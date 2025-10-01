@@ -3,6 +3,7 @@ import TradingChart from "@/components/TradingChart";
 import PortfolioCard from "@/components/PortfolioCard";
 import CurrencyPairs from "@/components/CurrencyPairs";
 import MetalsTable from "@/components/MetalsTable";
+import MarketHistory from "@/components/MarketHistory";
 
 const Index = () => {
   return (
@@ -26,6 +27,7 @@ const Index = () => {
         
         <CurrencyPairs />
         <MetalsTable />
+        <MarketHistory />
       </div>
     </div>
   );
