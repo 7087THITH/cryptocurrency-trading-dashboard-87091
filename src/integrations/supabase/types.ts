@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      market_prices: {
+        Row: {
+          change_24h: number | null
+          close_price: number | null
+          created_at: string
+          high_price: number | null
+          id: string
+          low_price: number | null
+          market: string
+          open_price: number | null
+          price: number
+          recorded_at: string
+          symbol: string
+          volume: number | null
+        }
+        Insert: {
+          change_24h?: number | null
+          close_price?: number | null
+          created_at?: string
+          high_price?: number | null
+          id?: string
+          low_price?: number | null
+          market: string
+          open_price?: number | null
+          price: number
+          recorded_at?: string
+          symbol: string
+          volume?: number | null
+        }
+        Update: {
+          change_24h?: number | null
+          close_price?: number | null
+          created_at?: string
+          high_price?: number | null
+          id?: string
+          low_price?: number | null
+          market?: string
+          open_price?: number | null
+          price?: number
+          recorded_at?: string
+          symbol?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
