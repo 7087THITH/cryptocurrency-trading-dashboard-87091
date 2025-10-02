@@ -1,16 +1,60 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, SkipForward, SkipBack } from 'lucide-react';
-import TradingViewWidget from 'react-tradingview-widget';
+import MonthlyChart from '@/components/charts/MonthlyChart';
+import YearlyChart from '@/components/charts/YearlyChart';
+import TrendChart from '@/components/charts/TrendChart';
 
-const TRADING_PAIRS = [
-  { name: 'USD/THB', symbol: 'FX_IDC:USDTHB', interval: '15' },
-  { name: 'USD/JPY', symbol: 'FX_IDC:USDJPY', interval: '15' },
-  { name: 'USD/CNY', symbol: 'FX_IDC:USDCNY', interval: '15' },
-  { name: 'EUR/USD', symbol: 'FX_IDC:EURUSD', interval: '15' },
-  { name: 'LME Copper', symbol: 'COMEX:HG1!', interval: '15' },
-  { name: 'LME Aluminum', symbol: 'COMEX:ALI1!', interval: '15' },
-  { name: 'Gold', symbol: 'COMEX:GC1!', interval: '15' },
+type ChartType = 'monthly' | 'yearly' | 'trend';
+
+interface ChartData {
+  name: string;
+  symbol: string;
+  market: string;
+  chartType: ChartType;
+  chartLabel: string;
+}
+
+const CHART_SLIDES: ChartData[] = [
+  // USD/THB
+  { name: 'USD/THB', symbol: 'USD/THB', market: 'FX', chartType: 'monthly', chartLabel: 'Monthly (1-30 วัน)' },
+  { name: 'USD/THB', symbol: 'USD/THB', market: 'FX', chartType: 'yearly', chartLabel: 'Yearly (1-12 เดือน)' },
+  { name: 'USD/THB', symbol: 'USD/THB', market: 'FX', chartType: 'trend', chartLabel: 'Trend (2019-2023)' },
+  
+  // THB/JPY
+  { name: 'THB/JPY', symbol: 'THB/JPY', market: 'FX', chartType: 'monthly', chartLabel: 'Monthly (1-30 วัน)' },
+  { name: 'THB/JPY', symbol: 'THB/JPY', market: 'FX', chartType: 'yearly', chartLabel: 'Yearly (1-12 เดือน)' },
+  { name: 'THB/JPY', symbol: 'THB/JPY', market: 'FX', chartType: 'trend', chartLabel: 'Trend (2019-2023)' },
+  
+  // THB/CNY
+  { name: 'THB/CNY', symbol: 'THB/CNY', market: 'FX', chartType: 'monthly', chartLabel: 'Monthly (1-30 วัน)' },
+  { name: 'THB/CNY', symbol: 'THB/CNY', market: 'FX', chartType: 'yearly', chartLabel: 'Yearly (1-12 เดือน)' },
+  { name: 'THB/CNY', symbol: 'THB/CNY', market: 'FX', chartType: 'trend', chartLabel: 'Trend (2019-2023)' },
+  
+  // USD/CNY
+  { name: 'USD/CNY', symbol: 'USD/CNY', market: 'FX', chartType: 'monthly', chartLabel: 'Monthly (1-30 วัน)' },
+  { name: 'USD/CNY', symbol: 'USD/CNY', market: 'FX', chartType: 'yearly', chartLabel: 'Yearly (1-12 เดือน)' },
+  { name: 'USD/CNY', symbol: 'USD/CNY', market: 'FX', chartType: 'trend', chartLabel: 'Trend (2019-2023)' },
+  
+  // LME COPPER
+  { name: 'LME COPPER', symbol: 'COPPER', market: 'METALS', chartType: 'monthly', chartLabel: 'Monthly (1-30 วัน)' },
+  { name: 'LME COPPER', symbol: 'COPPER', market: 'METALS', chartType: 'yearly', chartLabel: 'Yearly (1-12 เดือน)' },
+  { name: 'LME COPPER', symbol: 'COPPER', market: 'METALS', chartType: 'trend', chartLabel: 'Trend (2019-2023)' },
+  
+  // LME ALUMINIUM
+  { name: 'LME ALUMINIUM', symbol: 'ALUMINIUM', market: 'METALS', chartType: 'monthly', chartLabel: 'Monthly (1-30 วัน)' },
+  { name: 'LME ALUMINIUM', symbol: 'ALUMINIUM', market: 'METALS', chartType: 'yearly', chartLabel: 'Yearly (1-12 เดือน)' },
+  { name: 'LME ALUMINIUM', symbol: 'ALUMINIUM', market: 'METALS', chartType: 'trend', chartLabel: 'Trend (2019-2023)' },
+  
+  // SHFE COPPER
+  { name: 'SHFE COPPER', symbol: 'COPPER', market: 'SHFE', chartType: 'monthly', chartLabel: 'Monthly (1-30 วัน)' },
+  { name: 'SHFE COPPER', symbol: 'COPPER', market: 'SHFE', chartType: 'yearly', chartLabel: 'Yearly (1-12 เดือน)' },
+  { name: 'SHFE COPPER', symbol: 'COPPER', market: 'SHFE', chartType: 'trend', chartLabel: 'Trend (2019-2023)' },
+  
+  // SHFE ALUMINIUM
+  { name: 'SHFE ALUMINIUM', symbol: 'ALUMINIUM', market: 'SHFE', chartType: 'monthly', chartLabel: 'Monthly (1-30 วัน)' },
+  { name: 'SHFE ALUMINIUM', symbol: 'ALUMINIUM', market: 'SHFE', chartType: 'yearly', chartLabel: 'Yearly (1-12 เดือน)' },
+  { name: 'SHFE ALUMINIUM', symbol: 'ALUMINIUM', market: 'SHFE', chartType: 'trend', chartLabel: 'Trend (2019-2023)' },
 ];
 
 const LiveTV = () => {
@@ -22,21 +66,36 @@ const LiveTV = () => {
     if (!isPlaying) return;
 
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % TRADING_PAIRS.length);
+      setCurrentIndex((prev) => (prev + 1) % CHART_SLIDES.length);
     }, intervalDuration);
 
     return () => clearInterval(timer);
   }, [isPlaying, intervalDuration, currentIndex]);
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % TRADING_PAIRS.length);
+    setCurrentIndex((prev) => (prev + 1) % CHART_SLIDES.length);
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + TRADING_PAIRS.length) % TRADING_PAIRS.length);
+    setCurrentIndex((prev) => (prev - 1 + CHART_SLIDES.length) % CHART_SLIDES.length);
   };
 
-  const currentPair = TRADING_PAIRS[currentIndex];
+  const currentSlide = CHART_SLIDES[currentIndex];
+
+  const renderChart = () => {
+    const { symbol, market, chartType } = currentSlide;
+    
+    switch (chartType) {
+      case 'monthly':
+        return <MonthlyChart symbol={symbol} market={market} />;
+      case 'yearly':
+        return <YearlyChart symbol={symbol} market={market} />;
+      case 'trend':
+        return <TrendChart symbol={symbol} market={market} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-background flex flex-col">
@@ -45,7 +104,7 @@ const LiveTV = () => {
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold">Live TV</h1>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <span className="text-sm">{currentIndex + 1} / {TRADING_PAIRS.length}</span>
+            <span className="text-sm">{currentIndex + 1} / {CHART_SLIDES.length}</span>
           </div>
         </div>
         
@@ -104,32 +163,16 @@ const LiveTV = () => {
       <div className="flex-1 relative">
         <div className="absolute inset-0 p-4">
           <div className="glass-card h-full flex flex-col">
-            <div className="p-4 border-b border-border">
-              <h2 className="text-3xl font-bold">{currentPair.name}</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                กราฟแท่งเทียนแบบเรียลไทม์ - อัพเดททุก {intervalDuration / 1000} วินาที
+            <div className="p-6 border-b border-border">
+              <h2 className="text-3xl font-bold">{currentSlide.name}</h2>
+              <p className="text-lg text-muted-foreground mt-2">
+                {currentSlide.chartLabel}
               </p>
             </div>
             
-            <div className="flex-1 p-4">
+            <div className="flex-1 p-6">
               <div className="h-full w-full">
-                <TradingViewWidget
-                  key={currentPair.symbol}
-                  symbol={currentPair.symbol}
-                  theme="light"
-                  locale="th"
-                  autosize
-                  hide_side_toolbar={false}
-                  allow_symbol_change={false}
-                  interval={currentPair.interval}
-                  toolbar_bg="#FAFAF8"
-                  enable_publishing={false}
-                  hide_top_toolbar={false}
-                  save_image={false}
-                  studies={["MACD@tv-basicstudies", "RSI@tv-basicstudies"]}
-                  style="1"
-                  container_id={`tradingview_chart_${currentIndex}`}
-                />
+                {renderChart()}
               </div>
             </div>
           </div>
