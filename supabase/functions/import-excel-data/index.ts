@@ -73,7 +73,8 @@ serve(async (req) => {
       throw new Error(`Invalid data format: ${validationResult.error.message}`);
     }
 
-    const { data: excelData } = validationResult;
+    const validatedData = validationResult.data;
+    const excelData = validatedData.data; // Get the array from the data property
     
     console.log('Starting data import...');
 
