@@ -8,7 +8,7 @@ const TradingChart = () => {
       </div>
       <div className="h-[400px] w-full">
         <TradingViewWidget
-          symbol="FX:USDCNY"
+          symbol="FX_IDC:USDCNY"
           theme="light"
           locale="en"
           autosize

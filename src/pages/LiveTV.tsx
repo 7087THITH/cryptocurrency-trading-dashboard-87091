@@ -4,13 +4,13 @@ import { Play, Pause, SkipForward, SkipBack } from 'lucide-react';
 import TradingViewWidget from 'react-tradingview-widget';
 
 const TRADING_PAIRS = [
-  { name: 'USD/THB', symbol: 'FX:USDTHB', interval: '15' },
-  { name: 'THB/JPY', symbol: 'FX:THBJPY', interval: '15' },
-  { name: 'THB/CNY', symbol: 'FX:THBCNY', interval: '15' },
-  { name: 'USD/CNY', symbol: 'FX:USDCNY', interval: '15' },
+  { name: 'USD/THB', symbol: 'FX_IDC:USDTHB', interval: '15' },
+  { name: 'USD/JPY', symbol: 'FX_IDC:USDJPY', interval: '15' },
+  { name: 'USD/CNY', symbol: 'FX_IDC:USDCNY', interval: '15' },
+  { name: 'EUR/USD', symbol: 'FX_IDC:EURUSD', interval: '15' },
   { name: 'LME Copper', symbol: 'COMEX:HG1!', interval: '15' },
   { name: 'LME Aluminum', symbol: 'COMEX:ALI1!', interval: '15' },
-  { name: 'LME Zinc', symbol: 'COMEX:ZI1!', interval: '15' },
+  { name: 'Gold', symbol: 'COMEX:GC1!', interval: '15' },
 ];
 
 const LiveTV = () => {
