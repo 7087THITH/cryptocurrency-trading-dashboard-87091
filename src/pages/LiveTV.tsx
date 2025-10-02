@@ -6,10 +6,9 @@ const LiveTV = () => {
     { symbol: 'THB/JPY', market: 'FX', title: 'THB/JPY' },
     { symbol: 'THB/CNY', market: 'FX', title: 'THB/CNY' },
     { symbol: 'USD/CNY', market: 'FX', title: 'USD/CNY' },
-    { symbol: 'COPPER', market: 'METALS', title: 'LME COPPER' },
-    { symbol: 'ALUMINIUM', market: 'METALS', title: 'LME ALUMINIUM' },
-    { symbol: 'COPPER', market: 'SHFE', title: 'SHFE COPPER' },
-    { symbol: 'ALUMINIUM', market: 'SHFE', title: 'SHFE ALUMINIUM' },
+    { symbol: 'CU', market: 'SHFE', title: 'SHFE COPPER (CU)' },
+    { symbol: 'AL', market: 'SHFE', title: 'SHFE ALUMINIUM (AL)' },
+    { symbol: 'ZN', market: 'SHFE', title: 'SHFE ZINC (ZN)' },
   ];
 
   return (
