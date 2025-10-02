@@ -20,7 +20,7 @@ export const navItems = [
     page: <LiveTV />,
   },
   {
-    title: "Currency Convert",
+    title: "Tool",
     to: "/historical-data",
     icon: <LineChart className="h-4 w-4" />,
     page: <HistoricalData />,
