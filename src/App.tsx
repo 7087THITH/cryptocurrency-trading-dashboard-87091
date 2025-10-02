@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { navItems } from "./nav-items";
 import { Button } from "@/components/ui/button";
-import { Home, Tv, LineChart } from "lucide-react";
+import { Home, Tv, LineChart, Activity } from "lucide-react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -34,6 +34,12 @@ const App = () => (
                       <Button variant="ghost" size="sm">
                         <Tv className="mr-2 h-4 w-4" />
                         Live TV
+                      </Button>
+                    </Link>
+                    <Link to="/live-tv-2">
+                      <Button variant="ghost" size="sm">
+                        <Activity className="mr-2 h-4 w-4" />
+                        Live TV2
                       </Button>
                     </Link>
                     <Link to="/historical-data">
