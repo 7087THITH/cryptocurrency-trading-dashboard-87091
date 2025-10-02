@@ -1,9 +1,9 @@
 import MarketStats from "@/components/MarketStats";
 import TradingChart from "@/components/TradingChart";
-import PortfolioCard from "@/components/PortfolioCard";
 import CurrencyPairs from "@/components/CurrencyPairs";
 import MetalsTable from "@/components/MetalsTable";
 import MarketHistory from "@/components/MarketHistory";
+import DataDisplayPanels from "@/components/DataDisplayPanels";
 
 const Index = () => {
   return (
@@ -16,14 +16,11 @@ const Index = () => {
         
         <MarketStats />
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          <div className="lg:col-span-3">
-            <TradingChart />
-          </div>
-          <div>
-            <PortfolioCard />
-          </div>
+        <div className="grid grid-cols-1 gap-4">
+          <TradingChart />
         </div>
+        
+        <DataDisplayPanels />
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <CurrencyPairs />
