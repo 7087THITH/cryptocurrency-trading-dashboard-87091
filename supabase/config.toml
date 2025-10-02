@@ -4,4 +4,4 @@ project_id = "dfepyvnbeiafyaysbojg"
 verify_jwt = false
 
 [functions.import-excel-data]
-verify_jwt = false
+verify_jwt = true

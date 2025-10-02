@@ -1,10 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Validation schemas
+const ExcelRowSchema = z.object({
+  makingDate: z.string().optional(),
+  dataDate: z.string().optional(),
+  currency: z.string().optional(),
+  sellingPrice: z.number().positive().optional(),
+  exchangeRate: z.number().positive().optional(),
+  metal: z.string().optional(),
+  lmeUsd: z.number().positive().optional(),
+  shfeCny: z.number().positive().optional(),
+  shfeUsd: z.number().positive().optional(),
+});
+
+const RequestSchema = z.object({
+  data: z.array(ExcelRowSchema).max(10000), // Max 10k rows
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,11 +30,50 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // Get auth token from header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Missing authorization header');
+    }
 
-    const { data: excelData } = await req.json();
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    // Verify user is authenticated
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error('Authentication error:', userError);
+      throw new Error('Unauthorized: Invalid or missing authentication');
+    }
+
+    // Check if user has admin role
+    const { data: roles, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .single();
+
+    if (roleError || !roles) {
+      console.error('Authorization error:', roleError);
+      throw new Error('Forbidden: Admin access required');
+    }
+
+    console.log(`Admin user ${user.email} initiating data import...`);
+
+    // Parse and validate request body
+    const body = await req.json();
+    const validationResult = RequestSchema.safeParse(body);
+    
+    if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error);
+      throw new Error(`Invalid data format: ${validationResult.error.message}`);
+    }
+
+    const { data: excelData } = validationResult;
     
     console.log('Starting data import...');
 
@@ -64,13 +121,19 @@ serve(async (req) => {
       }
     }
 
+    // Use service role key for inserts (bypasses RLS)
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+
     // Insert data in batches
     const batchSize = 1000;
 
     // Insert exchange rates
     for (let i = 0; i < exchangeRates.length; i += batchSize) {
       const batch = exchangeRates.slice(i, i + batchSize);
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('historical_exchange_rates')
         .insert(batch);
       if (error) {
@@ -82,7 +145,7 @@ serve(async (req) => {
     // Insert LME prices
     for (let i = 0; i < lmePrices.length; i += batchSize) {
       const batch = lmePrices.slice(i, i + batchSize);
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('historical_lme_prices')
         .insert(batch);
       if (error) {
@@ -94,7 +157,7 @@ serve(async (req) => {
     // Insert SHFE prices
     for (let i = 0; i < shfePrices.length; i += batchSize) {
       const batch = shfePrices.slice(i, i + batchSize);
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('historical_shfe_prices')
         .insert(batch);
       if (error) {
