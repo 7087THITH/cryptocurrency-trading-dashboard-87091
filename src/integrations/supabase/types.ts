@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      historical_exchange_rates: {
+        Row: {
+          created_at: string | null
+          currency: string
+          data_date: string
+          exchange_rate: number | null
+          id: string
+          making_date: string
+          selling_price: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency: string
+          data_date: string
+          exchange_rate?: number | null
+          id?: string
+          making_date: string
+          selling_price?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string
+          data_date?: string
+          exchange_rate?: number | null
+          id?: string
+          making_date?: string
+          selling_price?: number | null
+        }
+        Relationships: []
+      }
+      historical_lme_prices: {
+        Row: {
+          created_at: string | null
+          data_date: string
+          id: string
+          making_date: string
+          metal: string
+          price_usd: number
+        }
+        Insert: {
+          created_at?: string | null
+          data_date: string
+          id?: string
+          making_date: string
+          metal: string
+          price_usd: number
+        }
+        Update: {
+          created_at?: string | null
+          data_date?: string
+          id?: string
+          making_date?: string
+          metal?: string
+          price_usd?: number
+        }
+        Relationships: []
+      }
+      historical_shfe_prices: {
+        Row: {
+          created_at: string | null
+          data_date: string
+          id: string
+          making_date: string
+          metal: string
+          price_cny: number
+          price_usd: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_date: string
+          id?: string
+          making_date: string
+          metal: string
+          price_cny: number
+          price_usd?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          data_date?: string
+          id?: string
+          making_date?: string
+          metal?: string
+          price_cny?: number
+          price_usd?: number | null
+        }
+        Relationships: []
+      }
       market_prices: {
         Row: {
           change_24h: number | null

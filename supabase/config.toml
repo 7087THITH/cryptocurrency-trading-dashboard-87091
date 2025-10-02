@@ -1,1 +1,7 @@
 project_id = "dfepyvnbeiafyaysbojg"
+
+[functions.record-market-prices]
+verify_jwt = false
+
+[functions.import-excel-data]
+verify_jwt = false
