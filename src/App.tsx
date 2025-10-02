@@ -5,48 +5,59 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { navItems } from "./nav-items";
 import { Button } from "@/components/ui/button";
-import { Home, Tv } from "lucide-react";
+import { Home, Tv, LineChart } from "lucide-react";
+import { ThemeProvider } from "next-themes";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="min-h-screen bg-background">
-          {/* Navigation Bar */}
-          <nav className="border-b border-border bg-card">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-16">
-                <div className="flex items-center gap-4">
-                  <Link to="/">
-                    <Button variant="ghost" size="sm">
-                      <Home className="mr-2 h-4 w-4" />
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <Link to="/live-tv">
-                    <Button variant="ghost" size="sm">
-                      <Tv className="mr-2 h-4 w-4" />
-                      Live TV
-                    </Button>
-                  </Link>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="min-h-screen bg-background transition-colors">
+            {/* Navigation Bar */}
+            <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
+              <div className="container mx-auto px-4">
+                <div className="flex items-center justify-between h-14">
+                  <div className="flex items-center gap-2">
+                    <Link to="/">
+                      <Button variant="ghost" size="sm">
+                        <Home className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Link to="/live-tv">
+                      <Button variant="ghost" size="sm">
+                        <Tv className="mr-2 h-4 w-4" />
+                        Live TV
+                      </Button>
+                    </Link>
+                    <Link to="/historical-data">
+                      <Button variant="ghost" size="sm">
+                        <LineChart className="mr-2 h-4 w-4" />
+                        ข้อมูลประวัติศาสตร์
+                      </Button>
+                    </Link>
+                  </div>
+                  <ThemeToggle />
                 </div>
               </div>
-            </div>
-          </nav>
+            </nav>
 
-          {/* Routes */}
-          <Routes>
-            {navItems.map(({ to, page }) => (
-              <Route key={to} path={to} element={page} />
-            ))}
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
+            {/* Routes */}
+            <Routes>
+              {navItems.map(({ to, page }) => (
+                <Route key={to} path={to} element={page} />
+              ))}
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
