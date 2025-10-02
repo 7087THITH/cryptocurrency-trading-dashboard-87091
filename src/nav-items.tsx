@@ -1,7 +1,8 @@
-import { Home, Tv, LineChart, Activity } from "lucide-react";
+import { Home, Tv, LineChart, Activity, TrendingUp } from "lucide-react";
 import Index from "./pages/Index.tsx";
 import LiveTV from "./pages/LiveTV.tsx";
 import LiveTV2 from "./pages/LiveTV2.tsx";
+import LiveTV3 from "./pages/LiveTV3.tsx";
 import HistoricalData from "./pages/HistoricalData.tsx";
 
 /**
@@ -25,6 +26,12 @@ export const navItems = [
     to: "/live-tv-2",
     icon: <Activity className="h-4 w-4" />,
     page: <LiveTV2 />,
+  },
+  {
+    title: "Live TV 3",
+    to: "/live-tv-3",
+    icon: <TrendingUp className="h-4 w-4" />,
+    page: <LiveTV3 />,
   },
   {
     title: "Tool",
