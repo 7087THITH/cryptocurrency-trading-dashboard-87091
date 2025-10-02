@@ -12,7 +12,7 @@ const TradingChart = () => {
           theme="light"
           locale="en"
           autosize
-          hide_side_toolbar={false}
+          hide_side_toolbar={true}
           allow_symbol_change={true}
           interval="D"
           toolbar_bg="#FAFAF8"
@@ -20,6 +20,16 @@ const TradingChart = () => {
           hide_top_toolbar={false}
           save_image={false}
           container_id="tradingview_chart"
+          studies={[]}
+          disabled_features={[
+            "header_indicators",
+            "header_compare",
+            "header_screenshot",
+            "header_undo_redo"
+          ]}
+          enabled_features={[
+            "hide_left_toolbar_by_default"
+          ]}
         />
       </div>
     </div>
