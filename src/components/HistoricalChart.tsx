@@ -15,6 +15,16 @@ export const HistoricalChart = () => {
   const [viewType, setViewType] = useState<ViewType>('monthly');
   const [selectedSymbol, setSelectedSymbol] = useState<string>('USD');
 
+  // Update symbol when chart type changes
+  const handleChartTypeChange = (newType: ChartType) => {
+    setChartType(newType);
+    if (newType === 'exchange') {
+      setSelectedSymbol('USD');
+    } else {
+      setSelectedSymbol('CU');
+    }
+  };
+
   const { data: chartData, isLoading } = useQuery({
     queryKey: ['historical-data', chartType, viewType, selectedSymbol],
     queryFn: async () => {
@@ -98,7 +108,7 @@ export const HistoricalChart = () => {
     <Card className="p-6">
       <div className="mb-6 space-y-4">
         <div className="flex gap-4 flex-wrap">
-          <Select value={chartType} onValueChange={(v) => setChartType(v as ChartType)}>
+          <Select value={chartType} onValueChange={(v) => handleChartTypeChange(v as ChartType)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="เลือกประเภท" />
             </SelectTrigger>
@@ -133,28 +143,40 @@ export const HistoricalChart = () => {
               <div className="flex items-center justify-center h-[400px]">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
-            ) : (
+            ) : chartData && chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis 
                     dataKey="date" 
                     angle={-45}
                     textAnchor="end"
                     height={80}
+                    className="text-sm"
                   />
-                  <YAxis />
-                  <Tooltip />
+                  <YAxis className="text-sm" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '0.5rem'
+                    }}
+                  />
                   <Legend />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="#8884d8" 
+                    stroke="hsl(var(--primary))" 
                     name={selectedSymbol}
                     strokeWidth={2}
+                    dot={{ fill: 'hsl(var(--primary))' }}
                   />
                 </LineChart>
               </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-[400px] text-muted-foreground">
+                ไม่มีข้อมูลในช่วงเวลาที่เลือก กรุณานำเข้าข้อมูลจาก Excel ก่อน
+              </div>
             )}
           </TabsContent>
         </Tabs>

@@ -85,23 +85,22 @@ export const ExcelImporter = () => {
           className="hidden"
           id="excel-upload"
         />
-        <label htmlFor="excel-upload">
-          <Button disabled={loading} asChild>
-            <span>
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  กำลังนำเข้า...
-                </>
-              ) : (
-                <>
-                  <Upload className="mr-2 h-4 w-4" />
-                  เลือกไฟล์ Excel
-                </>
-              )}
-            </span>
-          </Button>
-        </label>
+        <Button 
+          disabled={loading} 
+          onClick={() => document.getElementById('excel-upload')?.click()}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              กำลังนำเข้า...
+            </>
+          ) : (
+            <>
+              <Upload className="mr-2 h-4 w-4" />
+              เลือกไฟล์ Excel
+            </>
+          )}
+        </Button>
       </div>
     </Card>
   );
