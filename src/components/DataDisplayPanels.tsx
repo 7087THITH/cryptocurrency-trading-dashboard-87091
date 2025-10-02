@@ -18,7 +18,7 @@ const DataDisplayPanels = () => {
   const [selectedCategory, setSelectedCategory] = useState(dataCategories[0]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 w-full">
       {/* Left Panel - Data Selection */}
       <Card className="glass-card">
         <CardHeader>
@@ -44,7 +44,7 @@ const DataDisplayPanels = () => {
       </Card>
 
       {/* Middle Panel - Chart Type Selection */}
-      <Card className="glass-card lg:col-span-2">
+      <Card className="glass-card lg:col-span-3">
         <CardHeader>
           <CardTitle className="text-lg">{selectedCategory.label}</CardTitle>
         </CardHeader>

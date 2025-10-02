@@ -42,7 +42,9 @@ const MarketStats = () => {
         }}
         plugins={[
           Autoplay({
-            delay: 3000,
+            delay: 5000,
+            stopOnInteraction: false,
+            stopOnMouseEnter: true,
           }),
         ]}
         className="w-full"
