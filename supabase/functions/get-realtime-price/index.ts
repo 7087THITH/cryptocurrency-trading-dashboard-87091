@@ -7,10 +7,11 @@ const corsHeaders = {
 
 // Mapping our symbols to Twelve Data symbols
 const SYMBOL_MAPPINGS: Record<string, string> = {
-  'USDTHB': 'USD/THB',
-  'THBJPY': 'THB/JPY',
-  'THBCNY': 'THB/CNY',
-  'USDCNY': 'USD/CNY',
+  // FX pairs
+  'USDTHB-FX': 'USD/THB',
+  'THBJPY-FX': 'THB/JPY',
+  'THBCNY-FX': 'THB/CNY',
+  'USDCNY-FX': 'USD/CNY',
   // For metals, Twelve Data uses different symbols
   'CU-SHFE': 'HG',  // Copper futures
   'AL-SHFE': 'ALI', // Aluminum

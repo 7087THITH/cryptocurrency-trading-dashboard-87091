@@ -39,7 +39,7 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
   const { data: realtimePrice, isLoading: realtimeLoading } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
-    refetchInterval: 15000, // Refresh every 15 seconds
+    refetchInterval: 60000, // Refresh every 60 seconds to avoid rate limit
   });
 
   // Generate mock monthly data based on real-time price
