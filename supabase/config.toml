@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.import-excel-data]
 verify_jwt = true
+
+[functions.fetch-twelve-data]
+verify_jwt = false

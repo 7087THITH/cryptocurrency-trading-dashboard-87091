@@ -1,4 +1,5 @@
 import RealtimeChart from '@/components/charts/RealtimeChart';
+import TradingViewWidget from 'react-tradingview-widget';
 import {
   Carousel,
   CarouselContent,
@@ -28,19 +29,19 @@ const LiveTV2 = () => {
     })
   );
 
-  // All possible charts
+  // All possible charts with TradingView symbols
   const allCharts = [
-    { symbol: 'USD/THB', market: 'FX', title: 'USD/THB' },
-    { symbol: 'THB/JPY', market: 'FX', title: 'THB/JPY' },
-    { symbol: 'THB/CNY', market: 'FX', title: 'THB/CNY' },
-    { symbol: 'USD/CNY', market: 'FX', title: 'USD/CNY' },
-    { symbol: 'CU', market: 'SHFE', title: 'SHFE COPPER (CU)' },
-    { symbol: 'AL', market: 'SHFE', title: 'SHFE ALUMINIUM (AL)' },
+    { symbol: 'USD/THB', market: 'FX', title: 'USD/THB', tradingViewSymbol: 'FX_IDC:USDTHB' },
+    { symbol: 'THB/JPY', market: 'FX', title: 'THB/JPY', tradingViewSymbol: 'FX_IDC:THBJPY' },
+    { symbol: 'THB/CNY', market: 'FX', title: 'THB/CNY', tradingViewSymbol: 'FX_IDC:THBCNY' },
+    { symbol: 'USD/CNY', market: 'FX', title: 'USD/CNY', tradingViewSymbol: 'FX_IDC:USDCNY' },
+    { symbol: 'CU', market: 'SHFE', title: 'SHFE COPPER (CU)', tradingViewSymbol: 'SHFE:CU1!' },
+    { symbol: 'AL', market: 'SHFE', title: 'SHFE ALUMINIUM (AL)', tradingViewSymbol: 'SHFE:AL1!' },
   ];
 
   // Check which charts have data
-  const { data: availableCharts = allCharts } = useQuery({
-    queryKey: ['available-charts'],
+  const { data: chartsStatus = [] } = useQuery({
+    queryKey: ['charts-status'],
     queryFn: async () => {
       const chartsWithData = await Promise.all(
         allCharts.map(async (chart) => {
@@ -55,7 +56,7 @@ const LiveTV2 = () => {
         })
       );
       
-      return chartsWithData.filter(chart => chart.hasData);
+      return chartsWithData;
     },
     refetchInterval: 60000, // Check every minute
   });
@@ -123,14 +124,48 @@ const LiveTV2 = () => {
           className="w-full h-full"
         >
           <CarouselContent className="h-[calc(100vh-140px)]">
-            {availableCharts.map((chart, index) => (
+            {chartsStatus.map((chart, index) => (
               <CarouselItem key={`${chart.symbol}-${chart.market}-${index}`} className="h-full">
-                <div className="h-full p-4">
-                  <RealtimeChart
-                    symbol={chart.symbol}
-                    market={chart.market}
-                    title={chart.title}
-                  />
+                <div className="h-full p-6">
+                  {chart.hasData ? (
+                    <RealtimeChart
+                      symbol={chart.symbol}
+                      market={chart.market}
+                      title={chart.title}
+                    />
+                  ) : (
+                    <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-semibold">{chart.title}</h2>
+                      </div>
+                      <div className="flex-1 w-full">
+                        <TradingViewWidget
+                          symbol={chart.tradingViewSymbol}
+                          theme="light"
+                          locale="en"
+                          autosize
+                          hide_side_toolbar={true}
+                          allow_symbol_change={false}
+                          interval="D"
+                          toolbar_bg="#FAFAF8"
+                          enable_publishing={false}
+                          hide_top_toolbar={false}
+                          save_image={false}
+                          container_id={`tradingview_chart_${index}`}
+                          studies={[]}
+                          disabled_features={[
+                            "header_indicators",
+                            "header_compare",
+                            "header_screenshot",
+                            "header_undo_redo"
+                          ]}
+                          enabled_features={[
+                            "hide_left_toolbar_by_default"
+                          ]}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CarouselItem>
             ))}
@@ -138,7 +173,7 @@ const LiveTV2 = () => {
         </Carousel>
 
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-background/80 backdrop-blur p-2 rounded-full">
-          {availableCharts.map((_, index) => (
+          {chartsStatus.map((_, index) => (
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}
