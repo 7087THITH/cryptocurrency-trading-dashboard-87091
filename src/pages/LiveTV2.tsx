@@ -28,30 +28,17 @@ interface ChartBlockProps {
     market: string;
     symbol: string;
   }[];
+  selectedTab: string;
 }
 const ChartBlock = ({
   title,
-  symbols
+  symbols,
+  selectedTab
 }: ChartBlockProps) => {
   const [selectedSymbol, setSelectedSymbol] = useState(0);
   const [chartData, setChartData] = useState<any[]>([]);
   const [realtimeHistory, setRealtimeHistory] = useState<any[]>([]);
   const currentSymbol = symbols[selectedSymbol];
-  const [selectedTab, setSelectedTab] = useState("monthly");
-
-  // Auto-rotate tabs every 45 seconds
-  useEffect(() => {
-    const tabs = ["monthly", "yearly", "trend"];
-    const interval = setInterval(() => {
-      setSelectedTab(current => {
-        const currentIndex = tabs.indexOf(current);
-        const nextIndex = (currentIndex + 1) % tabs.length;
-        return tabs[nextIndex];
-      });
-    }, 45000); // 45 seconds
-
-    return () => clearInterval(interval);
-  }, []);
 
   // Auto-rotate symbols every 2 minutes
   useEffect(() => {
@@ -235,93 +222,56 @@ const ChartBlock = ({
           <div className="text-lg text-muted-foreground">{latestData?.time}</div>
         </div>
       </div>
+      
+      {/* Symbol selector */}
+      <div className="flex gap-6 mb-6 text-lg">
+        {symbols.map((sym, idx) => <button key={idx} onClick={() => setSelectedSymbol(idx)} className={`transition-colors font-semibold ${selectedSymbol === idx ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+            {sym.label}
+          </button>)}
+      </div>
 
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-blue-100 dark:bg-blue-950 h-14">
-          <TabsTrigger value="monthly" className="text-base font-semibold">รายวัน (15, 30, 15)</TabsTrigger>
-          <TabsTrigger value="yearly" className="text-base font-semibold">รายเดือน (1 ปี)</TabsTrigger>
-          <TabsTrigger value="trend" className="text-base font-semibold">Trend (2019-2025)</TabsTrigger>
-        </TabsList>
-        
-        {/* Symbol selector */}
-        <div className="flex gap-6 mb-6 text-lg">
-          {symbols.map((sym, idx) => <button key={idx} onClick={() => setSelectedSymbol(idx)} className={`transition-colors font-semibold ${selectedSymbol === idx ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-              {sym.label}
-            </button>)}
-        </div>
-
-        <TabsContent value="monthly" className="flex-1 mt-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} interval={0} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
-              <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
-              fontSize: '14px'
-            }} />
-              <Legend wrapperStyle={{
-              fontSize: '14px'
-            }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคา" isAnimationActive={true} />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
-            </LineChart>
-          </ResponsiveContainer>
-        </TabsContent>
-
-        <TabsContent value="yearly" className="flex-1 mt-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
-              <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
-              fontSize: '14px'
-            }} />
-              <Legend wrapperStyle={{
-              fontSize: '14px'
-            }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
-            </LineChart>
-          </ResponsiveContainer>
-        </TabsContent>
-
-        <TabsContent value="trend" className="flex-1 mt-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
-              <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
-              fontSize: '14px'
-            }} />
-              <Legend wrapperStyle={{
-              fontSize: '14px'
-            }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={3} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={3} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
-            </LineChart>
-          </ResponsiveContainer>
-        </TabsContent>
-      </Tabs>
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} interval={selectedTab === 'monthly' ? 0 : 'preserveStartEnd'} />
+            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
+            <Tooltip contentStyle={{
+            background: 'hsl(var(--popover))',
+            border: '1px solid hsl(var(--border))',
+            borderRadius: '0.5rem',
+            fontSize: '14px'
+          }} />
+            <Legend wrapperStyle={{
+            fontSize: '14px'
+          }} />
+            <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={selectedTab === 'monthly'} name={selectedTab === 'monthly' ? 'ราคา' : 'ราคาเฉลี่ย'} isAnimationActive={true} />
+            <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={selectedTab !== 'monthly'} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
+            <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={selectedTab !== 'monthly'} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>;
 };
 const LiveTV2 = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [selectedTab, setSelectedTab] = useState("monthly");
+
+  // Auto-rotate tabs every 45 seconds
+  useEffect(() => {
+    const tabs = ["monthly", "yearly", "trend"];
+    const interval = setInterval(() => {
+      setSelectedTab(current => {
+        const currentIndex = tabs.indexOf(current);
+        const nextIndex = (currentIndex + 1) % tabs.length;
+        return tabs[nextIndex];
+      });
+    }, 45000); // 45 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Load delay from localStorage or use default (45 seconds)
   const [delay, setDelay] = useState(() => {
@@ -406,29 +356,37 @@ const LiveTV2 = () => {
     setIsPlaying(!isPlaying);
   };
   return <div className="h-screen w-screen bg-background overflow-hidden">
-      <div className="h-full relative">
-        <Carousel setApi={setApi} opts={{
-        loop: true
-      }} plugins={[autoplayRef.current]} className="w-full h-full relative">
-          <CarouselPrevious className="left-4 h-14 w-14 border-2 z-10">
-            <ChevronLeft className="h-8 w-8" />
-          </CarouselPrevious>
-          <CarouselNext className="right-4 h-14 w-14 border-2 z-10">
-            <ChevronRight className="h-8 w-8" />
-          </CarouselNext>
-          <CarouselContent className="h-full">
-            {chartBlocks.map((block, index) => <CarouselItem key={`${block.title}-${index}`} className="h-full">
-                <div className="h-full p-6">
-                  <ChartBlock title={block.title} symbols={block.symbols} />
-                </div>
-              </CarouselItem>)}
-          </CarouselContent>
-        </Carousel>
+      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="h-full flex flex-col">
+        <TabsList className="grid w-full grid-cols-3 bg-blue-100 dark:bg-blue-950 h-14 rounded-none">
+          <TabsTrigger value="monthly" className="text-base font-semibold">รายวัน (15, 30, 15)</TabsTrigger>
+          <TabsTrigger value="yearly" className="text-base font-semibold">รายเดือน (1 ปี)</TabsTrigger>
+          <TabsTrigger value="trend" className="text-base font-semibold">Trend (2019-2025)</TabsTrigger>
+        </TabsList>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/80 backdrop-blur p-3 rounded-full z-10">
-          {chartBlocks.map((_, index) => <button key={index} onClick={() => api?.scrollTo(index)} className={`h-3 rounded-full transition-all ${index === current ? 'w-12 bg-primary' : 'w-3 bg-muted-foreground/50 hover:bg-muted-foreground'}`} aria-label={`Go to chart ${index + 1}`} />)}
+        <div className="flex-1 relative">
+          <Carousel setApi={setApi} opts={{
+          loop: true
+        }} plugins={[autoplayRef.current]} className="w-full h-full relative">
+            <CarouselPrevious className="left-4 h-14 w-14 border-2 z-10">
+              <ChevronLeft className="h-8 w-8" />
+            </CarouselPrevious>
+            <CarouselNext className="right-4 h-14 w-14 border-2 z-10">
+              <ChevronRight className="h-8 w-8" />
+            </CarouselNext>
+            <CarouselContent className="h-full">
+              {chartBlocks.map((block, index) => <CarouselItem key={`${block.title}-${index}`} className="h-full">
+                  <div className="h-full p-6">
+                    <ChartBlock title={block.title} symbols={block.symbols} selectedTab={selectedTab} />
+                  </div>
+                </CarouselItem>)}
+            </CarouselContent>
+          </Carousel>
+
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/80 backdrop-blur p-3 rounded-full z-10">
+            {chartBlocks.map((_, index) => <button key={index} onClick={() => api?.scrollTo(index)} className={`h-3 rounded-full transition-all ${index === current ? 'w-12 bg-primary' : 'w-3 bg-muted-foreground/50 hover:bg-muted-foreground'}`} aria-label={`Go to chart ${index + 1}`} />)}
+          </div>
         </div>
-      </div>
+      </Tabs>
     </div>;
 };
 export default LiveTV2;
