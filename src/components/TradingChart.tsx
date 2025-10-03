@@ -4,11 +4,11 @@ const TradingChart = () => {
   return (
     <div className="glass-card p-6 rounded-lg mb-8 animate-fade-in">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">USD/CNY Chart</h2>
+        <h2 className="text-xl font-semibold">USD/THB Chart</h2>
       </div>
       <div className="h-[400px] w-full">
         <TradingViewWidget
-          symbol="FX_IDC:USDCNY"
+          symbol="FX_IDC:USDTHB"
           theme="light"
           locale="en"
           autosize
