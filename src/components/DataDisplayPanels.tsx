@@ -58,10 +58,10 @@ const DataDisplayPanels = () => {
           {dataCategories.map((category) => (
             <TabsContent key={category.id} value={category.id}>
               <Tabs defaultValue="monthly" className="w-full" onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-3 mb-4">
-                  <TabsTrigger value="monthly">Monthly (1-30 days)</TabsTrigger>
-                  <TabsTrigger value="yearly">Yearly (1-12 months)</TabsTrigger>
-                  <TabsTrigger value="trend">Trend (2019-2023)</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 h-8 mb-4">
+                  <TabsTrigger value="monthly" className="text-xs px-2 py-1">Monthly (1-30 days)</TabsTrigger>
+                  <TabsTrigger value="yearly" className="text-xs px-2 py-1">Yearly (1-12 months)</TabsTrigger>
+                  <TabsTrigger value="trend" className="text-xs px-2 py-1">Trend (2019-2023)</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="monthly" className="mt-4">
