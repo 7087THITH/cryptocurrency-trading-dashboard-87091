@@ -368,9 +368,7 @@ const LiveTV2 = () => {
             </CarouselNext>
             <CarouselContent className="h-full">
               {chartBlocks.map((block, index) => <CarouselItem key={`${block.title}-${index}`} className="h-full">
-                  <div className="h-full p-6">
-                    <ChartBlock title={block.title} symbols={block.symbols} selectedTab={selectedTab} />
-                  </div>
+                  
                 </CarouselItem>)}
             </CarouselContent>
           </Carousel>
