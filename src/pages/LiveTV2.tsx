@@ -4,15 +4,19 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselApi,
+  CarouselPrevious,
+  CarouselNext,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { useState, useEffect, useRef } from 'react';
 import { Slider } from "@/components/ui/slider";
-import { Clock } from "lucide-react";
+import { Clock, Pause, Play } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const LiveTV2 = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
   
   // Load delay from localStorage or use default
   const [delay, setDelay] = useState(() => {
@@ -62,6 +66,15 @@ const LiveTV2 = () => {
     localStorage.setItem('liveTV2-delay', newDelay.toString());
   };
 
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      autoplayRef.current.stop();
+    } else {
+      autoplayRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b space-y-4">
@@ -70,21 +83,42 @@ const LiveTV2 = () => {
           <p className="text-sm text-muted-foreground">กราฟแสดงข้อมูลแบบเรียลไทม์</p>
         </div>
         
-        <div className="flex items-center gap-4 max-w-md">
-          <Clock className="h-5 w-5 text-muted-foreground" />
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">เวลาในการเลื่อน</label>
-              <span className="text-sm text-muted-foreground">{delay / 1000} วินาที</span>
+        <div className="flex items-center gap-4 flex-wrap">
+          <Button
+            onClick={togglePlayPause}
+            variant="outline"
+            size="lg"
+            className="gap-2"
+          >
+            {isPlaying ? (
+              <>
+                <Pause className="h-5 w-5" />
+                หยุด
+              </>
+            ) : (
+              <>
+                <Play className="h-5 w-5" />
+                เล่น
+              </>
+            )}
+          </Button>
+
+          <div className="flex items-center gap-4 flex-1 max-w-md">
+            <Clock className="h-5 w-5 text-muted-foreground" />
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium">เวลาในการเลื่อน</label>
+                <span className="text-sm text-muted-foreground">{delay / 1000} วินาที</span>
+              </div>
+              <Slider
+                value={[delay / 1000]}
+                onValueChange={handleDelayChange}
+                min={3}
+                max={30}
+                step={1}
+                className="w-full"
+              />
             </div>
-            <Slider
-              value={[delay / 1000]}
-              onValueChange={handleDelayChange}
-              min={3}
-              max={30}
-              step={1}
-              className="w-full"
-            />
           </div>
         </div>
       </div>
@@ -96,8 +130,10 @@ const LiveTV2 = () => {
             loop: true,
           }}
           plugins={[autoplayRef.current]}
-          className="w-full h-full"
+          className="w-full h-full relative"
         >
+          <CarouselPrevious className="left-4 h-12 w-12" />
+          <CarouselNext className="right-4 h-12 w-12" />
           <CarouselContent className="h-[calc(100vh-140px)]">
             {charts.map((chart, index) => (
               <CarouselItem key={`${chart.symbol}-${index}`} className="h-full">
