@@ -409,7 +409,9 @@ const MultiBlockCharts = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in">
-      <ChartBlock title="บล็อคที่ 1: คู่สกุลเงิน THB" symbols={block1Symbols} />
+      <div className="mb-6 animate-pulse-slow">
+        <ChartBlock title="บล็อคที่ 1: คู่สกุลเงิน THB" symbols={block1Symbols} />
+      </div>
       <ChartBlock title="บล็อคที่ 2: USD/CNY และ Copper" symbols={block2Symbols} />
       <ChartBlock title="บล็อคที่ 3: USD/CNY และ Aluminium" symbols={block3Symbols} />
     </div>
