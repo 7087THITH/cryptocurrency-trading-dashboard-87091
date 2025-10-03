@@ -43,9 +43,13 @@ const DataDisplayPanels = () => {
     <Card className="glass-card mb-8 w-full">
       <CardContent className="pt-6">
         <Tabs defaultValue="usd-thb" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-6 bg-blue-50 dark:bg-blue-950/30">
             {dataCategories.map((category) => (
-              <TabsTrigger key={category.id} value={category.id}>
+              <TabsTrigger 
+                key={category.id} 
+                value={category.id}
+                className="data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+              >
                 {category.label}
               </TabsTrigger>
             ))}
