@@ -6,11 +6,19 @@ import {
   CarouselApi,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { Slider } from "@/components/ui/slider";
+import { Clock } from "lucide-react";
 
 const LiveTV2 = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const [delay, setDelay] = useState(5000);
+  const autoplayRef = useRef(
+    Autoplay({
+      delay: 5000,
+    })
+  );
   const charts = [
     { symbol: 'FX_IDC:USDTHB', title: 'USD/THB' },
     { symbol: 'FX_IDC:THBJPY', title: 'THB/JPY' },
@@ -28,11 +36,47 @@ const LiveTV2 = () => {
     });
   }, [api]);
 
+  useEffect(() => {
+    if (autoplayRef.current) {
+      autoplayRef.current.stop();
+      autoplayRef.current = Autoplay({
+        delay: delay,
+      });
+      if (api) {
+        api.reInit();
+      }
+    }
+  }, [delay, api]);
+
+  const handleDelayChange = (value: number[]) => {
+    setDelay(value[0] * 1000);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <h1 className="text-2xl font-bold">Live TV 2 - Real-time Charts</h1>
-        <p className="text-sm text-muted-foreground">กราฟแสดงข้อมูลแบบเรียลไทม์ (เปลี่ยนอัตโนมัติทุก 5 วินาที)</p>
+      <div className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b space-y-4">
+        <div>
+          <h1 className="text-2xl font-bold">Live TV 2 - Real-time Charts</h1>
+          <p className="text-sm text-muted-foreground">กราฟแสดงข้อมูลแบบเรียลไทม์</p>
+        </div>
+        
+        <div className="flex items-center gap-4 max-w-md">
+          <Clock className="h-5 w-5 text-muted-foreground" />
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium">เวลาในการเลื่อน</label>
+              <span className="text-sm text-muted-foreground">{delay / 1000} วินาที</span>
+            </div>
+            <Slider
+              value={[delay / 1000]}
+              onValueChange={handleDelayChange}
+              min={3}
+              max={30}
+              step={1}
+              className="w-full"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="flex-1 relative">
@@ -41,11 +85,7 @@ const LiveTV2 = () => {
           opts={{
             loop: true,
           }}
-          plugins={[
-            Autoplay({
-              delay: 5000,
-            }),
-          ]}
+          plugins={[autoplayRef.current]}
           className="w-full h-full"
         >
           <CarouselContent className="h-[calc(100vh-120px)]">
