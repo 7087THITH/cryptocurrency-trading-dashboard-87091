@@ -223,7 +223,7 @@ const ChartBlock = ({
   if (isLoading) {
     return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
         <h2 className="text-xl font-semibold mb-4">{title}</h2>
-        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+        <div className="flex-1 flex-nowrap items-center justify-center flex-auto ">
           กำลังโหลด...
         </div>
       </div>;

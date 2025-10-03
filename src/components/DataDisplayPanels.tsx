@@ -58,46 +58,6 @@ const DataDisplayPanels = () => {
       }
     };
   }, []);
-  return (
-    <Card className="w-full">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="monthly">Monthly (30 Days)</TabsTrigger>
-          <TabsTrigger value="yearly">Yearly (12 Months)</TabsTrigger>
-          <TabsTrigger value="trend">5-Year Trend</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="monthly" className="space-y-6 p-6">
-          {dataCategories.map((category) => (
-            <MonthlyChart
-              key={category.id}
-              symbol={category.symbol}
-              market={category.market}
-            />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="yearly" className="space-y-6 p-6">
-          {dataCategories.map((category) => (
-            <YearlyChart
-              key={category.id}
-              symbol={category.symbol}
-              market={category.market}
-            />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="trend" className="space-y-6 p-6">
-          {dataCategories.map((category) => (
-            <TrendChart
-              key={category.id}
-              symbol={category.symbol}
-              market={category.market}
-            />
-          ))}
-        </TabsContent>
-      </Tabs>
-    </Card>
-  );
+  return;
 };
 export default DataDisplayPanels;
