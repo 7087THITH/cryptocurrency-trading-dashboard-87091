@@ -2,11 +2,12 @@ import { ArrowUpIcon, ArrowDownIcon, TrendingUpIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { format } from "date-fns";
 
 const initialMarketData = [
   { label: "USD/THB", value: "36.75", change: 0.15, prefix: "" },
-  { label: "USD/THB", value: "36.78", change: 0.18, prefix: "" },
-  { label: "USD/THB", value: "36.72", change: 0.12, prefix: "" },
+  { label: "THB/JPY", value: "4.08", change: 0.22, prefix: "" },
+  { label: "THB/CNY", value: "5.07", change: -0.15, prefix: "" },
   { label: "USD/CNY", value: "7.24", change: -0.08, prefix: "" },
   { label: "SHFE COPPER (CU)", value: "68,750", change: 0.95, prefix: "¥" },
   { label: "SHFE COPPER (CU)", value: "68,820", change: 1.05, prefix: "¥" },
@@ -18,6 +19,7 @@ const initialMarketData = [
 
 const MarketStats = () => {
   const [marketData, setMarketData] = useState(initialMarketData);
+  const [lastUpdate, setLastUpdate] = useState(new Date());
 
   useEffect(() => {
     const updateInterval = setInterval(() => {
@@ -30,6 +32,7 @@ const MarketStats = () => {
           change: parseFloat((item.change + (Math.random() - 0.5) * 0.3).toFixed(2)),
         }))
       );
+      setLastUpdate(new Date());
     }, 2000);
 
     return () => {
@@ -68,6 +71,9 @@ const MarketStats = () => {
                   {item.change >= 0 ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
                   {Math.abs(item.change)}%
                 </span>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {format(lastUpdate, "dd/MM/yyyy HH:mm:ss")}
+                </p>
               </div>
             </CarouselItem>
           ))}
