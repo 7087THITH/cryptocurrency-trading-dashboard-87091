@@ -23,6 +23,7 @@ interface ChartBlockProps {
 const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
   const [selectedSymbol, setSelectedSymbol] = useState(0);
   const [chartData, setChartData] = useState<any[]>([]);
+  const [realtimeHistory, setRealtimeHistory] = useState<any[]>([]);
   const currentSymbol = symbols[selectedSymbol];
 
   const [selectedTab, setSelectedTab] = useState(() => {
@@ -41,6 +42,29 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
     refetchInterval: 60000, // Refresh every 60 seconds to avoid rate limit
   });
+
+  // Update realtime history when new data arrives
+  useEffect(() => {
+    if (realtimePrice) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('th-TH', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      
+      setRealtimeHistory(prev => {
+        const newHistory = [...prev, {
+          time: timeString,
+          price: realtimePrice.price,
+          high: realtimePrice.high_price,
+          low: realtimePrice.low_price,
+        }];
+        // Keep only last 30 data points
+        return newHistory.slice(-30);
+      });
+    }
+  }, [realtimePrice]);
 
   // Generate mock monthly data based on real-time price
   const { data: monthlyData, isLoading: monthlyLoading } = useQuery({
@@ -145,14 +169,16 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
   const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
 
   useEffect(() => {
-    if (selectedTab === 'monthly' && monthlyData) {
+    if (selectedTab === 'realtime' && realtimeHistory) {
+      setChartData(realtimeHistory);
+    } else if (selectedTab === 'monthly' && monthlyData) {
       setChartData(monthlyData);
     } else if (selectedTab === 'yearly' && yearlyData) {
       setChartData(yearlyData);
     } else if (selectedTab === 'trend' && trendData) {
       setChartData(trendData);
     }
-  }, [selectedTab, monthlyData, yearlyData, trendData]);
+  }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
 
   if (isLoading) {
     return (
@@ -206,11 +232,70 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
       </div>
 
       <Tabs value={selectedTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-3 mb-4">
+        <TabsList className="grid w-full grid-cols-4 mb-4">
+          <TabsTrigger value="realtime" className="text-xs">Realtime</TabsTrigger>
           <TabsTrigger value="monthly" className="text-xs">รายวัน (30 วัน)</TabsTrigger>
           <TabsTrigger value="yearly" className="text-xs">รายเดือน (1 ปี)</TabsTrigger>
           <TabsTrigger value="trend" className="text-xs">Trend (2019-2025)</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="realtime" className="flex-1 mt-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis 
+                dataKey="time" 
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={9}
+                interval="preserveStartEnd"
+              />
+              <YAxis 
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={9}
+                domain={['auto', 'auto']}
+                width={45}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  background: 'hsl(var(--popover))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '0.5rem',
+                  fontSize: '11px'
+                }}
+              />
+              <Legend wrapperStyle={{ fontSize: '10px' }} />
+              <Line 
+                type="monotone" 
+                dataKey="price" 
+                stroke="hsl(var(--primary))" 
+                strokeWidth={2}
+                dot={true}
+                name="ราคา"
+                isAnimationActive={true}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="high" 
+                stroke="hsl(var(--success))" 
+                strokeWidth={1}
+                dot={true}
+                name="สูงสุด"
+                strokeDasharray="5 5"
+                isAnimationActive={true}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="low" 
+                stroke="hsl(var(--destructive))" 
+                strokeWidth={1}
+                dot={true}
+                name="ต่ำสุด"
+                strokeDasharray="5 5"
+                isAnimationActive={true}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </TabsContent>
 
         <TabsContent value="monthly" className="flex-1 mt-0">
           <ResponsiveContainer width="100%" height="100%">
