@@ -146,6 +146,48 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_market_averages: {
+        Row: {
+          avg_high: number | null
+          avg_low: number | null
+          avg_price: number
+          created_at: string
+          data_points: number | null
+          id: string
+          market: string
+          month: number
+          symbol: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          avg_high?: number | null
+          avg_low?: number | null
+          avg_price: number
+          created_at?: string
+          data_points?: number | null
+          id?: string
+          market: string
+          month: number
+          symbol: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          avg_high?: number | null
+          avg_low?: number | null
+          avg_price?: number
+          created_at?: string
+          data_points?: number | null
+          id?: string
+          market?: string
+          month?: number
+          symbol?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -188,6 +230,45 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      yearly_market_averages: {
+        Row: {
+          avg_high: number | null
+          avg_low: number | null
+          avg_price: number
+          created_at: string
+          data_points: number | null
+          id: string
+          market: string
+          symbol: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          avg_high?: number | null
+          avg_low?: number | null
+          avg_price: number
+          created_at?: string
+          data_points?: number | null
+          id?: string
+          market: string
+          symbol: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          avg_high?: number | null
+          avg_low?: number | null
+          avg_price?: number
+          created_at?: string
+          data_points?: number | null
+          id?: string
+          market?: string
+          symbol?: string
+          updated_at?: string
+          year?: number
         }
         Relationships: []
       }
