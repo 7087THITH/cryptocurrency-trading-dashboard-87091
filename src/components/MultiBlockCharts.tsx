@@ -192,15 +192,15 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
       </div>
       
       {/* Symbol selector */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-3 mb-4 text-xs">
         {symbols.map((sym, idx) => (
           <button
             key={idx}
             onClick={() => setSelectedSymbol(idx)}
-            className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+            className={`transition-colors font-medium ${
               selectedSymbol === idx
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted hover:bg-muted/80'
+                ? 'text-primary'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {sym.label}
