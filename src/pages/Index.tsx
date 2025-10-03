@@ -1,7 +1,6 @@
 import MarketStats from "@/components/MarketStats";
 import MultiBlockCharts from "@/components/MultiBlockCharts";
 import MarketHistory from "@/components/MarketHistory";
-import DataDisplayPanels from "@/components/DataDisplayPanels";
 
 const Index = () => {
   return (
@@ -15,8 +14,6 @@ const Index = () => {
         <MarketStats />
         
         <MultiBlockCharts />
-        
-        <DataDisplayPanels />
         
         <MarketHistory />
       </div>
