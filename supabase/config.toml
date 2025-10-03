@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.get-realtime-price]
 verify_jwt = false
+
+[functions.fetch-historical-data]
+verify_jwt = false
