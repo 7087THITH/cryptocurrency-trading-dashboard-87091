@@ -511,13 +511,11 @@ const MultiBlockCharts = () => {
   ];
 
   const block2Symbols = [
-    { label: "USD/CNY", market: "FX", symbol: "USDCNY" },
     { label: "SHFE COPPER (CU)", market: "SHFE", symbol: "CU" },
     { label: "LME COPPER (CU)", market: "LME", symbol: "CU" },
   ];
 
   const block3Symbols = [
-    { label: "USD/CNY", market: "FX", symbol: "USDCNY" },
     { label: "SHFE ALUMINIUM (AL)", market: "SHFE", symbol: "AL" },
     { label: "LME ALUMINIUM (AL)", market: "LME", symbol: "AL" },
   ];
@@ -528,10 +526,10 @@ const MultiBlockCharts = () => {
         <ChartBlock title="บล็อคที่ 1: คู่สกุลเงิน THB" symbols={block1Symbols} />
       </div>
       <div className="h-[500px]">
-        <ChartBlock title="บล็อคที่ 2: USD/CNY และ Copper" symbols={block2Symbols} />
+        <ChartBlock title="บล็อคที่ 2: Copper" symbols={block2Symbols} />
       </div>
       <div className="h-[500px]">
-        <ChartBlock title="บล็อคที่ 3: USD/CNY และ Aluminium" symbols={block3Symbols} />
+        <ChartBlock title="บล็อคที่ 3: Aluminium" symbols={block3Symbols} />
       </div>
     </div>
   );
