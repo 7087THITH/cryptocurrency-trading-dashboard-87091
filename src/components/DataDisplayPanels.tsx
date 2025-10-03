@@ -58,6 +58,55 @@ const DataDisplayPanels = () => {
       }
     };
   }, []);
-  return;
+  return (
+    <div className="w-full space-y-4 animate-fade-in">
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold mb-6">Data Display Panels</h2>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="monthly">Monthly</TabsTrigger>
+            <TabsTrigger value="yearly">Yearly</TabsTrigger>
+            <TabsTrigger value="trend">Trend</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="monthly" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {dataCategories.map(category => (
+                <MonthlyChart
+                  key={category.id}
+                  symbol={category.symbol}
+                  market={category.market}
+                />
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="yearly" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {dataCategories.map(category => (
+                <YearlyChart
+                  key={category.id}
+                  symbol={category.symbol}
+                  market={category.market}
+                />
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="trend" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {dataCategories.map(category => (
+                <TrendChart
+                  key={category.id}
+                  symbol={category.symbol}
+                  market={category.market}
+                />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </Card>
+    </div>
+  );
 };
 export default DataDisplayPanels;

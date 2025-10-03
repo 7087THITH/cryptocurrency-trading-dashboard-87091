@@ -5,17 +5,17 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
-// Fetch real-time price from Twelve Data API
+// Fetch latest price from market_prices table
 const fetchRealtimePrice = async (symbol: string, market: string) => {
-  const {
-    data,
-    error
-  } = await supabase.functions.invoke('get-realtime-price', {
-    body: {
-      symbol,
-      market
-    }
-  });
+  const { data, error } = await supabase
+    .from('market_prices')
+    .select('*')
+    .eq('symbol', symbol)
+    .eq('market', market)
+    .order('recorded_at', { ascending: false })
+    .limit(1)
+    .single();
+  
   if (error) throw error;
   return data;
 };
