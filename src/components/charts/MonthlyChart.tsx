@@ -15,24 +15,64 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
   const { data: chartData, isLoading } = useQuery({
     queryKey: ["monthly-chart", symbol, market],
     queryFn: async () => {
-      const thirtyDaysAgo = subDays(new Date(), 30);
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      
+      // วันที่ 15 เดือนก่อนหน้า
+      const date15PrevMonth = new Date(currentYear, currentMonth - 1, 15);
+      // วันที่ 30 เดือนก่อนหน้า
+      const date30PrevMonth = new Date(currentYear, currentMonth - 1, 30);
+      // วันที่ 15 เดือนปัจจุบัน
+      const date15CurrentMonth = new Date(currentYear, currentMonth, 15);
+      
+      const targetDates = [date15PrevMonth, date30PrevMonth, date15CurrentMonth];
+      
+      // ดึงข้อมูลในช่วง 45 วันย้อนหลัง
+      const startDate = subDays(date15PrevMonth, 2);
+      const endDate = new Date(currentYear, currentMonth, 17);
       
       const { data, error } = await supabase
         .from("market_prices")
         .select("*")
         .eq("symbol", symbol)
         .eq("market", market)
-        .gte("recorded_at", thirtyDaysAgo.toISOString())
+        .gte("recorded_at", startDate.toISOString())
+        .lte("recorded_at", endDate.toISOString())
         .order("recorded_at", { ascending: true });
 
       if (error) throw error;
 
-      const mappedData = data.map(item => ({
-        date: format(new Date(item.recorded_at), "d MMM''yy"),
-        price: Number(item.price),
-        high: Number(item.high_price || item.price),
-        low: Number(item.low_price || item.price),
-      }));
+      // หาข้อมูลที่ใกล้เคียงกับวันที่เป้าหมาย
+      const mappedData = targetDates.map(targetDate => {
+        // หาข้อมูลที่ใกล้เคียงวันที่เป้าหมายที่สุด
+        const closestData = data.reduce((closest, item) => {
+          const itemDate = new Date(item.recorded_at);
+          const itemDiff = Math.abs(itemDate.getTime() - targetDate.getTime());
+          const closestDiff = closest 
+            ? Math.abs(new Date(closest.recorded_at).getTime() - targetDate.getTime())
+            : Infinity;
+          
+          return itemDiff < closestDiff ? item : closest;
+        }, null as any);
+
+        if (closestData) {
+          return {
+            date: format(targetDate, "d MMM''yy"),
+            price: Number(closestData.price),
+            high: Number(closestData.high_price || closestData.price),
+            low: Number(closestData.low_price || closestData.price),
+          };
+        }
+        
+        // ถ้าไม่มีข้อมูล ให้ใช้ค่า 0
+        return {
+          date: format(targetDate, "d MMM''yy"),
+          price: 0,
+          high: 0,
+          low: 0,
+        };
+      });
       
       setRealtimeData(mappedData);
       return mappedData;
@@ -52,20 +92,33 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
         },
         (payload) => {
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            // รีเฟรชข้อมูลใหม่เมื่อมีการอัปเดต
             const newItem = payload.new as any;
-            const formattedItem = {
-              date: format(new Date(newItem.recorded_at), "d MMM''yy"),
-              price: Number(newItem.price),
-              high: Number(newItem.high_price || newItem.price),
-              low: Number(newItem.low_price || newItem.price),
-            };
+            const newItemDate = new Date(newItem.recorded_at);
+            const day = newItemDate.getDate();
             
-            setRealtimeData(prev => {
-              const filtered = prev.filter(item => item.date !== formattedItem.date);
-              return [...filtered, formattedItem].sort((a, b) => 
-                new Date(a.date).getTime() - new Date(b.date).getTime()
-              );
-            });
+            // เช็คว่าเป็นวันที่ 15 หรือ 30 หรือไม่
+            if (day === 15 || day === 30) {
+              setRealtimeData(prev => {
+                const targetDateStr = format(newItemDate, "d MMM''yy");
+                const existingIndex = prev.findIndex(item => item.date === targetDateStr);
+                
+                const formattedItem = {
+                  date: targetDateStr,
+                  price: Number(newItem.price),
+                  high: Number(newItem.high_price || newItem.price),
+                  low: Number(newItem.low_price || newItem.price),
+                };
+                
+                if (existingIndex >= 0) {
+                  const updated = [...prev];
+                  updated[existingIndex] = formattedItem;
+                  return updated;
+                }
+                
+                return prev;
+              });
+            }
           }
         }
       )
@@ -86,15 +139,6 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
     return <div className="h-[300px] flex items-center justify-center text-muted-foreground">No data available</div>;
   }
 
-  // Create custom ticks - show first, middle, and last dates
-  const customTicks = displayData.length >= 3 
-    ? [
-        displayData[0].date,
-        displayData[Math.floor(displayData.length / 2)].date,
-        displayData[displayData.length - 1].date
-      ]
-    : displayData.map(item => item.date);
-
   return (
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={displayData}>
@@ -114,9 +158,8 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
         </defs>
         <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
         <XAxis 
-          dataKey="date" 
-          ticks={customTicks}
-          interval="preserveStartEnd"
+          dataKey="date"
+          interval={0}
         />
         <YAxis />
         <Tooltip />
