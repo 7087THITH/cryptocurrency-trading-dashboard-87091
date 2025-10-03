@@ -28,13 +28,29 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
 
   const [selectedTab, setSelectedTab] = useState(() => {
     const saved = localStorage.getItem(`multiBlockChart-tab-${title}`);
-    return saved || "monthly";
+    return saved || "realtime";
   });
 
   const handleTabChange = (value: string) => {
     setSelectedTab(value);
     localStorage.setItem(`multiBlockChart-tab-${title}`, value);
   };
+
+  // Auto-rotate tabs every 15 seconds
+  useEffect(() => {
+    const tabs = ["realtime", "monthly", "yearly", "trend"];
+    const interval = setInterval(() => {
+      setSelectedTab(current => {
+        const currentIndex = tabs.indexOf(current);
+        const nextIndex = (currentIndex + 1) % tabs.length;
+        const nextTab = tabs[nextIndex];
+        localStorage.setItem(`multiBlockChart-tab-${title}`, nextTab);
+        return nextTab;
+      });
+    }, 15000); // 15 seconds
+
+    return () => clearInterval(interval);
+  }, [title]);
 
   // Fetch real-time price and generate mock historical data
   const { data: realtimePrice, isLoading: realtimeLoading } = useQuery({
