@@ -40,9 +40,9 @@ const DataDisplayPanels = () => {
   }, []);
 
   return (
-    <Card className="glass-card mb-8 w-full">
-      <CardContent className="pt-6">
-        <Tabs defaultValue="usd-thb" className="w-full">
+    <Card className="glass-card mb-8 w-full h-[500px] flex flex-col">
+      <CardContent className="pt-6 flex-1 flex flex-col">
+        <Tabs defaultValue="usd-thb" className="w-full flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-6 bg-blue-50 dark:bg-blue-950/30">
             {dataCategories.map((category) => (
               <TabsTrigger 
@@ -56,21 +56,21 @@ const DataDisplayPanels = () => {
           </TabsList>
           
           {dataCategories.map((category) => (
-            <TabsContent key={category.id} value={category.id}>
-              <Tabs defaultValue="monthly" className="w-full" onValueChange={setActiveTab}>
-                <TabsContent value="monthly" className="mb-4">
+            <TabsContent key={category.id} value={category.id} className="flex-1 flex flex-col">
+              <Tabs defaultValue="monthly" className="w-full flex-1 flex flex-col" onValueChange={setActiveTab}>
+                <TabsContent value="monthly" className="flex-1">
                   <MonthlyChart 
                     symbol={category.symbol} 
                     market={category.market}
                   />
                 </TabsContent>
-                <TabsContent value="yearly" className="mb-4">
+                <TabsContent value="yearly" className="flex-1">
                   <YearlyChart 
                     symbol={category.symbol} 
                     market={category.market}
                   />
                 </TabsContent>
-                <TabsContent value="trend" className="mb-4">
+                <TabsContent value="trend" className="flex-1">
                   <TrendChart 
                     symbol={category.symbol} 
                     market={category.market}

@@ -493,14 +493,14 @@ const MultiBlockCharts = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in">
-      <div className="mb-6 animate-pulse-slow">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in mb-8">
+      <div className="h-[500px]">
         <ChartBlock title="บล็อคที่ 1: คู่สกุลเงิน THB" symbols={block1Symbols} />
       </div>
-      <div className="animate-pulse-slow" style={{ animationDelay: '0.2s' }}>
+      <div className="h-[500px]">
         <ChartBlock title="บล็อคที่ 2: USD/CNY และ Copper" symbols={block2Symbols} />
       </div>
-      <div className="animate-pulse-slow" style={{ animationDelay: '0.4s' }}>
+      <div className="h-[500px]">
         <ChartBlock title="บล็อคที่ 3: USD/CNY และ Aluminium" symbols={block3Symbols} />
       </div>
     </div>

@@ -59,7 +59,7 @@ const MarketStats = () => {
         <CarouselContent className="-ml-4">
           {marketData.map((item, index) => (
             <CarouselItem key={`${item.label}-${index}`} className="pl-4 md:basis-1/3 lg:basis-1/6">
-              <div className="glass-card p-6 rounded-lg">
+              <div className="glass-card p-6 rounded-lg h-[200px] flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-2xl">{item.flag}</span>
                   <TrendingUpIcon className={`w-4 h-4 ${item.change >= 0 ? 'text-success' : 'text-warning'}`} />

@@ -94,7 +94,7 @@ const MarketHistory = () => {
   }
 
   return (
-    <div className="glass-card p-6 rounded-lg animate-fade-in">
+    <div className="glass-card p-6 rounded-lg animate-fade-in h-[500px] flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold">ประวัติราคา (50 รายการล่าสุด)</h2>
         
@@ -135,7 +135,7 @@ const MarketHistory = () => {
         </div>
       </div>
 
-      <div className="h-80">
+      <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={historyData}>
             <XAxis 
