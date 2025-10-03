@@ -78,7 +78,7 @@ const MarketStats = () => {
           }
         }
         .scroll-container {
-          animation: scroll 50s linear infinite;
+          animation: scroll 10s linear infinite;
         }
         .scroll-container:hover {
           animation-play-state: paused;
