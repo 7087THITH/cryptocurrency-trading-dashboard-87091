@@ -440,7 +440,7 @@ const MultiBlockCharts = () => {
     market: "LME",
     symbol: "AL"
   }];
-  return <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in mb-8">
+  return <div className="grid grid-cols-1 gap-4 animate-fade-in mb-8">
       <div className="h-[500px]">
         <ChartBlock title="THB currency pair" symbols={block1Symbols} />
       </div>
