@@ -33,27 +33,27 @@ const CopperAluminumCard = () => {
   }, []);
 
   return (
-    <div className="glass-card rounded-lg p-3 animate-fade-in">
-      <h3 className="text-sm font-semibold mb-2">Copper & Aluminum</h3>
-      <div className="space-y-2">
+    <div className="glass-card rounded-lg p-4 animate-fade-in">
+      <h3 className="text-base font-semibold mb-4 border-b pb-2">Copper & Aluminum</h3>
+      <div className="space-y-4">
         {metals.map((metal) => (
-          <div key={metal.symbol} className="border-t border-secondary pt-2">
-            <p className="text-xs font-bold mb-1">{metal.symbol} - {metal.name}</p>
-            <div className="grid grid-cols-2 gap-2 text-[10px]">
-              <div>
-                <p className="text-muted-foreground mb-0.5">LME</p>
-                <p className="font-medium">${metal.lmePrice.toFixed(0)}</p>
-                <span className={`flex items-center gap-0.5 ${metal.lmeChange >= 0 ? "text-success" : "text-warning"}`}>
-                  {metal.lmeChange >= 0 ? <ArrowUpIcon className="w-2 h-2" /> : <ArrowDownIcon className="w-2 h-2" />}
-                  {Math.abs(metal.lmeChange).toFixed(2)}%
+          <div key={metal.symbol} className="space-y-2">
+            <p className="font-medium text-sm">{metal.symbol} - {metal.name}</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">LME</p>
+                <p className="font-semibold text-sm">${metal.lmePrice.toFixed(0)}</p>
+                <span className={`text-xs font-medium flex items-center gap-0.5 ${metal.lmeChange >= 0 ? "text-success" : "text-warning"}`}>
+                  {metal.lmeChange >= 0 ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
+                  {metal.lmeChange >= 0 ? '+' : ''}{metal.lmeChange.toFixed(2)}%
                 </span>
               </div>
-              <div className="bg-pink-50 dark:bg-pink-900/10 p-1.5 rounded">
-                <p className="text-muted-foreground mb-0.5">SHFE</p>
-                <p className="font-medium">¥{metal.shfePrice.toFixed(0)}</p>
-                <span className={`flex items-center gap-0.5 ${metal.shfeChange >= 0 ? "text-success" : "text-warning"}`}>
-                  {metal.shfeChange >= 0 ? <ArrowUpIcon className="w-2 h-2" /> : <ArrowDownIcon className="w-2 h-2" />}
-                  {Math.abs(metal.shfeChange).toFixed(2)}%
+              <div className="bg-accent/30 p-2 rounded space-y-1">
+                <p className="text-xs text-muted-foreground">SHFE</p>
+                <p className="font-semibold text-sm">¥{metal.shfePrice.toFixed(0)}</p>
+                <span className={`text-xs font-medium flex items-center gap-0.5 ${metal.shfeChange >= 0 ? "text-success" : "text-warning"}`}>
+                  {metal.shfeChange >= 0 ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
+                  {metal.shfeChange >= 0 ? '+' : ''}{metal.shfeChange.toFixed(2)}%
                 </span>
               </div>
             </div>

@@ -36,22 +36,22 @@ const USDPairsCard = () => {
   }, []);
 
   return (
-    <div className="glass-card rounded-lg p-3 animate-fade-in">
-      <h3 className="text-sm font-semibold mb-2">USD Pairs</h3>
-      <div className="space-y-2">
+    <div className="glass-card rounded-lg p-4 animate-fade-in">
+      <h3 className="text-base font-semibold mb-4 border-b pb-2">USD Pairs</h3>
+      <div className="space-y-4">
         {pairs.map((pair) => (
-          <div key={pair.pair} className="flex justify-between items-center text-xs border-t border-secondary pt-2">
-            <div>
-              <p className="font-medium">{pair.pair}</p>
-              <p className="text-[10px] text-muted-foreground">
+          <div key={pair.pair} className="space-y-1">
+            <div className="flex justify-between items-center">
+              <p className="font-medium text-sm">{pair.pair}</p>
+              <p className="font-semibold text-base">{pair.price.toFixed(3)}</p>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <p className="text-muted-foreground">
                 H: {pair.high.toFixed(3)} L: {pair.low.toFixed(3)}
               </p>
-            </div>
-            <div className="text-right">
-              <p className="font-medium">{pair.price.toFixed(3)}</p>
-              <span className={`flex items-center gap-0.5 justify-end ${pair.change >= 0 ? "text-success" : "text-warning"}`}>
-                {pair.change >= 0 ? <ArrowUpIcon className="w-2.5 h-2.5" /> : <ArrowDownIcon className="w-2.5 h-2.5" />}
-                {Math.abs(pair.change).toFixed(2)}%
+              <span className={`font-medium flex items-center gap-0.5 ${pair.change >= 0 ? "text-success" : "text-warning"}`}>
+                {pair.change >= 0 ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
+                {pair.change >= 0 ? '+' : ''}{pair.change.toFixed(2)}%
               </span>
             </div>
           </div>
