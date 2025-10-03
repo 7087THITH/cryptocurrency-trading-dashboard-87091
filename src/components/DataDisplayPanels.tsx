@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MonthlyChart from "./charts/MonthlyChart";
 import YearlyChart from "./charts/YearlyChart";
 import TrendChart from "./charts/TrendChart";
+import { format, subDays, subMonths } from "date-fns";
 
 const dataCategories = [
   { id: "usd-thb", label: "USD/THB", symbol: "USD/THB", market: "FX" },
@@ -15,6 +16,29 @@ const dataCategories = [
 ];
 
 const DataDisplayPanels = () => {
+  const [activeTab, setActiveTab] = useState("monthly");
+  
+  const dateRanges = useMemo(() => {
+    const today = new Date();
+    return {
+      monthly: {
+        start: format(subDays(today, 30), "d MMM''yy"),
+        mid: format(subDays(today, 15), "d MMM''yy"),
+        end: format(today, "d MMM''yy")
+      },
+      yearly: {
+        start: format(subMonths(today, 12), "MMM yyyy"),
+        mid: format(subMonths(today, 6), "MMM yyyy"),
+        end: format(today, "MMM yyyy")
+      },
+      trend: {
+        start: "2019",
+        mid: "2021",
+        end: "2023"
+      }
+    };
+  }, []);
+
   return (
     <Card className="glass-card mb-8 w-full">
       <CardContent className="pt-6">
@@ -29,12 +53,39 @@ const DataDisplayPanels = () => {
           
           {dataCategories.map((category) => (
             <TabsContent key={category.id} value={category.id}>
-              <Tabs defaultValue="monthly" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+              <Tabs defaultValue="monthly" className="w-full" onValueChange={setActiveTab}>
+                <TabsList className="grid w-full grid-cols-3 mb-4">
                   <TabsTrigger value="monthly">Monthly (1-30 days)</TabsTrigger>
                   <TabsTrigger value="yearly">Yearly (1-12 months)</TabsTrigger>
                   <TabsTrigger value="trend">Trend (2019-2023)</TabsTrigger>
                 </TabsList>
+                
+                {/* Date Range Display */}
+                <div className="mb-4 p-3 bg-muted/50 rounded-lg border">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium text-muted-foreground">Type:</span>
+                    <div className="flex items-center gap-2 font-mono">
+                      <span className="text-foreground font-semibold">
+                        {activeTab === "monthly" && dateRanges.monthly.start}
+                        {activeTab === "yearly" && dateRanges.yearly.start}
+                        {activeTab === "trend" && dateRanges.trend.start}
+                      </span>
+                      <span className="text-muted-foreground">............</span>
+                      <span className="text-foreground font-semibold">
+                        {activeTab === "monthly" && dateRanges.monthly.mid}
+                        {activeTab === "yearly" && dateRanges.yearly.mid}
+                        {activeTab === "trend" && dateRanges.trend.mid}
+                      </span>
+                      <span className="text-muted-foreground">............</span>
+                      <span className="text-foreground font-semibold">
+                        {activeTab === "monthly" && dateRanges.monthly.end}
+                        {activeTab === "yearly" && dateRanges.yearly.end}
+                        {activeTab === "trend" && dateRanges.trend.end}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
                 <TabsContent value="monthly" className="mt-4">
                   <MonthlyChart 
                     symbol={category.symbol} 
