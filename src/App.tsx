@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
 import { navItems } from "./nav-items";
 import { Button } from "@/components/ui/button";
-import { Home, Tv, LineChart, Activity, LogIn, LogOut, User } from "lucide-react";
+import { Home, Tv, LineChart, Activity, LogIn, LogOut, User, Calendar } from "lucide-react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
@@ -54,6 +54,12 @@ const Navigation = () => {
               <Button variant="ghost" size="sm">
                 <LineChart className="mr-2 h-4 w-4" />
                 Tooling
+              </Button>
+            </Link>
+            <Link to="/daily-exchange-rate">
+              <Button variant="ghost" size="sm">
+                <Calendar className="mr-2 h-4 w-4" />
+                Daily Rate
               </Button>
             </Link>
           </div>
