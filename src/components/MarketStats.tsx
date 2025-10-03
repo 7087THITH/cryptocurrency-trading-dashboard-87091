@@ -1,6 +1,7 @@
 import { ArrowUpIcon, ArrowDownIcon, TrendingUpIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
+import { AreaChart, Area, ResponsiveContainer } from "recharts";
 
 const initialMarketData = [
   { label: "USD/THB", value: "36.75", change: 0.15, prefix: "", flag: "🇹🇭" },
@@ -18,6 +19,19 @@ const initialMarketData = [
 const MarketStats = () => {
   const [marketData, setMarketData] = useState(initialMarketData);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+
+  // Generate 7-day trend data for each item
+  const generateTrendData = (baseValue: string, change: number) => {
+    const numValue = parseFloat(baseValue.replace(/,/g, ''));
+    const data = [];
+    for (let i = 6; i >= 0; i--) {
+      const dayChange = (Math.random() - 0.5) * (numValue * 0.02);
+      data.push({
+        value: numValue + dayChange - (i * (numValue * change * 0.001))
+      });
+    }
+    return data;
+  };
 
   useEffect(() => {
     const updateInterval = setInterval(() => {
@@ -70,6 +84,37 @@ const MarketStats = () => {
                 <TrendingUpIcon className={`w-4 h-4 ${item.change >= 0 ? 'text-success' : 'text-warning'}`} />
               </div>
               <h3 className="text-sm font-medium text-muted-foreground mb-2">{item.label}</h3>
+              
+              {/* Mini Area Chart */}
+              <div className="h-12 -mx-2 mb-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={generateTrendData(item.value, item.change)}>
+                    <defs>
+                      <linearGradient id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop 
+                          offset="5%" 
+                          stopColor={item.change >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"} 
+                          stopOpacity={0.3}
+                        />
+                        <stop 
+                          offset="95%" 
+                          stopColor={item.change >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"} 
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke={item.change >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"}
+                      strokeWidth={2}
+                      fill={`url(#gradient-${index})`}
+                      isAnimationActive={false}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              
               <p className="text-2xl font-semibold">
                 {item.prefix}{item.value}
               </p>
