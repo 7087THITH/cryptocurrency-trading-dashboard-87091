@@ -37,11 +37,11 @@ const ChartBlock = ({
   const [chartData, setChartData] = useState<any[]>([]);
   const [realtimeHistory, setRealtimeHistory] = useState<any[]>([]);
   const currentSymbol = symbols[selectedSymbol];
-  const [selectedTab, setSelectedTab] = useState("realtime");
+  const [selectedTab, setSelectedTab] = useState("monthly");
 
   // Auto-rotate tabs every 45 seconds
   useEffect(() => {
-    const tabs = ["realtime", "monthly", "yearly", "trend"];
+    const tabs = ["monthly", "yearly", "trend"];
     const interval = setInterval(() => {
       setSelectedTab(current => {
         const currentIndex = tabs.indexOf(current);
@@ -202,16 +202,14 @@ const ChartBlock = ({
   });
   const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
   useEffect(() => {
-    if (selectedTab === 'realtime' && realtimeHistory) {
-      setChartData(realtimeHistory);
-    } else if (selectedTab === 'monthly' && monthlyData) {
+    if (selectedTab === 'monthly' && monthlyData) {
       setChartData(monthlyData);
     } else if (selectedTab === 'yearly' && yearlyData) {
       setChartData(yearlyData);
     } else if (selectedTab === 'trend' && trendData) {
       setChartData(trendData);
     }
-  }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
+  }, [selectedTab, monthlyData, yearlyData, trendData]);
   if (isLoading) {
     return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
         <h2 className="text-3xl font-semibold mb-4">{title}</h2>
@@ -246,34 +244,11 @@ const ChartBlock = ({
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-4 mb-6 bg-blue-100 dark:bg-blue-950 h-14">
-          <TabsTrigger value="realtime" className="text-base font-semibold">Realtime</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 mb-6 bg-blue-100 dark:bg-blue-950 h-14">
           <TabsTrigger value="monthly" className="text-base font-semibold">รายวัน (15, 30, 15)</TabsTrigger>
           <TabsTrigger value="yearly" className="text-base font-semibold">รายเดือน (1 ปี)</TabsTrigger>
           <TabsTrigger value="trend" className="text-base font-semibold">Trend (2019-2025)</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="realtime" className="flex-1 mt-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} interval="preserveStartEnd" />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
-              <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
-              fontSize: '14px'
-            }} />
-              <Legend wrapperStyle={{
-              fontSize: '14px'
-            }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคา" isAnimationActive={true} />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
-            </LineChart>
-          </ResponsiveContainer>
-        </TabsContent>
 
         <TabsContent value="monthly" className="flex-1 mt-0">
           <ResponsiveContainer width="100%" height="100%">
