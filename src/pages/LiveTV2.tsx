@@ -357,12 +357,6 @@ const LiveTV2 = () => {
   };
   return <div className="h-screen w-screen bg-background overflow-hidden">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="h-full flex flex-col">
-        <TabsList className="grid w-full grid-cols-3 bg-blue-100 dark:bg-blue-950 h-14 rounded-none">
-          <TabsTrigger value="monthly" className="text-base font-semibold">รายวัน (15, 30, 15)</TabsTrigger>
-          <TabsTrigger value="yearly" className="text-base font-semibold">รายเดือน (1 ปี)</TabsTrigger>
-          <TabsTrigger value="trend" className="text-base font-semibold">Trend (2019-2025)</TabsTrigger>
-        </TabsList>
-
         <div className="flex-1 relative">
           <Carousel setApi={setApi} opts={{
           loop: true
@@ -386,6 +380,12 @@ const LiveTV2 = () => {
             {chartBlocks.map((_, index) => <button key={index} onClick={() => api?.scrollTo(index)} className={`h-3 rounded-full transition-all ${index === current ? 'w-12 bg-primary' : 'w-3 bg-muted-foreground/50 hover:bg-muted-foreground'}`} aria-label={`Go to chart ${index + 1}`} />)}
           </div>
         </div>
+
+        <TabsList className="grid w-full grid-cols-3 bg-blue-100 dark:bg-blue-950 h-8 rounded-none">
+          <TabsTrigger value="monthly" className="text-xs font-semibold py-1">รายวัน (15, 30, 15)</TabsTrigger>
+          <TabsTrigger value="yearly" className="text-xs font-semibold py-1">รายเดือน (1 ปี)</TabsTrigger>
+          <TabsTrigger value="trend" className="text-xs font-semibold py-1">Trend (2019-2025)</TabsTrigger>
+        </TabsList>
       </Tabs>
     </div>;
 };
