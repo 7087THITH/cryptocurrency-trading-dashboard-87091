@@ -44,7 +44,7 @@ const ChartBlock = ({
     localStorage.setItem(`multiBlockChart-tab-${title}`, value);
   };
 
-  // Auto-rotate tabs every 15 seconds
+  // Auto-rotate tabs every 45 seconds
   useEffect(() => {
     const tabs = ["realtime", "monthly", "yearly", "trend"];
     const interval = setInterval(() => {
@@ -55,22 +55,22 @@ const ChartBlock = ({
         localStorage.setItem(`multiBlockChart-tab-${title}`, nextTab);
         return nextTab;
       });
-    }, 15000); // 15 seconds
+    }, 45000); // 45 seconds
 
     return () => clearInterval(interval);
   }, [title]);
 
-  // Fetch real-time price and generate mock historical data
+  // Fetch real-time price every 15 seconds for more frequent updates
   const {
     data: realtimePrice,
     isLoading: realtimeLoading
   } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
-    refetchInterval: 60000 // Refresh every 60 seconds to avoid rate limit
+    refetchInterval: 15000 // Refresh every 15 seconds for realtime feel
   });
 
-  // Update realtime history when new data arrives
+  // Update realtime history when new data arrives (keep 1 hour of data)
   useEffect(() => {
     if (realtimePrice) {
       const now = new Date();
@@ -86,8 +86,8 @@ const ChartBlock = ({
           high: realtimePrice.high_price,
           low: realtimePrice.low_price
         }];
-        // Keep only last 30 data points
-        return newHistory.slice(-30);
+        // Keep only last 240 data points (1 hour with 15-second intervals)
+        return newHistory.slice(-240);
       });
     }
   }, [realtimePrice]);
