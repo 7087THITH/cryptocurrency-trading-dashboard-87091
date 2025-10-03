@@ -235,6 +235,12 @@ const ChartBlock = ({
           <div className="text-lg text-muted-foreground">{latestData?.time}</div>
         </div>
       </div>
+
+      <TabsList className="grid w-full grid-cols-3 mb-6 bg-blue-100 dark:bg-blue-950 h-14">
+        <TabsTrigger value="monthly" className="text-base font-semibold">รายวัน (15, 30, 15)</TabsTrigger>
+        <TabsTrigger value="yearly" className="text-base font-semibold">รายเดือน (1 ปี)</TabsTrigger>
+        <TabsTrigger value="trend" className="text-base font-semibold">Trend (2019-2025)</TabsTrigger>
+      </TabsList>
       
       {/* Symbol selector */}
       <div className="flex gap-6 mb-6 text-lg">
@@ -244,12 +250,6 @@ const ChartBlock = ({
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-blue-100 dark:bg-blue-950 h-14">
-          <TabsTrigger value="monthly" className="text-base font-semibold">รายวัน (15, 30, 15)</TabsTrigger>
-          <TabsTrigger value="yearly" className="text-base font-semibold">รายเดือน (1 ปี)</TabsTrigger>
-          <TabsTrigger value="trend" className="text-base font-semibold">Trend (2019-2025)</TabsTrigger>
-        </TabsList>
-
         <TabsContent value="monthly" className="flex-1 mt-0">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
