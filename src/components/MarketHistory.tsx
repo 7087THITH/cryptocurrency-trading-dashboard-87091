@@ -11,8 +11,28 @@ import {
 import { useState } from "react";
 
 const MarketHistory = () => {
-  const [selectedSymbol, setSelectedSymbol] = useState("USD/THB");
-  const [selectedMarket, setSelectedMarket] = useState("FX");
+  const [selectedSymbol, setSelectedSymbol] = useState(() => {
+    const saved = localStorage.getItem('marketHistory-symbol');
+    return saved || "USD/THB";
+  });
+  const [selectedMarket, setSelectedMarket] = useState(() => {
+    const saved = localStorage.getItem('marketHistory-market');
+    return saved || "FX";
+  });
+
+  const handleMarketChange = (value: string) => {
+    setSelectedMarket(value);
+    localStorage.setItem('marketHistory-market', value);
+    // Reset symbol when market changes
+    const newSymbol = value === 'FX' ? 'USD/THB' : 'CU';
+    setSelectedSymbol(newSymbol);
+    localStorage.setItem('marketHistory-symbol', newSymbol);
+  };
+
+  const handleSymbolChange = (value: string) => {
+    setSelectedSymbol(value);
+    localStorage.setItem('marketHistory-symbol', value);
+  };
 
   const { data: historyData, isLoading } = useQuery({
     queryKey: ['marketHistory', selectedSymbol, selectedMarket],
@@ -79,7 +99,7 @@ const MarketHistory = () => {
         <h2 className="text-xl font-semibold">ประวัติราคา (50 รายการล่าสุด)</h2>
         
         <div className="flex gap-2">
-          <Select value={selectedMarket} onValueChange={setSelectedMarket}>
+          <Select value={selectedMarket} onValueChange={handleMarketChange}>
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
@@ -90,7 +110,7 @@ const MarketHistory = () => {
             </SelectContent>
           </Select>
 
-          <Select value={selectedSymbol} onValueChange={setSelectedSymbol}>
+          <Select value={selectedSymbol} onValueChange={handleSymbolChange}>
             <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>

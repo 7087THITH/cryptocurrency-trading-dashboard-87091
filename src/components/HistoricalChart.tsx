@@ -11,18 +11,36 @@ type ChartType = 'exchange' | 'lme' | 'shfe';
 type ViewType = 'monthly' | 'yearly' | 'trend';
 
 export const HistoricalChart = () => {
-  const [chartType, setChartType] = useState<ChartType>('exchange');
-  const [viewType, setViewType] = useState<ViewType>('monthly');
-  const [selectedSymbol, setSelectedSymbol] = useState<string>('USD');
+  const [chartType, setChartType] = useState<ChartType>(() => {
+    const saved = localStorage.getItem('historicalChart-type');
+    return (saved as ChartType) || 'exchange';
+  });
+  const [viewType, setViewType] = useState<ViewType>(() => {
+    const saved = localStorage.getItem('historicalChart-view');
+    return (saved as ViewType) || 'monthly';
+  });
+  const [selectedSymbol, setSelectedSymbol] = useState<string>(() => {
+    const saved = localStorage.getItem('historicalChart-symbol');
+    return saved || 'USD';
+  });
 
   // Update symbol when chart type changes
   const handleChartTypeChange = (newType: ChartType) => {
     setChartType(newType);
-    if (newType === 'exchange') {
-      setSelectedSymbol('USD');
-    } else {
-      setSelectedSymbol('CU');
-    }
+    localStorage.setItem('historicalChart-type', newType);
+    const newSymbol = newType === 'exchange' ? 'USD' : 'CU';
+    setSelectedSymbol(newSymbol);
+    localStorage.setItem('historicalChart-symbol', newSymbol);
+  };
+
+  const handleViewTypeChange = (newView: ViewType) => {
+    setViewType(newView);
+    localStorage.setItem('historicalChart-view', newView);
+  };
+
+  const handleSymbolChange = (newSymbol: string) => {
+    setSelectedSymbol(newSymbol);
+    localStorage.setItem('historicalChart-symbol', newSymbol);
   };
 
   const { data: chartData, isLoading } = useQuery({
@@ -119,7 +137,7 @@ export const HistoricalChart = () => {
             </SelectContent>
           </Select>
 
-          <Select value={selectedSymbol} onValueChange={setSelectedSymbol}>
+          <Select value={selectedSymbol} onValueChange={handleSymbolChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="เลือกสกุล/โลหะ" />
             </SelectTrigger>
@@ -131,7 +149,7 @@ export const HistoricalChart = () => {
           </Select>
         </div>
 
-        <Tabs value={viewType} onValueChange={(v) => setViewType(v as ViewType)}>
+        <Tabs value={viewType} onValueChange={(v) => handleViewTypeChange(v as ViewType)}>
           <TabsList>
             <TabsTrigger value="monthly">รายเดือน (30 วัน)</TabsTrigger>
             <TabsTrigger value="yearly">รายปี (12 เดือน)</TabsTrigger>

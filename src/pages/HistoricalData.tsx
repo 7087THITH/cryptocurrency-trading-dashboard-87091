@@ -6,9 +6,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeftRight } from 'lucide-react';
 
 const HistoricalData = () => {
-  const [amount, setAmount] = useState<string>('1');
-  const [fromCurrency, setFromCurrency] = useState<string>('USD');
-  const [toCurrency, setToCurrency] = useState<string>('THB');
+  // Load saved values from localStorage or use defaults
+  const [amount, setAmount] = useState<string>(() => {
+    const saved = localStorage.getItem('historical-amount');
+    return saved || '1';
+  });
+  const [fromCurrency, setFromCurrency] = useState<string>(() => {
+    const saved = localStorage.getItem('historical-fromCurrency');
+    return saved || 'USD';
+  });
+  const [toCurrency, setToCurrency] = useState<string>(() => {
+    const saved = localStorage.getItem('historical-toCurrency');
+    return saved || 'THB';
+  });
 
   const exchangeRates: Record<string, Record<string, number>> = {
     USD: { THB: 36.85, JPY: 149.50, CNY: 7.24, EUR: 0.92, GBP: 0.79 },
@@ -26,8 +36,27 @@ const HistoricalData = () => {
     : '0.00';
 
   const swapCurrencies = () => {
-    setFromCurrency(toCurrency);
-    setToCurrency(fromCurrency);
+    const newFrom = toCurrency;
+    const newTo = fromCurrency;
+    setFromCurrency(newFrom);
+    setToCurrency(newTo);
+    localStorage.setItem('historical-fromCurrency', newFrom);
+    localStorage.setItem('historical-toCurrency', newTo);
+  };
+
+  const handleAmountChange = (value: string) => {
+    setAmount(value);
+    localStorage.setItem('historical-amount', value);
+  };
+
+  const handleFromCurrencyChange = (value: string) => {
+    setFromCurrency(value);
+    localStorage.setItem('historical-fromCurrency', value);
+  };
+
+  const handleToCurrencyChange = (value: string) => {
+    setToCurrency(value);
+    localStorage.setItem('historical-toCurrency', value);
   };
 
   return (
@@ -52,7 +81,7 @@ const HistoricalData = () => {
                 id="amount"
                 type="number"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => handleAmountChange(e.target.value)}
                 placeholder="กรอกจำนวนเงิน"
                 min="0"
                 step="0.01"
@@ -62,7 +91,7 @@ const HistoricalData = () => {
             <div className="grid grid-cols-[1fr_auto_1fr] gap-4 items-end">
               <div className="space-y-2">
                 <Label htmlFor="from-currency">จาก</Label>
-                <Select value={fromCurrency} onValueChange={setFromCurrency}>
+                <Select value={fromCurrency} onValueChange={handleFromCurrencyChange}>
                   <SelectTrigger id="from-currency">
                     <SelectValue />
                   </SelectTrigger>
@@ -86,7 +115,7 @@ const HistoricalData = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="to-currency">เป็น</Label>
-                <Select value={toCurrency} onValueChange={setToCurrency}>
+                <Select value={toCurrency} onValueChange={handleToCurrencyChange}>
                   <SelectTrigger id="to-currency">
                     <SelectValue />
                   </SelectTrigger>

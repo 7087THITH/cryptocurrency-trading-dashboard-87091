@@ -13,10 +13,16 @@ import { Clock } from "lucide-react";
 const LiveTV2 = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-  const [delay, setDelay] = useState(5000);
+  
+  // Load delay from localStorage or use default
+  const [delay, setDelay] = useState(() => {
+    const savedDelay = localStorage.getItem('liveTV2-delay');
+    return savedDelay ? parseInt(savedDelay) : 5000;
+  });
+  
   const autoplayRef = useRef(
     Autoplay({
-      delay: 5000,
+      delay: delay,
     })
   );
   const charts = [
@@ -49,7 +55,9 @@ const LiveTV2 = () => {
   }, [delay, api]);
 
   const handleDelayChange = (value: number[]) => {
-    setDelay(value[0] * 1000);
+    const newDelay = value[0] * 1000;
+    setDelay(newDelay);
+    localStorage.setItem('liveTV2-delay', newDelay.toString());
   };
 
   return (
