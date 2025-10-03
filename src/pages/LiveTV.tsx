@@ -24,6 +24,21 @@ const LiveTV = () => {
     },
   ];
 
+  const lmeCharts = [
+    {
+      title: 'LME COPPER (CU)',
+      symbols: [{ label: 'LME COPPER (CU)', market: 'LME', symbol: 'CU' }]
+    },
+    {
+      title: 'LME ALUMINIUM (AL)',
+      symbols: [{ label: 'LME ALUMINIUM (AL)', market: 'LME', symbol: 'AL' }]
+    },
+    {
+      title: 'LME ZINC (ZN)',
+      symbols: [{ label: 'LME ZINC (ZN)', market: 'LME', symbol: 'ZN' }]
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="mb-6">
@@ -72,6 +87,12 @@ const LiveTV = () => {
         
         {shfeCharts.map((chart, index) => (
           <div key={`shfe-${index}`} style={{ minHeight: '500px' }}>
+            <ChartBlock title={chart.title} symbols={chart.symbols} />
+          </div>
+        ))}
+        
+        {lmeCharts.map((chart, index) => (
+          <div key={`lme-${index}`} style={{ minHeight: '500px' }}>
             <ChartBlock title={chart.title} symbols={chart.symbols} />
           </div>
         ))}
