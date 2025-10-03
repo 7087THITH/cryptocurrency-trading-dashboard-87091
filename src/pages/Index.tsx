@@ -20,6 +20,14 @@ const Index = () => {
         
         <MarketHistory />
       </div>
+      
+      <footer className="w-full py-6 px-4 mt-8 border-t border-border bg-card/50">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-sm text-muted-foreground">
+            กำกับโดย Mr. Naito Yuhei (Manager), Mr. Thitichot Chumchuang (Dev), Ms. Orapin Khluinori
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
