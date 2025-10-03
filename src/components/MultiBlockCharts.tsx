@@ -14,7 +14,7 @@ const fetchRealtimePrice = async (symbol: string, market: string) => {
     .eq('market', market)
     .order('recorded_at', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
   
   if (error) throw error;
   return data;
@@ -355,19 +355,19 @@ const MultiBlockCharts = () => {
   const block1Symbols = [{
     label: "USD/THB",
     market: "FX",
-    symbol: "USDTHB"
+    symbol: "USD/THB"
   }, {
     label: "THB/JPY",
     market: "FX",
-    symbol: "THBJPY"
+    symbol: "THB/JPY"
   }, {
     label: "THB/CNY",
     market: "FX",
-    symbol: "THBCNY"
+    symbol: "THB/CNY"
   }, {
     label: "USD/CNY",
     market: "FX",
-    symbol: "USDCNY"
+    symbol: "USD/CNY"
   }];
   const block2Symbols = [{
     label: "SHFE COPPER (CU)",
