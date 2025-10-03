@@ -232,7 +232,7 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
       </div>
 
       <Tabs value={selectedTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-4 mb-4">
+        <TabsList className="grid w-full grid-cols-4 mb-4 bg-blue-100 dark:bg-blue-950">
           <TabsTrigger value="realtime" className="text-xs">Realtime</TabsTrigger>
           <TabsTrigger value="monthly" className="text-xs">รายวัน (30 วัน)</TabsTrigger>
           <TabsTrigger value="yearly" className="text-xs">รายเดือน (1 ปี)</TabsTrigger>
