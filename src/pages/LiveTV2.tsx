@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Clock, Pause, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Footer from '@/components/Footer';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useQuery } from "@tanstack/react-query";
@@ -405,34 +405,30 @@ const LiveTV2 = () => {
     }
     setIsPlaying(!isPlaying);
   };
-  return <div className="min-h-screen bg-background flex flex-col">
-      
-
-      <div className="flex-1 relative">
+  return <div className="h-screen w-screen bg-background overflow-hidden">
+      <div className="h-full relative">
         <Carousel setApi={setApi} opts={{
         loop: true
       }} plugins={[autoplayRef.current]} className="w-full h-full relative">
-          <CarouselPrevious className="left-4 h-14 w-14 border-2">
+          <CarouselPrevious className="left-4 h-14 w-14 border-2 z-10">
             <ChevronLeft className="h-8 w-8" />
           </CarouselPrevious>
-          <CarouselNext className="right-4 h-14 w-14 border-2">
+          <CarouselNext className="right-4 h-14 w-14 border-2 z-10">
             <ChevronRight className="h-8 w-8" />
           </CarouselNext>
-          <CarouselContent className="h-[calc(100vh-140px)]">
+          <CarouselContent className="h-full">
             {chartBlocks.map((block, index) => <CarouselItem key={`${block.title}-${index}`} className="h-full">
-                <div className="h-full p-4">
+                <div className="h-full p-6">
                   <ChartBlock title={block.title} symbols={block.symbols} />
                 </div>
               </CarouselItem>)}
           </CarouselContent>
         </Carousel>
 
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-background/80 backdrop-blur p-3 rounded-full">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/80 backdrop-blur p-3 rounded-full z-10">
           {chartBlocks.map((_, index) => <button key={index} onClick={() => api?.scrollTo(index)} className={`h-3 rounded-full transition-all ${index === current ? 'w-12 bg-primary' : 'w-3 bg-muted-foreground/50 hover:bg-muted-foreground'}`} aria-label={`Go to chart ${index + 1}`} />)}
         </div>
       </div>
-      
-      <Footer />
     </div>;
 };
 export default LiveTV2;
