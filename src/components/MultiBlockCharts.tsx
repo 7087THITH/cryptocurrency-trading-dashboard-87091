@@ -66,7 +66,7 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
     }
   }, [realtimePrice]);
 
-  // Generate mock monthly data based on real-time price
+  // Generate data for specific dates (15 and 30 of months)
   const { data: monthlyData, isLoading: monthlyLoading } = useQuery({
     queryKey: ['monthly-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
@@ -75,25 +75,39 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
       const basePrice = realtimePrice.price;
       const data = [];
       const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
       
-      // Generate 30 days of mock data with variation
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(now);
-        date.setDate(date.getDate() - i);
-        
+      // วันที่ 15 เดือนก่อนหน้า
+      const date15PrevMonth = new Date(currentYear, currentMonth - 1, 15);
+      // วันที่ 30 เดือนปัจจุบัน (หรือเดือนก่อนถ้ายังไม่ถึง)
+      const date30Current = now.getDate() >= 30 
+        ? new Date(currentYear, currentMonth, 30)
+        : new Date(currentYear, currentMonth - 1, 30);
+      // วันที่ 15 เดือนถัดไป
+      const date15NextMonth = new Date(currentYear, currentMonth + 1, 15);
+      
+      const targetDates = [
+        { date: date15PrevMonth, label: "15 เดือนก่อน" },
+        { date: date30Current, label: "30 ปัจจุบัน" },
+        { date: date15NextMonth, label: "15 เดือนหน้า" }
+      ];
+      
+      targetDates.forEach(({ date, label }) => {
         const variation = (Math.random() - 0.5) * basePrice * 0.03; // ±3% variation
         const dayPrice = basePrice + variation;
         
         data.push({
           time: date.toLocaleDateString('th-TH', {
             day: '2-digit',
-            month: '2-digit'
+            month: 'short',
+            year: '2-digit'
           }),
           price: Number(dayPrice.toFixed(4)),
           high: Number((dayPrice * 1.01).toFixed(4)),
           low: Number((dayPrice * 0.99).toFixed(4)),
         });
-      }
+      });
       
       return data;
     },
@@ -234,7 +248,7 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
       <Tabs value={selectedTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
         <TabsList className="grid w-full grid-cols-4 mb-4 bg-blue-100 dark:bg-blue-950">
           <TabsTrigger value="realtime" className="text-xs">Realtime</TabsTrigger>
-          <TabsTrigger value="monthly" className="text-xs">รายวัน (30 วัน)</TabsTrigger>
+          <TabsTrigger value="monthly" className="text-xs">รายวัน (15, 30, 15)</TabsTrigger>
           <TabsTrigger value="yearly" className="text-xs">รายเดือน (1 ปี)</TabsTrigger>
           <TabsTrigger value="trend" className="text-xs">Trend (2019-2025)</TabsTrigger>
         </TabsList>
@@ -305,7 +319,7 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
                 dataKey="time" 
                 stroke="hsl(var(--muted-foreground))"
                 fontSize={9}
-                interval="preserveStartEnd"
+                interval={0}
               />
               <YAxis 
                 stroke="hsl(var(--muted-foreground))"
@@ -327,7 +341,7 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
                 dataKey="price" 
                 stroke="hsl(var(--primary))" 
                 strokeWidth={2}
-                dot={false}
+                dot={true}
                 name="ราคา"
                 isAnimationActive={true}
               />
