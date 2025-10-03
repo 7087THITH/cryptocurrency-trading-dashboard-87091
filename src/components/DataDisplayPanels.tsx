@@ -60,32 +60,6 @@ const DataDisplayPanels = () => {
                   <TabsTrigger value="trend">Trend (2019-2023)</TabsTrigger>
                 </TabsList>
                 
-                {/* Date Range Display */}
-                <div className="mb-4 p-3 bg-muted/50 rounded-lg border">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-muted-foreground">Type:</span>
-                    <div className="flex items-center gap-2 font-mono">
-                      <span className="text-foreground font-semibold">
-                        {activeTab === "monthly" && dateRanges.monthly.start}
-                        {activeTab === "yearly" && dateRanges.yearly.start}
-                        {activeTab === "trend" && dateRanges.trend.start}
-                      </span>
-                      <span className="text-muted-foreground">............</span>
-                      <span className="text-foreground font-semibold">
-                        {activeTab === "monthly" && dateRanges.monthly.mid}
-                        {activeTab === "yearly" && dateRanges.yearly.mid}
-                        {activeTab === "trend" && dateRanges.trend.mid}
-                      </span>
-                      <span className="text-muted-foreground">............</span>
-                      <span className="text-foreground font-semibold">
-                        {activeTab === "monthly" && dateRanges.monthly.end}
-                        {activeTab === "yearly" && dateRanges.yearly.end}
-                        {activeTab === "trend" && dateRanges.trend.end}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
                 <TabsContent value="monthly" className="mt-4">
                   <MonthlyChart 
                     symbol={category.symbol} 
