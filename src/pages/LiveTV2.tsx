@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Clock, Pause, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useQuery } from "@tanstack/react-query";
@@ -231,71 +230,25 @@ const ChartBlock = ({
       </div>
 
       <div className="flex-1">
-        {selectedTab === 'monthly' && (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} interval={0} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
-              <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
-              fontSize: '14px'
-            }} />
-              <Legend wrapperStyle={{
-              fontSize: '14px'
-            }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคา" isAnimationActive={true} />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-
-        {selectedTab === 'yearly' && (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
-              <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
-              fontSize: '14px'
-            }} />
-              <Legend wrapperStyle={{
-              fontSize: '14px'
-            }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-
-        {selectedTab === 'trend' && (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
-              <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '0.5rem',
-              fontSize: '14px'
-            }} />
-              <Legend wrapperStyle={{
-              fontSize: '14px'
-            }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={3} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={3} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} interval={selectedTab === 'monthly' ? 0 : 'preserveStartEnd'} />
+            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
+            <Tooltip contentStyle={{
+            background: 'hsl(var(--popover))',
+            border: '1px solid hsl(var(--border))',
+            borderRadius: '0.5rem',
+            fontSize: '14px'
+          }} />
+            <Legend wrapperStyle={{
+            fontSize: '14px'
+          }} />
+            <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={selectedTab === 'monthly'} name={selectedTab === 'monthly' ? 'ราคา' : 'ราคาเฉลี่ย'} isAnimationActive={true} />
+            <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={selectedTab !== 'monthly'} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
+            <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={selectedTab !== 'monthly'} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>;
 };
@@ -422,9 +375,7 @@ const LiveTV2 = () => {
             </CarouselContent>
           </Carousel>
 
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 bg-background/80 backdrop-blur p-3 rounded-full z-10">
-            {chartBlocks.map((_, index) => <button key={index} onClick={() => api?.scrollTo(index)} className={`h-3 rounded-full transition-all ${index === current ? 'w-12 bg-primary' : 'w-3 bg-muted-foreground/50 hover:bg-muted-foreground'}`} aria-label={`Go to chart ${index + 1}`} />)}
-          </div>
+          
         </div>
 
         <TabsList className="grid w-full grid-cols-3 bg-blue-100 dark:bg-blue-950 h-8 rounded-none">
