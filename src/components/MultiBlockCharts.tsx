@@ -23,7 +23,6 @@ interface ChartBlockProps {
   title: string;
   symbols: {
     label: string;
-    fullName: string;
     market: string;
     symbol: string;
   }[];
@@ -262,7 +261,7 @@ const ChartBlock = ({
       {/* Symbol selector */}
       <div className="flex gap-3 mb-4 text-xs">
         {symbols.map((sym, idx) => <button key={idx} onClick={() => setSelectedSymbol(idx)} className={`transition-colors font-medium ${selectedSymbol === idx ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
-            {sym.fullName}
+            {sym.label}
           </button>)}
       </div>
 
@@ -367,44 +366,36 @@ const ChartBlock = ({
 const MultiBlockCharts = () => {
   const block1Symbols = [{
     label: "USD/THB",
-    fullName: "United States Dollar : Thai Baht",
     market: "FX",
     symbol: "USD/THB"
   }, {
     label: "THB/JPY",
-    fullName: "Thai Baht : Japanese Yen",
     market: "FX",
     symbol: "THB/JPY"
   }, {
     label: "THB/CNY",
-    fullName: "Thai Baht : Chinese Yuan",
     market: "FX",
     symbol: "THB/CNY"
   }, {
     label: "USD/CNY",
-    fullName: "United States Dollar : Chinese Yuan",
     market: "FX",
     symbol: "USD/CNY"
   }];
   const block2Symbols = [{
     label: "SHFE COPPER (CU)",
-    fullName: "Shanghai Futures Exchange - Copper",
     market: "SHFE",
     symbol: "CU"
   }, {
     label: "LME COPPER (CU)",
-    fullName: "London Metal Exchange - Copper",
     market: "LME",
     symbol: "CU"
   }];
   const block3Symbols = [{
     label: "SHFE ALUMINIUM (AL)",
-    fullName: "Shanghai Futures Exchange - Aluminium",
     market: "SHFE",
     symbol: "AL"
   }, {
     label: "LME ALUMINIUM (AL)",
-    fullName: "London Metal Exchange - Aluminium",
     market: "LME",
     symbol: "AL"
   }];
