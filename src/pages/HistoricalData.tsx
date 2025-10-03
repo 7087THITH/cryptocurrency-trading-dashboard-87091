@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeftRight } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 const HistoricalData = () => {
   // Load saved values from localStorage or use defaults
@@ -144,6 +145,8 @@ const HistoricalData = () => {
           </div>
         </CardContent>
       </Card>
+      
+      <Footer />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import RealtimeChart from '@/components/charts/RealtimeChart';
+import Footer from '@/components/Footer';
 
 const LiveTV3 = () => {
   const charts = [
@@ -29,6 +30,8 @@ const LiveTV3 = () => {
           />
         ))}
       </div>
+      
+      <Footer />
     </div>
   );
 };

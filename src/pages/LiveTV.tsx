@@ -1,5 +1,6 @@
 import TradingViewWidget from 'react-tradingview-widget';
 import ChartBlock from '@/components/charts/ChartBlock';
+import Footer from '@/components/Footer';
 
 const LiveTV = () => {
   const tradingViewCharts = [
@@ -97,6 +98,8 @@ const LiveTV = () => {
           </div>
         ))}
       </div>
+      
+      <Footer />
     </div>
   );
 };

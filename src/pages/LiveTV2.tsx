@@ -12,6 +12,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Clock, Pause, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Footer from '@/components/Footer';
 
 const LiveTV2 = () => {
   const [api, setApi] = useState<CarouselApi>();
@@ -194,6 +195,8 @@ const LiveTV2 = () => {
           ))}
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
