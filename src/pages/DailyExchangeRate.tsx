@@ -108,6 +108,121 @@ const DailyExchangeRate = () => {
     acc[pair.id] = count > 0 ? totals[pair.id] / count : 0;
     return acc;
   }, {} as Record<string, number>);
-  return;
+  return (
+    <div className="container mx-auto p-6 space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            อัตราแลกเปลี่ยนรายวัน (Daily Exchange Rate)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4 mb-6">
+            <Select value={selectedMonth.toString()} onValueChange={(value) => setSelectedMonth(parseInt(value))}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="เลือกเดือน" />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((month) => (
+                  <SelectItem key={month.value} value={month.value.toString()}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="เลือกปี" />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Tabs defaultValue="table" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="table">ตารางข้อมูล</TabsTrigger>
+              <TabsTrigger value="charts">กราฟ</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="table" className="mt-6">
+              {isLoading ? (
+                <Skeleton className="h-[400px] w-full" />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="p-2 text-left">Date</th>
+                        {currencyPairs.map((pair) => (
+                          <th key={pair.id} className="p-2 text-right">{pair.label}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tableData.map((row) => (
+                        <tr key={row.date} className="border-b hover:bg-muted/50">
+                          <td className="p-2">{row.date}</td>
+                          {currencyPairs.map((pair) => (
+                            <td key={pair.id} className="p-2 text-right">
+                              {row[pair.id]?.toFixed(4) || "-"}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                      <tr className="border-t-2 font-bold bg-muted/30">
+                        <td className="p-2">TTL</td>
+                        {currencyPairs.map((pair) => (
+                          <td key={pair.id} className="p-2 text-right">
+                            {totals[pair.id]?.toFixed(2) || "0.00"}
+                          </td>
+                        ))}
+                      </tr>
+                      <tr className="font-bold bg-muted/30">
+                        <td className="p-2">Day</td>
+                        {currencyPairs.map((pair) => (
+                          <td key={pair.id} className="p-2 text-right">
+                            {tableData.filter(row => row[pair.id]).length}
+                          </td>
+                        ))}
+                      </tr>
+                      <tr className="font-bold bg-primary/10">
+                        <td className="p-2">Average</td>
+                        {currencyPairs.map((pair) => (
+                          <td key={pair.id} className="p-2 text-right">
+                            {averages[pair.id]?.toFixed(6) || "0.000000"}
+                          </td>
+                        ))}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="charts" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {currencyPairs.map((pair) => (
+                  <DailyExchangeChart
+                    key={pair.id}
+                    currency={pair.id}
+                    month={selectedMonth}
+                    year={selectedYear}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
+  );
 };
 export default DailyExchangeRate;
