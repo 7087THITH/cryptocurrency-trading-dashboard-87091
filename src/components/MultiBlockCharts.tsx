@@ -60,6 +60,18 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [title]);
 
+  // Auto-rotate symbols every 2 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSelectedSymbol(current => {
+        const nextIndex = (current + 1) % symbols.length;
+        return nextIndex;
+      });
+    }, 120000); // 2 minutes
+
+    return () => clearInterval(interval);
+  }, [symbols.length]);
+
   // Fetch real-time price every 15 seconds for more frequent updates
   const {
     data: realtimePrice,
