@@ -30,7 +30,7 @@ const Navigation = () => {
   };
   return <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-14 mx-0 my-0 px-0 py-0 rounded-sm bg-indigo-100">
           <div className="flex items-center gap-2">
             <Link to="/">
               <Button variant="ghost" size="sm">
