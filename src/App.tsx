@@ -45,7 +45,7 @@ const App = () => (
                     <Link to="/historical-data">
                       <Button variant="ghost" size="sm">
                         <LineChart className="mr-2 h-4 w-4" />
-                        ข้อมูลประวัติศาสตร์
+                        Tooling
                       </Button>
                     </Link>
                   </div>
