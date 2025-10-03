@@ -5,16 +5,16 @@ import Autoplay from "embla-carousel-autoplay";
 import { format } from "date-fns";
 
 const initialMarketData = [
-  { label: "USD/THB", value: "36.75", change: 0.15, prefix: "" },
-  { label: "THB/JPY", value: "4.08", change: 0.22, prefix: "" },
-  { label: "THB/CNY", value: "5.07", change: -0.15, prefix: "" },
-  { label: "USD/CNY", value: "7.24", change: -0.08, prefix: "" },
-  { label: "SHFE COPPER (CU)", value: "68,750", change: 0.95, prefix: "¥" },
-  { label: "SHFE COPPER (CU)", value: "68,820", change: 1.05, prefix: "¥" },
-  { label: "SHFE ZINC (ZN)", value: "21,450", change: 0.62, prefix: "¥" },
-  { label: "LME COPPER (CU)", value: "8,245", change: 1.2, prefix: "$" },
-  { label: "LME COPPER (CU)", value: "8,265", change: 1.35, prefix: "$" },
-  { label: "LME ZINC (ZN)", value: "2,645", change: 0.8, prefix: "$" },
+  { label: "USD/THB", value: "36.75", change: 0.15, prefix: "", flag: "🇹🇭" },
+  { label: "THB/JPY", value: "4.08", change: 0.22, prefix: "", flag: "🇹🇭🇯🇵" },
+  { label: "THB/CNY", value: "5.07", change: -0.15, prefix: "", flag: "🇹🇭🇨🇳" },
+  { label: "USD/CNY", value: "7.24", change: -0.08, prefix: "", flag: "🇺🇸🇨🇳" },
+  { label: "SHFE COPPER (CU)", value: "68,750", change: 0.95, prefix: "¥", flag: "🇨🇳" },
+  { label: "SHFE COPPER (CU)", value: "68,820", change: 1.05, prefix: "¥", flag: "🇨🇳" },
+  { label: "SHFE ZINC (ZN)", value: "21,450", change: 0.62, prefix: "¥", flag: "🇨🇳" },
+  { label: "LME COPPER (CU)", value: "8,245", change: 1.2, prefix: "$", flag: "🇬🇧" },
+  { label: "LME COPPER (CU)", value: "8,265", change: 1.35, prefix: "$", flag: "🇬🇧" },
+  { label: "LME ZINC (ZN)", value: "2,645", change: 0.8, prefix: "$", flag: "🇬🇧" },
 ];
 
 const MarketStats = () => {
@@ -60,11 +60,12 @@ const MarketStats = () => {
           {marketData.map((item, index) => (
             <CarouselItem key={`${item.label}-${index}`} className="pl-4 md:basis-1/3 lg:basis-1/6">
               <div className="glass-card p-6 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-muted-foreground">{item.label}</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-2xl">{item.flag}</span>
                   <TrendingUpIcon className={`w-4 h-4 ${item.change >= 0 ? 'text-success' : 'text-warning'}`} />
                 </div>
-                <p className="text-2xl font-semibold mt-2">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">{item.label}</h3>
+                <p className="text-2xl font-semibold">
                   {item.prefix}{item.value}
                 </p>
                 <span className={`text-sm ${item.change >= 0 ? 'text-success' : 'text-warning'} flex items-center gap-1`}>
