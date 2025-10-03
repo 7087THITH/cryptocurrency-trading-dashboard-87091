@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import MultiBlockCharts from "@/components/MultiBlockCharts";
 
 // Fetch latest price from market_prices table
 const fetchRealtimePrice = async (symbol: string, market: string) => {
@@ -355,29 +356,9 @@ const LiveTV2 = () => {
     setIsPlaying(!isPlaying);
   };
   return <div className="h-screen w-screen bg-background overflow-hidden">
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="h-full flex flex-col">
-        <div className="flex-1 relative">
-          <Carousel setApi={setApi} opts={{
-          loop: true
-        }} plugins={[autoplayRef.current]} className="w-full h-full relative">
-            <CarouselPrevious className="left-4 h-14 w-14 border-2 z-10">
-              <ChevronLeft className="h-8 w-8" />
-            </CarouselPrevious>
-            <CarouselNext className="right-4 h-14 w-14 border-2 z-10">
-              <ChevronRight className="h-8 w-8" />
-            </CarouselNext>
-            <CarouselContent className="h-full">
-              {chartBlocks.map((block, index) => <CarouselItem key={`${block.title}-${index}`} className="h-full">
-                  
-                </CarouselItem>)}
-            </CarouselContent>
-          </Carousel>
-
-          
-        </div>
-
-        
-      </Tabs>
+      <div className="w-full h-full relative p-6">
+        <MultiBlockCharts />
+      </div>
     </div>;
 };
 export default LiveTV2;
