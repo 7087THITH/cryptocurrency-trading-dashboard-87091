@@ -10,7 +10,7 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import { useState, useEffect, useRef } from 'react';
 import { Slider } from "@/components/ui/slider";
-import { Clock, Pause, Play } from "lucide-react";
+import { Clock, Pause, Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const LiveTV2 = () => {
@@ -132,8 +132,12 @@ const LiveTV2 = () => {
           plugins={[autoplayRef.current]}
           className="w-full h-full relative"
         >
-          <CarouselPrevious className="left-4 h-12 w-12" />
-          <CarouselNext className="right-4 h-12 w-12" />
+          <CarouselPrevious className="left-4 h-14 w-14 border-2">
+            <ChevronLeft className="h-8 w-8" />
+          </CarouselPrevious>
+          <CarouselNext className="right-4 h-14 w-14 border-2">
+            <ChevronRight className="h-8 w-8" />
+          </CarouselNext>
           <CarouselContent className="h-[calc(100vh-140px)]">
             {charts.map((chart, index) => (
               <CarouselItem key={`${chart.symbol}-${index}`} className="h-full">
