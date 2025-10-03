@@ -1,5 +1,7 @@
 import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface MetalData {
   symbol: string;
@@ -90,21 +92,60 @@ const MetalsTable = () => {
     },
   ]);
 
-  // Simulate real-time price updates
+  const { toast } = useToast();
+
+  // Fetch real LME prices from scraping edge function
+  const fetchLMEPrices = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('scrape-lme-prices');
+      
+      if (error) throw error;
+      
+      if (data?.success && data?.data) {
+        console.log('LME prices fetched:', data.data);
+        
+        // Update metals with real prices
+        setMetals(prevMetals => 
+          prevMetals.map(metal => {
+            const lmeData = data.data.find((d: any) => d.symbol === metal.symbol);
+            if (lmeData) {
+              return {
+                ...metal,
+                lmePrice: lmeData.price,
+                lmeChange: lmeData.change,
+              };
+            }
+            return metal;
+          })
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching LME prices:', error);
+      toast({
+        title: "ข้อผิดพลาด",
+        description: "ไม่สามารถดึงข้อมูลราคา LME ได้",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Fetch LME prices on mount and every 30 seconds
+  useEffect(() => {
+    fetchLMEPrices();
+    const interval = setInterval(fetchLMEPrices, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Simulate SHFE price updates
   useEffect(() => {
     const interval = setInterval(() => {
       setMetals(prevMetals => 
         prevMetals.map(metal => {
-          const newLmePrice = metal.lmePrice * (1 + (Math.random() - 0.5) * 0.003);
           const newShfePrice = metal.shfePrice * (1 + (Math.random() - 0.5) * 0.003);
           return {
             ...metal,
-            lmePrice: newLmePrice,
             shfePrice: newShfePrice,
-            lmeChange: metal.lmeChange + (Math.random() - 0.5) * 0.2,
             shfeChange: metal.shfeChange + (Math.random() - 0.5) * 0.2,
-            lmeHigh: Math.max(metal.lmeHigh, newLmePrice),
-            lmeLow: Math.min(metal.lmeLow, newLmePrice),
             shfeHigh: Math.max(metal.shfeHigh, newShfePrice),
             shfeLow: Math.min(metal.shfeLow, newShfePrice),
           };
