@@ -231,25 +231,71 @@ const ChartBlock = ({
       </div>
 
       <div className="flex-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} interval={selectedTab === 'monthly' ? 0 : 'preserveStartEnd'} />
-            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
-            <Tooltip contentStyle={{
-            background: 'hsl(var(--popover))',
-            border: '1px solid hsl(var(--border))',
-            borderRadius: '0.5rem',
-            fontSize: '14px'
-          }} />
-            <Legend wrapperStyle={{
-            fontSize: '14px'
-          }} />
-            <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={selectedTab === 'monthly'} name={selectedTab === 'monthly' ? 'ราคา' : 'ราคาเฉลี่ย'} isAnimationActive={true} />
-            <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={selectedTab !== 'monthly'} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
-            <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={selectedTab !== 'monthly'} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
-          </LineChart>
-        </ResponsiveContainer>
+        {selectedTab === 'monthly' && (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} interval={0} />
+              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
+              <Tooltip contentStyle={{
+              background: 'hsl(var(--popover))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '0.5rem',
+              fontSize: '14px'
+            }} />
+              <Legend wrapperStyle={{
+              fontSize: '14px'
+            }} />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคา" isAnimationActive={true} />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+
+        {selectedTab === 'yearly' && (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} />
+              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
+              <Tooltip contentStyle={{
+              background: 'hsl(var(--popover))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '0.5rem',
+              fontSize: '14px'
+            }} />
+              <Legend wrapperStyle={{
+              fontSize: '14px'
+            }} />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+
+        {selectedTab === 'trend' && (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={14} />
+              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={14} domain={['auto', 'auto']} width={80} />
+              <Tooltip contentStyle={{
+              background: 'hsl(var(--popover))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '0.5rem',
+              fontSize: '14px'
+            }} />
+              <Legend wrapperStyle={{
+              fontSize: '14px'
+            }} />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={3} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={3} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={3} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>;
 };
