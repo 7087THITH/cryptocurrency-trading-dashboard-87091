@@ -77,7 +77,7 @@ const DataDisplayPanels = () => {
                   />
                 </TabsContent>
                 
-                <TabsList className="grid w-full grid-cols-3 h-8">
+                <TabsList className="grid w-full grid-cols-3 h-8 bg-white dark:bg-white">
                   <TabsTrigger value="monthly" className="text-xs px-2 py-1">Monthly (1-30 days)</TabsTrigger>
                   <TabsTrigger value="yearly" className="text-xs px-2 py-1">Yearly (1-12 months)</TabsTrigger>
                   <TabsTrigger value="trend" className="text-xs px-2 py-1">Trend (2019-2023)</TabsTrigger>
