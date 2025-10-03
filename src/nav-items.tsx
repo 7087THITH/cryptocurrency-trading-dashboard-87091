@@ -1,9 +1,10 @@
-import { Home, Tv, LineChart, Activity, TrendingUp } from "lucide-react";
+import { Home, Tv, LineChart, Activity, TrendingUp, LogIn } from "lucide-react";
 import Index from "./pages/Index.tsx";
 import LiveTV from "./pages/LiveTV.tsx";
 import LiveTV2 from "./pages/LiveTV2.tsx";
 import LiveTV3 from "./pages/LiveTV3.tsx";
 import HistoricalData from "./pages/HistoricalData.tsx";
+import Auth from "./pages/Auth.tsx";
 
 /**
  * Central place for defining the navigation items. Used for navigation components and routing.
@@ -38,5 +39,11 @@ export const navItems = [
     to: "/historical-data",
     icon: <LineChart className="h-4 w-4" />,
     page: <HistoricalData />,
+  },
+  {
+    title: "Login",
+    to: "/auth",
+    icon: <LogIn className="h-4 w-4" />,
+    page: <Auth />,
   },
 ];
