@@ -29,7 +29,7 @@ const Navigation = () => {
 
   return (
     <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
-      <div className="container mx-auto px-4">
+      <div className="container px-4">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-2">
             <Link to="/">
