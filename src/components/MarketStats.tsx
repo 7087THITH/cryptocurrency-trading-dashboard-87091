@@ -10,10 +10,10 @@ const initialMarketData = [
   { label: "THB/CNY", value: "5.07", change: -0.15, prefix: "", flag: "🇹🇭🇨🇳" },
   { label: "USD/CNY", value: "7.24", change: -0.08, prefix: "", flag: "🇺🇸🇨🇳" },
   { label: "SHFE COPPER (CU)", value: "68,750", change: 0.95, prefix: "¥", flag: "🇨🇳" },
-  { label: "SHFE COPPER (CU)", value: "68,820", change: 1.05, prefix: "¥", flag: "🇨🇳" },
+  { label: "SHFE ALUMINIUM (AL)", value: "19,850", change: 0.45, prefix: "¥", flag: "🇨🇳" },
   { label: "SHFE ZINC (ZN)", value: "21,450", change: 0.62, prefix: "¥", flag: "🇨🇳" },
   { label: "LME COPPER (CU)", value: "8,245", change: 1.2, prefix: "$", flag: "🇬🇧" },
-  { label: "LME COPPER (CU)", value: "8,265", change: 1.35, prefix: "$", flag: "🇬🇧" },
+  { label: "LME ALUMINIUM (AL)", value: "2,485", change: 0.85, prefix: "$", flag: "🇬🇧" },
   { label: "LME ZINC (ZN)", value: "2,645", change: 0.8, prefix: "$", flag: "🇬🇧" },
 ];
 

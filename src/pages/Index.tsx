@@ -1,5 +1,5 @@
 import MarketStats from "@/components/MarketStats";
-import TradingChart from "@/components/TradingChart";
+import MultiBlockCharts from "@/components/MultiBlockCharts";
 import MarketHistory from "@/components/MarketHistory";
 import DataDisplayPanels from "@/components/DataDisplayPanels";
 import USDPairsCard from "@/components/cards/USDPairsCard";
@@ -20,9 +20,7 @@ const Index = () => {
         
         <MarketStats />
         
-        <div className="grid grid-cols-1 gap-4">
-          <TradingChart />
-        </div>
+        <MultiBlockCharts />
         
         <DataDisplayPanels />
         
