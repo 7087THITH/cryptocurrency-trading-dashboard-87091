@@ -1,14 +1,27 @@
 import TradingViewWidget from 'react-tradingview-widget';
+import ChartBlock from '@/components/charts/ChartBlock';
 
 const LiveTV = () => {
-  const charts = [
+  const tradingViewCharts = [
     { symbol: 'FX_IDC:USDTHB', title: 'USD/THB' },
     { symbol: 'FX_IDC:THBJPY', title: 'THB/JPY' },
     { symbol: 'FX_IDC:THBCNY', title: 'THB/CNY' },
     { symbol: 'FX_IDC:USDCNY', title: 'USD/CNY' },
-    { symbol: 'SHFE:CU1!', title: 'SHFE COPPER (CU)' },
-    { symbol: 'SHFE:AL1!', title: 'SHFE ALUMINIUM (AL)' },
-    { symbol: 'SHFE:ZN1!', title: 'SHFE ZINC (ZN)' },
+  ];
+
+  const shfeCharts = [
+    {
+      title: 'SHFE COPPER (CU)',
+      symbols: [{ label: 'SHFE COPPER (CU)', market: 'SHFE', symbol: 'CU' }]
+    },
+    {
+      title: 'SHFE ALUMINIUM (AL)',
+      symbols: [{ label: 'SHFE ALUMINIUM (AL)', market: 'SHFE', symbol: 'AL' }]
+    },
+    {
+      title: 'SHFE ZINC (ZN)',
+      symbols: [{ label: 'SHFE ZINC (ZN)', market: 'SHFE', symbol: 'ZN' }]
+    },
   ];
 
   return (
@@ -19,7 +32,7 @@ const LiveTV = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-        {charts.map((chart, index) => (
+        {tradingViewCharts.map((chart, index) => (
           <div 
             key={`${chart.symbol}-${index}`}
             className="glass-card p-6 rounded-lg animate-fade-in flex flex-col"
@@ -54,6 +67,12 @@ const LiveTV = () => {
                 ]}
               />
             </div>
+          </div>
+        ))}
+        
+        {shfeCharts.map((chart, index) => (
+          <div key={`shfe-${index}`} style={{ minHeight: '500px' }}>
+            <ChartBlock title={chart.title} symbols={chart.symbols} />
           </div>
         ))}
       </div>
