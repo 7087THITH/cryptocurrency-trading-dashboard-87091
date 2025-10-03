@@ -378,11 +378,7 @@ const LiveTV2 = () => {
           
         </div>
 
-        <TabsList className="grid w-full grid-cols-3 bg-blue-100 dark:bg-blue-950 h-8 rounded-none">
-          <TabsTrigger value="monthly" className="text-xs font-semibold py-1">รายวัน (15, 30, 15)</TabsTrigger>
-          <TabsTrigger value="yearly" className="text-xs font-semibold py-1">รายเดือน (1 ปี)</TabsTrigger>
-          <TabsTrigger value="trend" className="text-xs font-semibold py-1">Trend (2019-2025)</TabsTrigger>
-        </TabsList>
+        
       </Tabs>
     </div>;
 };
