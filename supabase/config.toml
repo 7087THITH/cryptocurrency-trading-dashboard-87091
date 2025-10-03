@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.fetch-twelve-data]
 verify_jwt = false
+
+[functions.get-realtime-price]
+verify_jwt = false

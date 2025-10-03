@@ -5,6 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
+// Fetch real-time price from Twelve Data API
+const fetchRealtimePrice = async (symbol: string, market: string) => {
+  const { data, error } = await supabase.functions.invoke('get-realtime-price', {
+    body: { symbol, market }
+  });
+  
+  if (error) throw error;
+  return data;
+};
+
 interface ChartBlockProps {
   title: string;
   symbols: { label: string; market: string; symbol: string }[];
@@ -25,127 +35,114 @@ const ChartBlock = ({ title, symbols }: ChartBlockProps) => {
     localStorage.setItem(`multiBlockChart-tab-${title}`, value);
   };
 
-  // Fetch monthly data (last 30 days)
+  // Fetch real-time price and generate mock historical data
+  const { data: realtimePrice, isLoading: realtimeLoading } = useQuery({
+    queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
+    queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
+    refetchInterval: 15000, // Refresh every 15 seconds
+  });
+
+  // Generate mock monthly data based on real-time price
   const { data: monthlyData, isLoading: monthlyLoading } = useQuery({
-    queryKey: ['monthly-chart', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['monthly-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      if (!realtimePrice) return [];
       
-      const { data, error } = await supabase
-        .from('market_prices')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .gte('recorded_at', thirtyDaysAgo.toISOString())
-        .order('recorded_at', { ascending: true });
-
-      if (error) throw error;
+      const basePrice = realtimePrice.price;
+      const data = [];
+      const now = new Date();
       
-      return data?.map(item => ({
-        time: new Date(item.recorded_at).toLocaleDateString('th-TH', {
-          day: '2-digit',
-          month: '2-digit'
-        }),
-        price: Number(item.price),
-        high: Number(item.high_price || item.price),
-        low: Number(item.low_price || item.price),
-      })) || [];
-    },
-    refetchInterval: 60000,
-  });
-
-  // Fetch yearly data (last 12 months)
-  const { data: yearlyData, isLoading: yearlyLoading } = useQuery({
-    queryKey: ['yearly-chart', currentSymbol.symbol, currentSymbol.market],
-    queryFn: async () => {
-      const twelveMonthsAgo = new Date();
-      twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
-      
-      const { data, error } = await supabase
-        .from('market_prices')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .gte('recorded_at', twelveMonthsAgo.toISOString())
-        .order('recorded_at', { ascending: true });
-
-      if (error) throw error;
-      
-      const monthlyGroups: { [key: string]: any[] } = {};
-      data?.forEach(item => {
-        const monthKey = new Date(item.recorded_at).toLocaleDateString('th-TH', {
-          year: 'numeric',
-          month: '2-digit'
+      // Generate 30 days of mock data with variation
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        
+        const variation = (Math.random() - 0.5) * basePrice * 0.03; // ±3% variation
+        const dayPrice = basePrice + variation;
+        
+        data.push({
+          time: date.toLocaleDateString('th-TH', {
+            day: '2-digit',
+            month: '2-digit'
+          }),
+          price: Number(dayPrice.toFixed(4)),
+          high: Number((dayPrice * 1.01).toFixed(4)),
+          low: Number((dayPrice * 0.99).toFixed(4)),
         });
-        if (!monthlyGroups[monthKey]) {
-          monthlyGroups[monthKey] = [];
-        }
-        monthlyGroups[monthKey].push(item);
-      });
-
-      return Object.keys(monthlyGroups).map(monthKey => {
-        const items = monthlyGroups[monthKey];
-        const avgPrice = items.reduce((sum, item) => sum + Number(item.price), 0) / items.length;
-        const maxHigh = Math.max(...items.map(item => Number(item.high_price || item.price)));
-        const minLow = Math.min(...items.map(item => Number(item.low_price || item.price)));
-        
-        return {
-          time: monthKey,
-          price: Number(avgPrice.toFixed(4)),
-          high: Number(maxHigh.toFixed(4)),
-          low: Number(minLow.toFixed(4)),
-        };
-      });
+      }
+      
+      return data;
     },
+    enabled: !!realtimePrice,
     refetchInterval: 60000,
   });
 
-  // Fetch trend data (2019-2025)
-  const { data: trendData, isLoading: trendLoading } = useQuery({
-    queryKey: ['trend-chart', currentSymbol.symbol, currentSymbol.market],
+  // Generate mock yearly data based on real-time price
+  const { data: yearlyData, isLoading: yearlyLoading } = useQuery({
+    queryKey: ['yearly-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
-      const startDate = new Date('2019-01-01');
-      const endDate = new Date('2025-12-31');
+      if (!realtimePrice) return [];
       
-      const { data, error } = await supabase
-        .from('market_prices')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .gte('recorded_at', startDate.toISOString())
-        .lte('recorded_at', endDate.toISOString())
-        .order('recorded_at', { ascending: true });
-
-      if (error) throw error;
+      const basePrice = realtimePrice.price;
+      const data = [];
+      const now = new Date();
       
-      const yearlyGroups: { [key: string]: any[] } = {};
-      data?.forEach(item => {
-        const year = new Date(item.recorded_at).getFullYear().toString();
-        if (!yearlyGroups[year]) {
-          yearlyGroups[year] = [];
-        }
-        yearlyGroups[year].push(item);
-      });
-
-      return Object.keys(yearlyGroups).sort().map(year => {
-        const items = yearlyGroups[year];
-        const avgPrice = items.reduce((sum, item) => sum + Number(item.price), 0) / items.length;
-        const maxHigh = Math.max(...items.map(item => Number(item.high_price || item.price)));
-        const minLow = Math.min(...items.map(item => Number(item.low_price || item.price)));
+      // Generate 12 months of mock data
+      for (let i = 11; i >= 0; i--) {
+        const date = new Date(now);
+        date.setMonth(date.getMonth() - i);
         
-        return {
-          time: year,
-          price: Number(avgPrice.toFixed(4)),
-          high: Number(maxHigh.toFixed(4)),
-          low: Number(minLow.toFixed(4)),
-        };
-      });
+        const variation = (Math.random() - 0.5) * basePrice * 0.05; // ±5% variation
+        const monthPrice = basePrice + variation;
+        
+        data.push({
+          time: date.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: '2-digit'
+          }),
+          price: Number(monthPrice.toFixed(4)),
+          high: Number((monthPrice * 1.02).toFixed(4)),
+          low: Number((monthPrice * 0.98).toFixed(4)),
+        });
+      }
+      
+      return data;
     },
+    enabled: !!realtimePrice,
     refetchInterval: 60000,
   });
 
-  const isLoading = monthlyLoading || yearlyLoading || trendLoading;
+  // Generate mock trend data based on real-time price
+  const { data: trendData, isLoading: trendLoading } = useQuery({
+    queryKey: ['trend-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
+    queryFn: async () => {
+      if (!realtimePrice) return [];
+      
+      const basePrice = realtimePrice.price;
+      const data = [];
+      const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
+      
+      // Generate yearly trend data
+      years.forEach((year, index) => {
+        const trend = (index - 3) * 0.02; // Create a trend pattern
+        const variation = (Math.random() - 0.5) * 0.1;
+        const yearPrice = basePrice * (1 + trend + variation);
+        
+        data.push({
+          time: year,
+          price: Number(yearPrice.toFixed(4)),
+          high: Number((yearPrice * 1.03).toFixed(4)),
+          low: Number((yearPrice * 0.97).toFixed(4)),
+        });
+      });
+      
+      return data;
+    },
+    enabled: !!realtimePrice,
+    refetchInterval: 60000,
+  });
+
+  const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
 
   useEffect(() => {
     if (selectedTab === 'monthly' && monthlyData) {
