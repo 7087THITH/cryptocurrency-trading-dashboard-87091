@@ -86,6 +86,15 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
     return <div className="h-[300px] flex items-center justify-center text-muted-foreground">No data available</div>;
   }
 
+  // Create custom ticks - show first, middle, and last dates
+  const customTicks = displayData.length >= 3 
+    ? [
+        displayData[0].date,
+        displayData[Math.floor(displayData.length / 2)].date,
+        displayData[displayData.length - 1].date
+      ]
+    : displayData.map(item => item.date);
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={displayData}>
@@ -104,7 +113,11 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-        <XAxis dataKey="date" />
+        <XAxis 
+          dataKey="date" 
+          ticks={customTicks}
+          interval="preserveStartEnd"
+        />
         <YAxis />
         <Tooltip />
         <Legend />
