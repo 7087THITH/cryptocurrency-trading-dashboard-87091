@@ -57,7 +57,7 @@ const MarketStats = () => {
       >
         <CarouselContent className="-ml-4">
           {marketData.map((item, index) => (
-            <CarouselItem key={`${item.label}-${index}`} className="pl-4 md:basis-1/2 lg:basis-1/3">
+            <CarouselItem key={`${item.label}-${index}`} className="pl-4 md:basis-1/3 lg:basis-1/6">
               <div className="glass-card p-6 rounded-lg">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium text-muted-foreground">{item.label}</h3>
