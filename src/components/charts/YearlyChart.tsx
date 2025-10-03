@@ -132,8 +132,8 @@ const YearlyChart = ({ symbol, market }: YearlyChartProps) => {
       <AreaChart data={displayData}>
         <defs>
           <linearGradient id="colorAvgPrice" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
           </linearGradient>
           <linearGradient id="colorAvgHigh" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#10b981" stopOpacity={0.6}/>
@@ -150,7 +150,7 @@ const YearlyChart = ({ symbol, market }: YearlyChartProps) => {
         <Tooltip />
         <Legend />
         <Area type="monotone" dataKey="avgHigh" stroke="#10b981" fill="url(#colorAvgHigh)" name="Avg High" />
-        <Area type="monotone" dataKey="avgPrice" stroke="#8b5cf6" fill="url(#colorAvgPrice)" name="Avg Price" strokeWidth={2} />
+        <Area type="monotone" dataKey="avgPrice" stroke="#3b82f6" fill="url(#colorAvgPrice)" name="Avg Price" strokeWidth={2} />
         <Area type="monotone" dataKey="avgLow" stroke="#ef4444" fill="url(#colorAvgLow)" name="Avg Low" />
       </AreaChart>
     </ResponsiveContainer>

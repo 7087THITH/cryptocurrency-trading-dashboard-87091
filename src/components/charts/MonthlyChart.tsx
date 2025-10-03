@@ -144,8 +144,8 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
       <AreaChart data={displayData}>
         <defs>
           <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
           </linearGradient>
           <linearGradient id="colorHigh" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#10b981" stopOpacity={0.6}/>
@@ -165,7 +165,7 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
         <Tooltip />
         <Legend />
         <Area type="monotone" dataKey="high" stroke="#10b981" fill="url(#colorHigh)" name="High" />
-        <Area type="monotone" dataKey="price" stroke="#8b5cf6" fill="url(#colorPrice)" name="Price" strokeWidth={2} />
+        <Area type="monotone" dataKey="price" stroke="#3b82f6" fill="url(#colorPrice)" name="Price" strokeWidth={2} />
         <Area type="monotone" dataKey="low" stroke="#ef4444" fill="url(#colorLow)" name="Low" />
       </AreaChart>
     </ResponsiveContainer>
