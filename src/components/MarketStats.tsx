@@ -4,18 +4,16 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import Autoplay from "embla-carousel-autoplay";
 
 const initialMarketData = [
+  { label: "USD/THB", value: "36.75", change: 0.15, prefix: "" },
+  { label: "USD/THB", value: "36.78", change: 0.18, prefix: "" },
+  { label: "USD/THB", value: "36.72", change: 0.12, prefix: "" },
   { label: "USD/CNY", value: "7.24", change: -0.08, prefix: "" },
-  { label: "LME Copper", value: "8,245", change: 1.2, prefix: "$" },
-  { label: "SHFE Aluminum", value: "18,950", change: -0.3, prefix: "¥" },
-  { label: "USD/THB", value: "36.75", change: 0.15, prefix: "฿" },
-  { label: "EUR/USD", value: "1.0842", change: -0.22, prefix: "" },
-  { label: "LME Zinc", value: "2,645", change: 0.8, prefix: "$" },
-  { label: "GBP/USD", value: "1.2634", change: 0.18, prefix: "" },
-  { label: "LME Nickel", value: "16,420", change: -0.5, prefix: "$" },
-  { label: "USD/JPY", value: "149.85", change: 0.32, prefix: "¥" },
-  { label: "LME Lead", value: "2,087", change: 0.45, prefix: "$" },
-  { label: "EUR/THB", value: "39.82", change: -0.12, prefix: "฿" },
-  { label: "SHFE Copper", value: "68,750", change: 0.95, prefix: "¥" },
+  { label: "SHFE COPPER (CU)", value: "68,750", change: 0.95, prefix: "¥" },
+  { label: "SHFE COPPER (CU)", value: "68,820", change: 1.05, prefix: "¥" },
+  { label: "SHFE ZINC (ZN)", value: "21,450", change: 0.62, prefix: "¥" },
+  { label: "LME COPPER (CU)", value: "8,245", change: 1.2, prefix: "$" },
+  { label: "LME COPPER (CU)", value: "8,265", change: 1.35, prefix: "$" },
+  { label: "LME ZINC (ZN)", value: "2,645", change: 0.8, prefix: "$" },
 ];
 
 const MarketStats = () => {
