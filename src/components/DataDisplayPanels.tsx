@@ -15,68 +15,50 @@ const dataCategories = [
 ];
 
 const DataDisplayPanels = () => {
-  const [selectedCategory, setSelectedCategory] = useState(dataCategories[0]);
-
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8 w-full">
-      {/* Left Panel - Data Selection */}
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle className="text-lg">Data Selection</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
+    <Card className="glass-card mb-8 w-full">
+      <CardContent className="pt-6">
+        <Tabs defaultValue="usd-thb" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-6">
             {dataCategories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category)}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                  selectedCategory.id === category.id
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted hover:bg-muted/80"
-                }`}
-              >
+              <TabsTrigger key={category.id} value={category.id}>
                 {category.label}
-              </button>
+              </TabsTrigger>
             ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Middle Panel - Chart Type Selection */}
-      <Card className="glass-card lg:col-span-3">
-        <CardHeader>
-          <CardTitle className="text-lg">{selectedCategory.label}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="monthly" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="monthly">Monthly (1-30 days)</TabsTrigger>
-              <TabsTrigger value="yearly">Yearly (1-12 months)</TabsTrigger>
-              <TabsTrigger value="trend">Trend (2019-2023)</TabsTrigger>
-            </TabsList>
-            <TabsContent value="monthly" className="mt-4">
-              <MonthlyChart 
-                symbol={selectedCategory.symbol} 
-                market={selectedCategory.market}
-              />
+          </TabsList>
+          
+          {dataCategories.map((category) => (
+            <TabsContent key={category.id} value={category.id}>
+              <Tabs defaultValue="monthly" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="monthly">Monthly (1-30 days)</TabsTrigger>
+                  <TabsTrigger value="yearly">Yearly (1-12 months)</TabsTrigger>
+                  <TabsTrigger value="trend">Trend (2019-2023)</TabsTrigger>
+                </TabsList>
+                <TabsContent value="monthly" className="mt-4">
+                  <MonthlyChart 
+                    symbol={category.symbol} 
+                    market={category.market}
+                  />
+                </TabsContent>
+                <TabsContent value="yearly" className="mt-4">
+                  <YearlyChart 
+                    symbol={category.symbol} 
+                    market={category.market}
+                  />
+                </TabsContent>
+                <TabsContent value="trend" className="mt-4">
+                  <TrendChart 
+                    symbol={category.symbol} 
+                    market={category.market}
+                  />
+                </TabsContent>
+              </Tabs>
             </TabsContent>
-            <TabsContent value="yearly" className="mt-4">
-              <YearlyChart 
-                symbol={selectedCategory.symbol} 
-                market={selectedCategory.market}
-              />
-            </TabsContent>
-            <TabsContent value="trend" className="mt-4">
-              <TrendChart 
-                symbol={selectedCategory.symbol} 
-                market={selectedCategory.market}
-              />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </div>
+          ))}
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
 
