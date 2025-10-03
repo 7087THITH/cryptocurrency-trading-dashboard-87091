@@ -273,14 +273,14 @@ const ChartBlock = ({
           <TabsTrigger value="trend" className="text-xs">Trend (2019-2025)</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="realtime" className="flex-1 mt-0">
+        <TabsContent value="realtime" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <LineChart data={chartData} style={{ background: 'transparent' }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={9} interval="preserveStartEnd" />
               <YAxis stroke="hsl(var(--muted-foreground))" fontSize={9} domain={['auto', 'auto']} width={45} />
               <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
+              background: 'rgba(255, 255, 255, 0.95)',
               border: '1px solid hsl(var(--border))',
               borderRadius: '0.5rem',
               fontSize: '11px'
@@ -295,14 +295,14 @@ const ChartBlock = ({
           </ResponsiveContainer>
         </TabsContent>
 
-        <TabsContent value="monthly" className="flex-1 mt-0">
+        <TabsContent value="monthly" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <LineChart data={chartData} style={{ background: 'transparent' }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={9} interval={0} />
               <YAxis stroke="hsl(var(--muted-foreground))" fontSize={9} domain={['auto', 'auto']} width={45} />
               <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
+              background: 'rgba(255, 255, 255, 0.95)',
               border: '1px solid hsl(var(--border))',
               borderRadius: '0.5rem',
               fontSize: '11px'
@@ -317,14 +317,14 @@ const ChartBlock = ({
           </ResponsiveContainer>
         </TabsContent>
 
-        <TabsContent value="yearly" className="flex-1 mt-0">
+        <TabsContent value="yearly" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <LineChart data={chartData} style={{ background: 'transparent' }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={9} />
               <YAxis stroke="hsl(var(--muted-foreground))" fontSize={9} domain={['auto', 'auto']} width={45} />
               <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
+              background: 'rgba(255, 255, 255, 0.95)',
               border: '1px solid hsl(var(--border))',
               borderRadius: '0.5rem',
               fontSize: '11px'
@@ -339,14 +339,14 @@ const ChartBlock = ({
           </ResponsiveContainer>
         </TabsContent>
 
-        <TabsContent value="trend" className="flex-1 mt-0">
+        <TabsContent value="trend" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <LineChart data={chartData} style={{ background: 'transparent' }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" fontSize={10} />
               <YAxis stroke="hsl(var(--muted-foreground))" fontSize={9} domain={['auto', 'auto']} width={45} />
               <Tooltip contentStyle={{
-              background: 'hsl(var(--popover))',
+              background: 'rgba(255, 255, 255, 0.95)',
               border: '1px solid hsl(var(--border))',
               borderRadius: '0.5rem',
               fontSize: '11px'
