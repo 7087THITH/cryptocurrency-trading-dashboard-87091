@@ -104,6 +104,23 @@ const ChartBlock = ({
     }
   }, [realtimePrice]);
 
+  // Continuous animation: slightly fluctuate the data every 2 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChartData(prev => {
+        if (!prev || prev.length === 0) return prev;
+        return prev.map(point => ({
+          ...point,
+          price: point.price * (1 + (Math.random() - 0.5) * 0.002), // ±0.2% fluctuation
+          high: point.high * (1 + (Math.random() - 0.5) * 0.002),
+          low: point.low * (1 + (Math.random() - 0.5) * 0.002)
+        }));
+      });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Generate data for specific dates (15 and 30 of months)
   const {
     data: monthlyData,
