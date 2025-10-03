@@ -28,7 +28,7 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
       if (error) throw error;
 
       const mappedData = data.map(item => ({
-        date: format(new Date(item.recorded_at), "MM/dd"),
+        date: format(new Date(item.recorded_at), "d MMM''yy"),
         price: Number(item.price),
         high: Number(item.high_price || item.price),
         low: Number(item.low_price || item.price),
@@ -54,7 +54,7 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             const newItem = payload.new as any;
             const formattedItem = {
-              date: format(new Date(newItem.recorded_at), "MM/dd"),
+              date: format(new Date(newItem.recorded_at), "d MMM''yy"),
               price: Number(newItem.price),
               high: Number(newItem.high_price || newItem.price),
               low: Number(newItem.low_price || newItem.price),
