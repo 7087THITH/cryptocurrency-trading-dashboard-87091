@@ -1,9 +1,13 @@
 import MarketStats from "@/components/MarketStats";
 import TradingChart from "@/components/TradingChart";
-import CurrencyPairs from "@/components/CurrencyPairs";
-import MetalsTable from "@/components/MetalsTable";
 import MarketHistory from "@/components/MarketHistory";
 import DataDisplayPanels from "@/components/DataDisplayPanels";
+import USDPairsCard from "@/components/cards/USDPairsCard";
+import THBPairsCard from "@/components/cards/THBPairsCard";
+import MajorPairsCard from "@/components/cards/MajorPairsCard";
+import CopperAluminumCard from "@/components/cards/CopperAluminumCard";
+import ZincLeadCard from "@/components/cards/ZincLeadCard";
+import NickelTinCard from "@/components/cards/NickelTinCard";
 
 const Index = () => {
   return (
@@ -22,9 +26,13 @@ const Index = () => {
         
         <DataDisplayPanels />
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <CurrencyPairs />
-          <MetalsTable />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <USDPairsCard />
+          <THBPairsCard />
+          <MajorPairsCard />
+          <CopperAluminumCard />
+          <ZincLeadCard />
+          <NickelTinCard />
         </div>
         
         <MarketHistory />
