@@ -497,8 +497,12 @@ const MultiBlockCharts = () => {
       <div className="mb-6 animate-pulse-slow">
         <ChartBlock title="บล็อคที่ 1: คู่สกุลเงิน THB" symbols={block1Symbols} />
       </div>
-      <ChartBlock title="บล็อคที่ 2: USD/CNY และ Copper" symbols={block2Symbols} />
-      <ChartBlock title="บล็อคที่ 3: USD/CNY และ Aluminium" symbols={block3Symbols} />
+      <div className="animate-pulse-slow" style={{ animationDelay: '0.2s' }}>
+        <ChartBlock title="บล็อคที่ 2: USD/CNY และ Copper" symbols={block2Symbols} />
+      </div>
+      <div className="animate-pulse-slow" style={{ animationDelay: '0.4s' }}>
+        <ChartBlock title="บล็อคที่ 3: USD/CNY และ Aluminium" symbols={block3Symbols} />
+      </div>
     </div>
   );
 };
