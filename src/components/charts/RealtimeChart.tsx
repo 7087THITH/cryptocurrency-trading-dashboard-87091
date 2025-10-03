@@ -81,9 +81,9 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
 
   if (isLoading) {
     return (
-      <div className="glass-card p-4 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">{title}</h3>
-        <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+      <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+        <h2 className="text-xl font-semibold mb-6">{title}</h2>
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
           กำลังโหลด...
         </div>
       </div>
@@ -92,9 +92,9 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
 
   if (!chartData || chartData.length === 0) {
     return (
-      <div className="glass-card p-4 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">{title}</h3>
-        <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+      <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+        <h2 className="text-xl font-semibold mb-6">{title}</h2>
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
           ไม่มีข้อมูล
         </div>
       </div>
@@ -104,16 +104,16 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
   const latestData = chartData[chartData.length - 1];
 
   return (
-    <div className="glass-card p-4 rounded-lg">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">{title}</h2>
         <div className="text-right">
-          <div className="text-xl font-bold text-primary">{latestData?.price.toFixed(4)}</div>
-          <div className="text-xs text-muted-foreground">{latestData?.time}</div>
+          <div className="text-2xl font-bold text-primary">{latestData?.price.toFixed(4)}</div>
+          <div className="text-sm text-muted-foreground">{latestData?.time}</div>
         </div>
       </div>
       
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis 

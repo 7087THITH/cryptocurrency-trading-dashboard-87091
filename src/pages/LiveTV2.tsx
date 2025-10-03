@@ -126,7 +126,7 @@ const LiveTV2 = () => {
           <CarouselContent className="h-[calc(100vh-140px)]">
             {chartsStatus.map((chart, index) => (
               <CarouselItem key={`${chart.symbol}-${chart.market}-${index}`} className="h-full">
-                <div className="h-full p-6">
+                <div className="h-full p-4">
                   {chart.hasData ? (
                     <RealtimeChart
                       symbol={chart.symbol}
@@ -136,7 +136,7 @@ const LiveTV2 = () => {
                   ) : (
                     <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
                       <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-semibold">{chart.title}</h2>
+                        <h2 className="text-xl font-semibold">{chart.title}</h2>
                       </div>
                       <div className="flex-1 w-full">
                         <TradingViewWidget
