@@ -61,7 +61,9 @@ const MarketStats = () => {
             <CarouselItem key={`${item.label}-${index}`} className="pl-4 md:basis-1/3 lg:basis-1/6">
               <div className="glass-card p-6 rounded-lg h-[200px] flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-2xl">{item.flag}</span>
+                  <span className="text-2xl animate-pulse hover:scale-110 transition-transform duration-300 cursor-pointer">
+                    {item.flag}
+                  </span>
                   <TrendingUpIcon className={`w-4 h-4 ${item.change >= 0 ? 'text-success' : 'text-warning'}`} />
                 </div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-2">{item.label}</h3>
