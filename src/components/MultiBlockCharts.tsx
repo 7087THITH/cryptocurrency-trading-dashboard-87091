@@ -508,6 +508,7 @@ const MultiBlockCharts = () => {
     { label: "USD/THB", market: "FX", symbol: "USDTHB" },
     { label: "THB/JPY", market: "FX", symbol: "THBJPY" },
     { label: "THB/CNY", market: "FX", symbol: "THBCNY" },
+    { label: "USD/CNY", market: "FX", symbol: "USDCNY" },
   ];
 
   const block2Symbols = [
