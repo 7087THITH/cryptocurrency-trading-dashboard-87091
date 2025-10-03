@@ -10,6 +10,12 @@ const initialMarketData = [
   { label: "USD/THB", value: "36.75", change: 0.15, prefix: "฿" },
   { label: "EUR/USD", value: "1.0842", change: -0.22, prefix: "" },
   { label: "LME Zinc", value: "2,645", change: 0.8, prefix: "$" },
+  { label: "GBP/USD", value: "1.2634", change: 0.18, prefix: "" },
+  { label: "LME Nickel", value: "16,420", change: -0.5, prefix: "$" },
+  { label: "USD/JPY", value: "149.85", change: 0.32, prefix: "¥" },
+  { label: "LME Lead", value: "2,087", change: 0.45, prefix: "$" },
+  { label: "EUR/THB", value: "39.82", change: -0.12, prefix: "฿" },
+  { label: "SHFE Copper", value: "68,750", change: 0.95, prefix: "¥" },
 ];
 
 const MarketStats = () => {
