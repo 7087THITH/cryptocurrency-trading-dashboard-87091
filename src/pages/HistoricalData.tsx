@@ -90,7 +90,7 @@ const HistoricalData = () => {
         <p className="text-muted-foreground">Converter tool</p>
       </div>
 
-      <Card className="max-w-2xl mx-auto">
+      <Card className="max-w-md">
         <CardHeader>
           <CardTitle>แปลงสกุลเงิน</CardTitle>
           <CardDescription>เลือกสกุลเงินและจำนวนที่ต้องการแปลง</CardDescription>
