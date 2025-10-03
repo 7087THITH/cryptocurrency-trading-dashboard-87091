@@ -10,25 +10,25 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-
 const queryClient = new QueryClient();
-
 const Navigation = () => {
-  const { user, signOut } = useAuth();
-  const { toast } = useToast();
+  const {
+    user,
+    signOut
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-
   const handleSignOut = async () => {
     await signOut();
     toast({
       title: "ออกจากระบบสำเร็จ",
-      description: "ขอบคุณที่ใช้งาน",
+      description: "ขอบคุณที่ใช้งาน"
     });
     navigate("/");
   };
-
-  return (
-    <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
+  return <nav className="border-b border-border bg-card/50 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-2">
@@ -56,17 +56,11 @@ const Navigation = () => {
                 Tooling
               </Button>
             </Link>
-            <Link to="/daily-exchange-rate">
-              <Button variant="ghost" size="sm">
-                <Calendar className="mr-2 h-4 w-4" />
-                Daily Rate
-              </Button>
-            </Link>
+            
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            {user ? (
-              <>
+            {user ? <>
                 <Button variant="ghost" size="sm" className="gap-2">
                   <User className="h-4 w-4" />
                   {user.email}
@@ -75,24 +69,18 @@ const Navigation = () => {
                   <LogOut className="mr-2 h-4 w-4" />
                   ออกจากระบบ
                 </Button>
-              </>
-            ) : (
-              <Link to="/auth">
+              </> : <Link to="/auth">
                 <Button variant="ghost" size="sm">
                   <LogIn className="mr-2 h-4 w-4" />
                   เข้าสู่ระบบ
                 </Button>
-              </Link>
-            )}
+              </Link>}
           </div>
         </div>
       </div>
-    </nav>
-  );
+    </nav>;
 };
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const App = () => <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light">
       <TooltipProvider>
         <Toaster />
@@ -102,15 +90,14 @@ const App = () => (
             <Navigation />
             {/* Routes */}
             <Routes>
-              {navItems.map(({ to, page }) => (
-                <Route key={to} path={to} element={page} />
-              ))}
+              {navItems.map(({
+              to,
+              page
+            }) => <Route key={to} path={to} element={page} />)}
             </Routes>
           </div>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
-  </QueryClientProvider>
-);
-
+  </QueryClientProvider>;
 export default App;
