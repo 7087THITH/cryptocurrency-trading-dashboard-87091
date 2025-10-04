@@ -22,17 +22,39 @@ interface ChartBlockProps {
     market: string;
     symbol: string;
   }[];
-  selectedTab: string;
 }
 const ChartBlock = ({
   title,
-  symbols,
-  selectedTab
+  symbols
 }: ChartBlockProps) => {
   const [selectedSymbol, setSelectedSymbol] = useState(0);
   const [chartData, setChartData] = useState<any[]>([]);
   const [realtimeHistory, setRealtimeHistory] = useState<any[]>([]);
   const currentSymbol = symbols[selectedSymbol];
+  const [selectedTab, setSelectedTab] = useState(() => {
+    const saved = localStorage.getItem(`twoBlockChart-tab-${title}`);
+    return saved || "realtime";
+  });
+  const handleTabChange = (value: string) => {
+    setSelectedTab(value);
+    localStorage.setItem(`twoBlockChart-tab-${title}`, value);
+  };
+
+  // Auto-rotate tabs every 45 seconds
+  useEffect(() => {
+    const tabs = ["realtime", "monthly", "yearly", "trend"];
+    const interval = setInterval(() => {
+      setSelectedTab(current => {
+        const currentIndex = tabs.indexOf(current);
+        const nextIndex = (currentIndex + 1) % tabs.length;
+        const nextTab = tabs[nextIndex];
+        localStorage.setItem(`twoBlockChart-tab-${title}`, nextTab);
+        return nextTab;
+      });
+    }, 45000); // 45 seconds
+
+    return () => clearInterval(interval);
+  }, [title]);
 
   // Auto-rotate symbols every 2 minutes
   useEffect(() => {
@@ -214,7 +236,12 @@ const ChartBlock = ({
     }
   }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
   if (isLoading) {
-    return;
+    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col mx-0 px-[24px] my-0">
+        <h2 className="text-xl font-semibold mb-4">{title}</h2>
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          กำลังโหลด...
+        </div>
+      </div>;
   }
   if (!chartData || chartData.length === 0) {
     return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
@@ -241,12 +268,12 @@ const ChartBlock = ({
           </button>)}
       </div>
 
-      <Tabs value={selectedTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-4 mb-4">
-          <TabsTrigger value="realtime" className="text-xs">Realtime</TabsTrigger>
+      <Tabs value={selectedTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
+        <TabsList className="grid w-full grid-cols-4 mb-4 bg-blue-500/20">
+          <TabsTrigger value="realtime" className="text-xs text-blue-500">Realtime</TabsTrigger>
           <TabsTrigger value="monthly" className="text-xs">รายวัน (15, 30, 15)</TabsTrigger>
           <TabsTrigger value="yearly" className="text-xs">รายเดือน (1 ปี)</TabsTrigger>
-          <TabsTrigger value="trend" className="text-xs">Trend (2019-2025)</TabsTrigger>
+          <TabsTrigger value="trend" className="text-xs text-gray-50 bg-slate-950 hover:bg-slate-800">Trend (2019-2025)</TabsTrigger>
         </TabsList>
 
         <TabsContent value="realtime" className="flex-1 mt-0 bg-transparent">
@@ -372,26 +399,6 @@ const ChartBlock = ({
     </div>;
 };
 const TwoBlockCharts = () => {
-  const [selectedTab, setSelectedTab] = useState(() => {
-    const saved = localStorage.getItem('twoBlockChart-globalTab');
-    return saved || "realtime";
-  });
-
-  // Auto-rotate tabs every 45 seconds - synchronized across all charts
-  useEffect(() => {
-    const tabs = ["realtime", "monthly", "yearly", "trend"];
-    const interval = setInterval(() => {
-      setSelectedTab(current => {
-        const currentIndex = tabs.indexOf(current);
-        const nextIndex = (currentIndex + 1) % tabs.length;
-        const nextTab = tabs[nextIndex];
-        localStorage.setItem('twoBlockChart-globalTab', nextTab);
-        return nextTab;
-      });
-    }, 45000); // 45 seconds
-
-    return () => clearInterval(interval);
-  }, []);
   const block1Symbols = [{
     label: "USD/THB",
     market: "FX",
@@ -428,10 +435,10 @@ const TwoBlockCharts = () => {
   }];
   return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in h-full overflow-hidden mx-0 px-0 my-[20px]">
       <div className="h-full overflow-hidden">
-        <ChartBlock title="THB currency pair" symbols={block1Symbols} selectedTab={selectedTab} />
+        <ChartBlock title="THB currency pair" symbols={block1Symbols} />
       </div>
-      <div className="h-full overflow-hidden mx-[8px] px-0 py-0">
-        <ChartBlock title="Copper & Aluminium" symbols={block2Symbols} selectedTab={selectedTab} />
+      <div className="h-full overflow-hidden">
+        <ChartBlock title="Copper & Aluminium" symbols={block2Symbols} />
       </div>
     </div>;
 };
