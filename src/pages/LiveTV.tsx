@@ -1,8 +1,6 @@
 import TradingViewWidget from 'react-tradingview-widget';
 import ChartBlock from '@/components/charts/ChartBlock';
 import Footer from '@/components/Footer';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
-import TranslatedText from '@/components/TranslatedText';
 
 const LiveTV = () => {
   const tradingViewCharts = [
@@ -44,12 +42,9 @@ const LiveTV = () => {
 
   return (
     <div className="min-h-screen bg-background p-6">
-      <div className="mb-6 flex justify-between items-start">
-        <div>
-          <TranslatedText text="Live TV - Real-time Charts" as="h1" className="text-3xl font-bold" />
-          <TranslatedText text="Real-time data charts" as="p" className="text-muted-foreground mt-2" />
-        </div>
-        <LanguageSwitcher />
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Live TV - Real-time Charts</h1>
+        <p className="text-muted-foreground mt-2">กราฟแสดงข้อมูลแบบเรียลไทม์</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
