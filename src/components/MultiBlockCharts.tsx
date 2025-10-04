@@ -267,7 +267,7 @@ const ChartBlock = ({
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         <div className="text-right">
-          <div className="text-xl font-bold text-primary">{latestData?.price?.toFixed(4)}</div>
+          <div className="text-xl font-bold text-primary rounded-3xl">{latestData?.price?.toFixed(4)}</div>
           <div className="text-xs text-muted-foreground">{latestData?.time}</div>
         </div>
       </div>
@@ -280,11 +280,11 @@ const ChartBlock = ({
       </div>
 
       <Tabs value={selectedTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-4 mb-4 bg-green-200">
+        <TabsList className="grid w-full grid-cols-4 mb-4 bg-slate-900">
           <TabsTrigger value="realtime" className="text-xs text-blue-500">Realtime</TabsTrigger>
           <TabsTrigger value="monthly" className="text-xs">รายวัน (15, 30, 15)</TabsTrigger>
           <TabsTrigger value="yearly" className="text-xs">รายเดือน (1 ปี)</TabsTrigger>
-          <TabsTrigger value="trend" className="text-xs">Trend (2019-2025)</TabsTrigger>
+          <TabsTrigger value="trend" className="text-xs text-gray-50 bg-slate-950 hover:bg-slate-800">Trend (2019-2025)</TabsTrigger>
         </TabsList>
 
         <TabsContent value="realtime" className="flex-1 mt-0 bg-transparent">
