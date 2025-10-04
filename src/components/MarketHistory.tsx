@@ -67,9 +67,7 @@ const MarketHistory = () => {
     }
   });
   if (isLoading) {
-    return <div className="glass-card p-6 rounded-lg animate-pulse">
-        <div className="h-64 bg-secondary rounded"></div>
-      </div>;
+    return;
   }
   return;
 };
