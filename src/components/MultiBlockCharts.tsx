@@ -7,15 +7,12 @@ import { Loader2 } from "lucide-react";
 
 // Fetch latest price from market_prices table
 const fetchRealtimePrice = async (symbol: string, market: string) => {
-  const { data, error } = await supabase
-    .from('market_prices')
-    .select('*')
-    .eq('symbol', symbol)
-    .eq('market', market)
-    .order('recorded_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  
+  const {
+    data,
+    error
+  } = await supabase.from('market_prices').select('*').eq('symbol', symbol).eq('market', market).order('recorded_at', {
+    ascending: false
+  }).limit(1).maybeSingle();
   if (error) throw error;
   return data;
 };
@@ -111,13 +108,13 @@ const ChartBlock = ({
         if (!prev || prev.length === 0) return prev;
         return prev.map(point => ({
           ...point,
-          price: point.price * (1 + (Math.random() - 0.5) * 0.002), // ±0.2% fluctuation
+          price: point.price * (1 + (Math.random() - 0.5) * 0.002),
+          // ±0.2% fluctuation
           high: point.high * (1 + (Math.random() - 0.5) * 0.002),
           low: point.low * (1 + (Math.random() - 0.5) * 0.002)
         }));
       });
     }, 2000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -283,7 +280,7 @@ const ChartBlock = ({
       </div>
 
       <Tabs value={selectedTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-4 mb-4">
+        <TabsList className="grid w-full grid-cols-4 mb-4 bg-green-200">
           <TabsTrigger value="realtime" className="text-xs text-blue-500">Realtime</TabsTrigger>
           <TabsTrigger value="monthly" className="text-xs">รายวัน (15, 30, 15)</TabsTrigger>
           <TabsTrigger value="yearly" className="text-xs">รายเดือน (1 ปี)</TabsTrigger>
@@ -292,11 +289,13 @@ const ChartBlock = ({
 
         <TabsContent value="realtime" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} style={{ background: 'transparent' }}>
+            <LineChart data={chartData} style={{
+            background: 'transparent'
+          }}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
@@ -320,11 +319,13 @@ const ChartBlock = ({
 
         <TabsContent value="monthly" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} style={{ background: 'transparent' }}>
+            <LineChart data={chartData} style={{
+            background: 'transparent'
+          }}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
@@ -348,11 +349,13 @@ const ChartBlock = ({
 
         <TabsContent value="yearly" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} style={{ background: 'transparent' }}>
+            <LineChart data={chartData} style={{
+            background: 'transparent'
+          }}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
@@ -376,11 +379,13 @@ const ChartBlock = ({
 
         <TabsContent value="trend" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} style={{ background: 'transparent' }}>
+            <LineChart data={chartData} style={{
+            background: 'transparent'
+          }}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
