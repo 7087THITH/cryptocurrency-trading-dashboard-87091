@@ -255,7 +255,7 @@ const ChartBlock = ({
       </div>;
   }
   const latestData = chartData[chartData.length - 1];
-  return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+  return <div className="glass-card p-4 rounded-lg max-h-[95vh] animate-fade-in flex flex-col overflow-hidden">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         <div className="text-right">
