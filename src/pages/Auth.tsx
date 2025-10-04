@@ -8,8 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-const emailSchema = z.string().email("กรุณากรอกอีเมลที่ถูกต้อง");
-const passwordSchema = z.string().min(6, "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+import { signUpSchema, signInSchema, loginRateLimiter, signupRateLimiter, sanitizeInput } from "@/lib/validation";
 const Auth = () => {
   const navigate = useNavigate();
   const {
@@ -21,15 +20,17 @@ const Auth = () => {
   const [fullName, setFullName] = useState("");
   const validateInputs = (isSignup: boolean) => {
     try {
-      emailSchema.parse(email);
-      passwordSchema.parse(password);
-      if (isSignup && !fullName.trim()) {
-        toast({
-          title: "ข้อผิดพลาด",
-          description: "กรุณากรอกชื่อ-นามสกุล",
-          variant: "destructive"
+      if (isSignup) {
+        signUpSchema.parse({
+          email: email.trim(),
+          password,
+          full_name: fullName.trim()
         });
-        return false;
+      } else {
+        signInSchema.parse({
+          email: email.trim(),
+          password
+        });
       }
       return true;
     } catch (error) {
@@ -45,13 +46,24 @@ const Auth = () => {
   };
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Rate limiting check
+    if (!loginRateLimiter(email)) {
+      toast({
+        title: "พยายามเข้าสู่ระบบมากเกินไป",
+        description: "กรุณารอ 15 นาทีแล้วลองใหม่อีกครั้ง",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!validateInputs(false)) return;
     setLoading(true);
     try {
       const {
         error
       } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim().toLowerCase(),
         password
       });
       if (error) {
@@ -87,19 +99,32 @@ const Auth = () => {
   };
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Rate limiting check
+    if (!signupRateLimiter(email)) {
+      toast({
+        title: "พยายามลงทะเบียนมากเกินไป",
+        description: "กรุณารอ 1 ชั่วโมงแล้วลองใหม่อีกครั้ง",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     if (!validateInputs(true)) return;
     setLoading(true);
     try {
       const redirectUrl = `${window.location.origin}/`;
+      const sanitizedName = sanitizeInput(fullName);
+      
       const {
         error
       } = await supabase.auth.signUp({
-        email,
+        email: email.trim().toLowerCase(),
         password,
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            full_name: fullName
+            full_name: sanitizedName
           }
         }
       });
@@ -176,8 +201,19 @@ const Auth = () => {
                   <Input id="signup-email" type="email" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} required disabled={loading} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)</Label>
-                  <Input id="signup-password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required disabled={loading} />
+                  <Label htmlFor="signup-password">รหัสผ่าน</Label>
+                  <Input 
+                    id="signup-password" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)} 
+                    required 
+                    disabled={loading} 
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    ต้องมีอย่างน้อย 8 ตัวอักษร ประกอบด้วยตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก ตัวเลข และอักขระพิเศษ
+                  </p>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "กำลังลงทะเบียน..." : "ลงทะเบียน"}
