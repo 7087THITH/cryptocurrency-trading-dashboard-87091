@@ -11,7 +11,7 @@ const Index = () => {
       <div className="w-full p-4 space-y-4">
         <header className="mb-4 flex justify-between items-start">
           <div>
-            <TranslatedText text="Trading Dashboard" as="h1" className="text-3xl font-bold mb-1" />
+            <TranslatedText text="API MATERIAL EXCHANGE RATE" as="h1" className="text-3xl font-bold mb-1" />
             <TranslatedText text="Currency Pairs & Metal Markets" as="p" className="text-muted-foreground" />
           </div>
           <LanguageSwitcher />
