@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { signUpSchema, signInSchema, loginRateLimiter, signupRateLimiter, sanitizeInput } from "@/lib/validation";
+import { signUpSchema, signInSchema, loginRateLimiter, signupRateLimiter, sanitizeInput, emailSchema } from "@/lib/validation";
 const Auth = () => {
   const navigate = useNavigate();
   const {
@@ -18,6 +19,9 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const validateInputs = (isSignup: boolean) => {
     try {
       if (isSignup) {
@@ -159,6 +163,59 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate email
+    try {
+      emailSchema.parse(forgotPasswordEmail.trim());
+    } catch (error) {
+      toast({
+        title: "อีเมลไม่ถูกต้อง",
+        description: "กรุณากรอกอีเมลที่ถูกต้อง",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    try {
+      const redirectUrl = `${window.location.origin}/reset-password`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        forgotPasswordEmail.trim().toLowerCase(),
+        {
+          redirectTo: redirectUrl,
+        }
+      );
+
+      if (error) {
+        toast({
+          title: "เกิดข้อผิดพลาด",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "ส่งอีเมลสำเร็จ",
+        description: "กรุณาตรวจสอบอีเมลของคุณเพื่อรีเซ็ตรหัสผ่าน"
+      });
+
+      setForgotPasswordOpen(false);
+      setForgotPasswordEmail("");
+    } catch (error) {
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถส่งอีเมลได้ กรุณาลองใหม่อีกครั้ง",
+        variant: "destructive"
+      });
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };
   return <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
@@ -187,6 +244,39 @@ const Auth = () => {
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
                 </Button>
+                
+                <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="link" className="w-full text-sm" type="button">
+                      ลืมรหัสผ่าน?
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>รีเซ็ตรหัสผ่าน</DialogTitle>
+                      <DialogDescription>
+                        กรอกอีเมลที่คุณใช้สมัครสมาชิก เราจะส่งลิงก์สำหรับรีเซ็ตรหัสผ่านไปให้คุณ
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleForgotPassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="forgot-email">อีเมล</Label>
+                        <Input
+                          id="forgot-email"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={forgotPasswordEmail}
+                          onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                          required
+                          disabled={forgotPasswordLoading}
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={forgotPasswordLoading}>
+                        {forgotPasswordLoading ? "กำลังส่งอีเมล..." : "ส่งลิงก์รีเซ็ตรหัสผ่าน"}
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </form>
             </TabsContent>
 
