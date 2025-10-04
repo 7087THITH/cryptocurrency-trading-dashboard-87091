@@ -435,8 +435,7 @@ const MultiBlockCharts = () => {
     label: "LME COPPER (CU)",
     market: "LME",
     symbol: "CU"
-  }];
-  const block3Symbols = [{
+  }, {
     label: "SHFE ALUMINIUM (AL)",
     market: "SHFE",
     symbol: "AL"
@@ -445,15 +444,12 @@ const MultiBlockCharts = () => {
     market: "LME",
     symbol: "AL"
   }];
-  return <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in mb-8">
+  return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in mb-8">
       <div className="h-[500px]">
         <ChartBlock title="THB currency pair" symbols={block1Symbols} />
       </div>
       <div className="h-[500px]">
-        <ChartBlock title="Copper currency pair" symbols={block2Symbols} />
-      </div>
-      <div className="h-[500px]">
-        <ChartBlock title="Aluminium currency pair" symbols={block3Symbols} />
+        <ChartBlock title="Copper & Aluminium - liquid-procure-flow" symbols={block2Symbols} />
       </div>
     </div>;
 };
