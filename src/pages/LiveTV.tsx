@@ -60,7 +60,7 @@ const LiveTV = () => {
             <div className="flex-1 w-full">
               <TradingViewWidget
                 symbol={chart.symbol}
-                theme="light"
+                theme="Light"
                 locale="en"
                 autosize
                 hide_side_toolbar={true}

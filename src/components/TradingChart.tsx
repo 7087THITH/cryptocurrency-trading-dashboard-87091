@@ -9,7 +9,7 @@ const TradingChart = () => {
       <div className="h-[400px] w-full">
         <TradingViewWidget
           symbol="FX_IDC:USDTHB"
-          theme="light"
+          theme="Light"
           locale="en"
           autosize
           hide_side_toolbar={true}
