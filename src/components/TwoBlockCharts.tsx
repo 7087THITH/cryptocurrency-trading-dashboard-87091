@@ -128,7 +128,6 @@ const ChartBlock = ({
       const now = new Date();
       const currentMonth = now.getMonth();
       const currentYear = now.getFullYear();
-
       const date15PrevMonth = new Date(currentYear, currentMonth - 1, 15);
       const date30Current = now.getDate() >= 30 ? new Date(currentYear, currentMonth, 30) : new Date(currentYear, currentMonth - 1, 30);
       const date15NextMonth = new Date(currentYear, currentMonth + 1, 15);
@@ -176,7 +175,6 @@ const ChartBlock = ({
       const basePrice = realtimePrice.price;
       const data = [];
       const now = new Date();
-
       for (let i = 11; i >= 0; i--) {
         const date = new Date(now);
         date.setMonth(date.getMonth() - i);
@@ -209,7 +207,6 @@ const ChartBlock = ({
       const basePrice = realtimePrice.price;
       const data = [];
       const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
-
       years.forEach((year, index) => {
         const trend = (index - 3) * 0.02;
         const variation = (Math.random() - 0.5) * 0.1;
@@ -239,7 +236,7 @@ const ChartBlock = ({
     }
   }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
   if (isLoading) {
-    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col mx-0 px-[24px] my-0">
         <h2 className="text-xl font-semibold mb-4">{title}</h2>
         <div className="flex-1 flex items-center justify-center text-muted-foreground">
           กำลังโหลด...
@@ -436,7 +433,7 @@ const TwoBlockCharts = () => {
     market: "LME",
     symbol: "AL"
   }];
-  return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in h-full overflow-hidden">
+  return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in h-full overflow-hidden mx-0 px-0 my-[20px]">
       <div className="h-full overflow-hidden">
         <ChartBlock title="THB currency pair" symbols={block1Symbols} />
       </div>
