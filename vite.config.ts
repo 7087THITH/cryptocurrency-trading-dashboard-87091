@@ -23,14 +23,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     sourcemap: mode !== 'production',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: true,
-        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
-      },
-    },
+    minify: mode === 'production' ? 'esbuild' : false,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -39,5 +32,8 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
+  },
+  esbuild: {
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
 }));
