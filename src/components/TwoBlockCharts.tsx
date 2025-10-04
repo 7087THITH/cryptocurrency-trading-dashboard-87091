@@ -34,7 +34,6 @@ const ChartBlock = ({
   const [realtimeHistory, setRealtimeHistory] = useState<any[]>([]);
   const currentSymbol = symbols[selectedSymbol];
 
-
   // Auto-rotate symbols every 2 minutes
   useEffect(() => {
     const interval = setInterval(() => {
@@ -215,12 +214,7 @@ const ChartBlock = ({
     }
   }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
   if (isLoading) {
-    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col mx-0 px-[24px] my-0">
-        <h2 className="text-xl font-semibold mb-4">{title}</h2>
-        <div className="flex-1 flex items-center justify-center text-muted-foreground">
-          กำลังโหลด...
-        </div>
-      </div>;
+    return;
   }
   if (!chartData || chartData.length === 0) {
     return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
@@ -398,7 +392,6 @@ const TwoBlockCharts = () => {
 
     return () => clearInterval(interval);
   }, []);
-
   const block1Symbols = [{
     label: "USD/THB",
     market: "FX",
@@ -437,7 +430,7 @@ const TwoBlockCharts = () => {
       <div className="h-full overflow-hidden">
         <ChartBlock title="THB currency pair" symbols={block1Symbols} selectedTab={selectedTab} />
       </div>
-      <div className="h-full overflow-hidden">
+      <div className="h-full overflow-hidden mx-[8px] px-0 py-0">
         <ChartBlock title="Copper & Aluminium" symbols={block2Symbols} selectedTab={selectedTab} />
       </div>
     </div>;
