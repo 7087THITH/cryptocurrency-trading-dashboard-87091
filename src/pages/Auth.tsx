@@ -183,20 +183,47 @@ const Auth = () => {
     try {
       const redirectUrl = `${window.location.origin}/reset-password`;
       
-      const { error } = await supabase.auth.resetPasswordForEmail(
+      // First, trigger Supabase password reset to generate token
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
         forgotPasswordEmail.trim().toLowerCase(),
         {
           redirectTo: redirectUrl,
         }
       );
 
-      if (error) {
+      if (resetError) {
         toast({
           title: "เกิดข้อผิดพลาด",
-          description: error.message,
+          description: resetError.message,
           variant: "destructive"
         });
         return;
+      }
+
+      // Then send custom email via edge function
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-reset-password-email`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({
+              email: forgotPasswordEmail.trim().toLowerCase(),
+              resetLink: redirectUrl,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Failed to send custom email, but Supabase email sent");
+        }
+      } catch (emailError) {
+        console.error("Error sending custom email:", emailError);
+        // Don't fail the whole process if custom email fails
       }
 
       toast({
