@@ -52,7 +52,8 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
         low: Number(item.low_price || item.price),
       }));
     },
-    refetchInterval: 60000, // Refetch every minute
+    refetchInterval: 120000, // Refetch every 2 minutes
+    staleTime: 60000
   });
 
   // Yearly data (last 12 months)
@@ -99,6 +100,8 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
         };
       });
     },
+    refetchInterval: 300000, // Refetch every 5 minutes
+    staleTime: 120000
   });
 
   // Trend data (2019-2023)
@@ -143,6 +146,8 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
         };
       });
     },
+    refetchInterval: 600000, // Refetch every 10 minutes
+    staleTime: 300000
   });
 
   const isLoading = isLoadingMonthly || isLoadingYearly || isLoadingTrend;
@@ -229,7 +234,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 strokeWidth={2}
                 dot={false}
                 name="ราคา"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
               <Line 
                 type="monotone" 
@@ -239,7 +244,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dot={false}
                 name="สูงสุด"
                 strokeDasharray="5 5"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
               <Line 
                 type="monotone" 
@@ -249,7 +254,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dot={false}
                 name="ต่ำสุด"
                 strokeDasharray="5 5"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -285,7 +290,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 strokeWidth={2}
                 dot={true}
                 name="ราคาเฉลี่ย"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
               <Line 
                 type="monotone" 
@@ -295,7 +300,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dot={true}
                 name="สูงสุด"
                 strokeDasharray="5 5"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
               <Line 
                 type="monotone" 
@@ -305,7 +310,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dot={true}
                 name="ต่ำสุด"
                 strokeDasharray="5 5"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -341,7 +346,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 strokeWidth={3}
                 dot={true}
                 name="ราคาเฉลี่ย"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
               <Line 
                 type="monotone" 
@@ -351,7 +356,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dot={true}
                 name="สูงสุด"
                 strokeDasharray="5 5"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
               <Line 
                 type="monotone" 
@@ -361,7 +366,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dot={true}
                 name="ต่ำสุด"
                 strokeDasharray="5 5"
-                isAnimationActive={true}
+                isAnimationActive={false}
               />
             </LineChart>
           </ResponsiveContainer>
