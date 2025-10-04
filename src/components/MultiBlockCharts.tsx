@@ -69,22 +69,22 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch 30 days of historical data for realtime chart (refresh every 5 seconds)
+  // Fetch 7 days of historical data for realtime chart (refresh every 5 seconds)
   const {
     data: realtimeData,
     isLoading: realtimeLoading
   } = useQuery({
-    queryKey: ['realtime-30days', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['realtime-7days', currentSymbol.symbol, currentSymbol.market],
     queryFn: async () => {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       
       const { data, error } = await supabase
         .from('market_prices')
         .select('*')
         .eq('symbol', currentSymbol.symbol)
         .eq('market', currentSymbol.market)
-        .gte('recorded_at', thirtyDaysAgo.toISOString())
+        .gte('recorded_at', sevenDaysAgo.toISOString())
         .order('recorded_at', { ascending: true });
       
       if (error) throw error;
