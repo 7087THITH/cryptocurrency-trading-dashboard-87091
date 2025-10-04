@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
 
 // Fetch latest price from market_prices table
 const fetchRealtimePrice = async (symbol: string, market: string) => {
@@ -33,12 +32,12 @@ const ChartBlock = ({
   const [realtimeHistory, setRealtimeHistory] = useState<any[]>([]);
   const currentSymbol = symbols[selectedSymbol];
   const [selectedTab, setSelectedTab] = useState(() => {
-    const saved = localStorage.getItem(`multiBlockChart-tab-${title}`);
+    const saved = localStorage.getItem(`twoBlockChart-tab-${title}`);
     return saved || "realtime";
   });
   const handleTabChange = (value: string) => {
     setSelectedTab(value);
-    localStorage.setItem(`multiBlockChart-tab-${title}`, value);
+    localStorage.setItem(`twoBlockChart-tab-${title}`, value);
   };
 
   // Auto-rotate tabs every 45 seconds
@@ -49,7 +48,7 @@ const ChartBlock = ({
         const currentIndex = tabs.indexOf(current);
         const nextIndex = (currentIndex + 1) % tabs.length;
         const nextTab = tabs[nextIndex];
-        localStorage.setItem(`multiBlockChart-tab-${title}`, nextTab);
+        localStorage.setItem(`twoBlockChart-tab-${title}`, nextTab);
         return nextTab;
       });
     }, 45000); // 45 seconds
@@ -69,17 +68,17 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch real-time price every 15 seconds for more frequent updates
+  // Fetch real-time price every 15 seconds
   const {
     data: realtimePrice,
     isLoading: realtimeLoading
   } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
-    refetchInterval: 15000 // Refresh every 15 seconds for realtime feel
+    refetchInterval: 15000
   });
 
-  // Update realtime history when new data arrives (keep 1 hour of data)
+  // Update realtime history when new data arrives
   useEffect(() => {
     if (realtimePrice) {
       const now = new Date();
@@ -95,13 +94,12 @@ const ChartBlock = ({
           high: realtimePrice.high_price,
           low: realtimePrice.low_price
         }];
-        // Keep only last 240 data points (1 hour with 15-second intervals)
         return newHistory.slice(-240);
       });
     }
   }, [realtimePrice]);
 
-  // Continuous animation: slightly fluctuate the data every 2 seconds
+  // Continuous animation
   useEffect(() => {
     const interval = setInterval(() => {
       setChartData(prev => {
@@ -109,7 +107,6 @@ const ChartBlock = ({
         return prev.map(point => ({
           ...point,
           price: point.price * (1 + (Math.random() - 0.5) * 0.002),
-          // ±0.2% fluctuation
           high: point.high * (1 + (Math.random() - 0.5) * 0.002),
           low: point.low * (1 + (Math.random() - 0.5) * 0.002)
         }));
@@ -118,7 +115,7 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Generate data for specific dates (15 and 30 of months)
+  // Generate monthly data
   const {
     data: monthlyData,
     isLoading: monthlyLoading
@@ -132,11 +129,8 @@ const ChartBlock = ({
       const currentMonth = now.getMonth();
       const currentYear = now.getFullYear();
 
-      // วันที่ 15 เดือนก่อนหน้า
       const date15PrevMonth = new Date(currentYear, currentMonth - 1, 15);
-      // วันที่ 30 เดือนปัจจุบัน (หรือเดือนก่อนถ้ายังไม่ถึง)
       const date30Current = now.getDate() >= 30 ? new Date(currentYear, currentMonth, 30) : new Date(currentYear, currentMonth - 1, 30);
-      // วันที่ 15 เดือนถัดไป
       const date15NextMonth = new Date(currentYear, currentMonth + 1, 15);
       const targetDates = [{
         date: date15PrevMonth,
@@ -152,7 +146,7 @@ const ChartBlock = ({
         date,
         label
       }) => {
-        const variation = (Math.random() - 0.5) * basePrice * 0.03; // ±3% variation
+        const variation = (Math.random() - 0.5) * basePrice * 0.03;
         const dayPrice = basePrice + variation;
         data.push({
           time: date.toLocaleDateString('th-TH', {
@@ -171,7 +165,7 @@ const ChartBlock = ({
     refetchInterval: 60000
   });
 
-  // Generate mock yearly data based on real-time price
+  // Generate yearly data
   const {
     data: yearlyData,
     isLoading: yearlyLoading
@@ -183,11 +177,10 @@ const ChartBlock = ({
       const data = [];
       const now = new Date();
 
-      // Generate 12 months of mock data
       for (let i = 11; i >= 0; i--) {
         const date = new Date(now);
         date.setMonth(date.getMonth() - i);
-        const variation = (Math.random() - 0.5) * basePrice * 0.05; // ±5% variation
+        const variation = (Math.random() - 0.5) * basePrice * 0.05;
         const monthPrice = basePrice + variation;
         data.push({
           time: date.toLocaleDateString('th-TH', {
@@ -205,7 +198,7 @@ const ChartBlock = ({
     refetchInterval: 60000
   });
 
-  // Generate mock trend data based on real-time price
+  // Generate trend data
   const {
     data: trendData,
     isLoading: trendLoading
@@ -217,9 +210,8 @@ const ChartBlock = ({
       const data = [];
       const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
 
-      // Generate yearly trend data
       years.forEach((year, index) => {
-        const trend = (index - 3) * 0.02; // Create a trend pattern
+        const trend = (index - 3) * 0.02;
         const variation = (Math.random() - 0.5) * 0.1;
         const yearPrice = basePrice * (1 + trend + variation);
         data.push({
@@ -409,7 +401,7 @@ const ChartBlock = ({
       </Tabs>
     </div>;
 };
-const MultiBlockCharts = () => {
+const TwoBlockCharts = () => {
   const block1Symbols = [{
     label: "USD/THB",
     market: "FX",
@@ -435,8 +427,7 @@ const MultiBlockCharts = () => {
     label: "LME COPPER (CU)",
     market: "LME",
     symbol: "CU"
-  }];
-  const block3Symbols = [{
+  }, {
     label: "SHFE ALUMINIUM (AL)",
     market: "SHFE",
     symbol: "AL"
@@ -445,16 +436,13 @@ const MultiBlockCharts = () => {
     market: "LME",
     symbol: "AL"
   }];
-  return <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-fade-in mb-8">
-      <div className="h-[500px]">
+  return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in mb-8">
+      <div className="min-h-[calc(100vh-8rem)]">
         <ChartBlock title="THB currency pair" symbols={block1Symbols} />
       </div>
-      <div className="h-[500px]">
-        <ChartBlock title="Copper currency pair" symbols={block2Symbols} />
-      </div>
-      <div className="h-[500px]">
-        <ChartBlock title="Aluminium currency pair" symbols={block3Symbols} />
+      <div className="min-h-[calc(100vh-8rem)]">
+        <ChartBlock title="Copper & Aluminium" symbols={block2Symbols} />
       </div>
     </div>;
 };
-export default MultiBlockCharts;
+export default TwoBlockCharts;

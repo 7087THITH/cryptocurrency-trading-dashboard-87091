@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import MultiBlockCharts from "@/components/MultiBlockCharts";
+import TwoBlockCharts from "@/components/TwoBlockCharts";
 
 // Fetch latest price from market_prices table
 const fetchRealtimePrice = async (symbol: string, market: string) => {
@@ -357,7 +357,7 @@ const LiveTV2 = () => {
   };
   return <div className="h-screen w-screen bg-background overflow-hidden">
       <div className="w-full h-full relative p-6">
-        <MultiBlockCharts />
+        <TwoBlockCharts />
       </div>
     </div>;
 };
