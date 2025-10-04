@@ -67,8 +67,104 @@ const MarketHistory = () => {
     }
   });
   if (isLoading) {
-    return;
+    return <div className="text-muted-foreground">กำลังโหลด...</div>;
   }
-  return;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-4">
+        <Select value={selectedMarket} onValueChange={handleMarketChange}>
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="FX">FX</SelectItem>
+            <SelectItem value="LME">LME</SelectItem>
+            <SelectItem value="SHFE">SHFE</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedSymbol} onValueChange={handleSymbolChange}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {selectedMarket === 'FX' && (
+              <>
+                <SelectItem value="USD/THB">USD/THB</SelectItem>
+                <SelectItem value="EUR/USD">EUR/USD</SelectItem>
+                <SelectItem value="GBP/USD">GBP/USD</SelectItem>
+                <SelectItem value="JPY/USD">JPY/USD</SelectItem>
+              </>
+            )}
+            {selectedMarket === 'LME' && (
+              <>
+                <SelectItem value="CU">Copper</SelectItem>
+                <SelectItem value="AL">Aluminum</SelectItem>
+                <SelectItem value="ZN">Zinc</SelectItem>
+                <SelectItem value="NI">Nickel</SelectItem>
+                <SelectItem value="PB">Lead</SelectItem>
+                <SelectItem value="SN">Tin</SelectItem>
+              </>
+            )}
+            {selectedMarket === 'SHFE' && (
+              <>
+                <SelectItem value="CU">Copper</SelectItem>
+                <SelectItem value="AL">Aluminum</SelectItem>
+                <SelectItem value="ZN">Zinc</SelectItem>
+              </>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {historyData && historyData.length > 0 && (
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={historyData}>
+            <XAxis 
+              dataKey="time" 
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+            />
+            <YAxis 
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={12}
+            />
+            <Tooltip 
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px'
+              }}
+            />
+            <Legend />
+            <Line 
+              type="monotone" 
+              dataKey="price" 
+              stroke="hsl(var(--primary))" 
+              strokeWidth={2}
+              name="ราคา"
+            />
+            <Line 
+              type="monotone" 
+              dataKey="high" 
+              stroke="hsl(var(--success))" 
+              strokeWidth={1}
+              strokeDasharray="5 5"
+              name="สูงสุด"
+            />
+            <Line 
+              type="monotone" 
+              dataKey="low" 
+              stroke="hsl(var(--destructive))" 
+              strokeWidth={1}
+              strokeDasharray="5 5"
+              name="ต่ำสุด"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  );
 };
 export default MarketHistory;
