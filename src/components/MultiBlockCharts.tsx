@@ -445,10 +445,10 @@ const MultiBlockCharts = () => {
     symbol: "AL"
   }];
   return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in mb-8">
-      <div className="h-[500px]">
+      <div className="min-h-[calc(100vh-12rem)]">
         <ChartBlock title="THB currency pair" symbols={block1Symbols} />
       </div>
-      <div className="h-[500px]">
+      <div className="min-h-[calc(100vh-12rem)]">
         <ChartBlock title="Copper & Aluminium - liquid-procure-flow" symbols={block2Symbols} />
       </div>
     </div>;
