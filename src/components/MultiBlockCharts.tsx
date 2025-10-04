@@ -69,22 +69,22 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch 24 hours of historical data for realtime chart (refresh every 5 seconds)
+  // Fetch 12 hours of historical data for realtime chart (refresh every 5 seconds)
   const {
     data: realtimeData,
     isLoading: realtimeLoading
   } = useQuery({
-    queryKey: ['realtime-24h', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['realtime-12h', currentSymbol.symbol, currentSymbol.market],
     queryFn: async () => {
-      const twentyFourHoursAgo = new Date();
-      twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+      const twelveHoursAgo = new Date();
+      twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
       
       const { data, error } = await supabase
         .from('market_prices')
         .select('*')
         .eq('symbol', currentSymbol.symbol)
         .eq('market', currentSymbol.market)
-        .gte('recorded_at', twentyFourHoursAgo.toISOString())
+        .gte('recorded_at', twelveHoursAgo.toISOString())
         .order('recorded_at', { ascending: true });
       
       if (error) throw error;
