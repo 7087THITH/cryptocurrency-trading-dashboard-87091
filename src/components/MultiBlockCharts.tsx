@@ -69,37 +69,54 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch real-time price every 15 seconds for more frequent updates
+  // Fetch 30 days of historical data for realtime chart (refresh every 5 seconds)
   const {
-    data: realtimePrice,
+    data: realtimeData,
     isLoading: realtimeLoading
+  } = useQuery({
+    queryKey: ['realtime-30days', currentSymbol.symbol, currentSymbol.market],
+    queryFn: async () => {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { data, error } = await supabase
+        .from('market_prices')
+        .select('*')
+        .eq('symbol', currentSymbol.symbol)
+        .eq('market', currentSymbol.market)
+        .gte('recorded_at', thirtyDaysAgo.toISOString())
+        .order('recorded_at', { ascending: true });
+      
+      if (error) throw error;
+      
+      return data?.map(item => ({
+        time: new Date(item.recorded_at).toLocaleDateString('th-TH', {
+          day: '2-digit',
+          month: 'short'
+        }),
+        price: item.price,
+        high: item.high_price,
+        low: item.low_price
+      })) || [];
+    },
+    refetchInterval: 5000 // Refresh every 5 seconds
+  });
+
+  // Get latest price for other tabs
+  const {
+    data: realtimePrice
   } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
-    refetchInterval: 15000 // Refresh every 15 seconds for realtime feel
+    refetchInterval: 5000
   });
 
-  // Update realtime history when new data arrives (keep 1 hour of data)
+  // Update realtime history from fetched data
   useEffect(() => {
-    if (realtimePrice) {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('th-TH', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      setRealtimeHistory(prev => {
-        const newHistory = [...prev, {
-          time: timeString,
-          price: realtimePrice.price,
-          high: realtimePrice.high_price,
-          low: realtimePrice.low_price
-        }];
-        // Keep only last 240 data points (1 hour with 15-second intervals)
-        return newHistory.slice(-240);
-      });
+    if (realtimeData) {
+      setRealtimeHistory(realtimeData);
     }
-  }, [realtimePrice]);
+  }, [realtimeData]);
 
   // Continuous animation: slightly fluctuate the data every 5 seconds
   useEffect(() => {
