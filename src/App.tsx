@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 const queryClient = new QueryClient();
 
 const Navigation = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, profile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -63,7 +63,7 @@ const Navigation = () => {
               <>
                 <Button variant="ghost" size="sm" className="gap-2">
                   <User className="h-4 w-4" />
-                  {user.email}
+                  {profile?.full_name || user.email}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
