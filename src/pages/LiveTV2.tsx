@@ -9,6 +9,7 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Ca
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import TwoBlockCharts from "@/components/TwoBlockCharts";
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 // Fetch latest price from market_prices table
 const fetchRealtimePrice = async (symbol: string, market: string) => {
@@ -356,6 +357,9 @@ const LiveTV2 = () => {
     setIsPlaying(!isPlaying);
   };
   return <div className="h-screen w-screen bg-background overflow-hidden">
+      <div className="absolute top-4 right-4 z-10">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full h-full">
         <TwoBlockCharts />
       </div>
