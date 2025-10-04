@@ -1,10 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
-import { memoize } from "@/lib/performance";
 
 // Fetch latest price from market_prices table
 const fetchRealtimePrice = async (symbol: string, market: string) => {
@@ -70,7 +69,7 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch 12 hours of historical data for realtime chart
+  // Fetch 12 hours of historical data for realtime chart (refresh every 5 seconds)
   const {
     data: realtimeData,
     isLoading: realtimeLoading
@@ -100,8 +99,7 @@ const ChartBlock = ({
         low: item.low_price
       })) || [];
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
-    staleTime: 15000
+    refetchInterval: 5000 // Refresh every 5 seconds
   });
 
   // Get latest price for other tabs
@@ -110,8 +108,7 @@ const ChartBlock = ({
   } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
-    refetchInterval: 30000,
-    staleTime: 15000
+    refetchInterval: 5000
   });
 
   // Update realtime history from fetched data
@@ -121,153 +118,138 @@ const ChartBlock = ({
     }
   }, [realtimeData]);
 
-  // Fetch monthly data (last 30 days) from database
+  // Continuous animation: slightly fluctuate the data every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChartData(prev => {
+        if (!prev || prev.length === 0) return prev;
+        return prev.map(point => ({
+          ...point,
+          price: point.price * (1 + (Math.random() - 0.5) * 0.0005),
+          // ±0.05% fluctuation (more subtle)
+          high: point.high * (1 + (Math.random() - 0.5) * 0.0005),
+          low: point.low * (1 + (Math.random() - 0.5) * 0.0005)
+        }));
+      });
+    }, 5000); // Every 5 seconds instead of 2
+    return () => clearInterval(interval);
+  }, []);
+
+  // Generate data for specific dates (15 and 30 of months)
   const {
     data: monthlyData,
     isLoading: monthlyLoading
   } = useQuery({
-    queryKey: ['monthly-chart', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['monthly-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
-      const { data, error } = await supabase
-        .from('market_prices')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .gte('recorded_at', thirtyDaysAgo.toISOString())
-        .order('recorded_at', { ascending: true });
+      if (!realtimePrice) return [];
+      const basePrice = realtimePrice.price;
+      const data = [];
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
 
-      if (error) throw error;
-      
-      // Group by day
-      const dailyGroups: { [key: string]: any[] } = {};
-      data?.forEach(item => {
-        const dayKey = new Date(item.recorded_at).toLocaleDateString('th-TH', {
-          day: '2-digit',
-          month: 'short'
+      // วันที่ 15 เดือนก่อนหน้า
+      const date15PrevMonth = new Date(currentYear, currentMonth - 1, 15);
+      // วันที่ 30 เดือนปัจจุบัน (หรือเดือนก่อนถ้ายังไม่ถึง)
+      const date30Current = now.getDate() >= 30 ? new Date(currentYear, currentMonth, 30) : new Date(currentYear, currentMonth - 1, 30);
+      // วันที่ 15 เดือนถัดไป
+      const date15NextMonth = new Date(currentYear, currentMonth + 1, 15);
+      const targetDates = [{
+        date: date15PrevMonth,
+        label: "15 เดือนก่อน"
+      }, {
+        date: date30Current,
+        label: "30 ปัจจุบัน"
+      }, {
+        date: date15NextMonth,
+        label: "15 เดือนหน้า"
+      }];
+      targetDates.forEach(({
+        date,
+        label
+      }) => {
+        const variation = (Math.random() - 0.5) * basePrice * 0.03; // ±3% variation
+        const dayPrice = basePrice + variation;
+        data.push({
+          time: date.toLocaleDateString('th-TH', {
+            day: '2-digit',
+            month: 'short',
+            year: '2-digit'
+          }),
+          price: Number(dayPrice.toFixed(4)),
+          high: Number((dayPrice * 1.01).toFixed(4)),
+          low: Number((dayPrice * 0.99).toFixed(4))
         });
-        if (!dailyGroups[dayKey]) {
-          dailyGroups[dayKey] = [];
-        }
-        dailyGroups[dayKey].push(item);
       });
-
-      return Object.keys(dailyGroups).map(dayKey => {
-        const items = dailyGroups[dayKey];
-        const avgPrice = items.reduce((sum, item) => sum + Number(item.price), 0) / items.length;
-        const maxHigh = Math.max(...items.map(item => Number(item.high_price || item.price)));
-        const minLow = Math.min(...items.map(item => Number(item.low_price || item.price)));
-        
-        return {
-          time: dayKey,
-          price: Number(avgPrice.toFixed(4)),
-          high: Number(maxHigh.toFixed(4)),
-          low: Number(minLow.toFixed(4)),
-        };
-      });
+      return data;
     },
-    refetchInterval: 120000,
-    staleTime: 60000
+    enabled: !!realtimePrice,
+    refetchInterval: 60000
   });
 
-  // Fetch yearly data (last 12 months) from database
+  // Generate mock yearly data based on real-time price
   const {
     data: yearlyData,
     isLoading: yearlyLoading
   } = useQuery({
-    queryKey: ['yearly-chart', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['yearly-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
-      const twelveMonthsAgo = new Date();
-      twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
-      
-      const { data, error } = await supabase
-        .from('market_prices')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .gte('recorded_at', twelveMonthsAgo.toISOString())
-        .order('recorded_at', { ascending: true });
+      if (!realtimePrice) return [];
+      const basePrice = realtimePrice.price;
+      const data = [];
+      const now = new Date();
 
-      if (error) throw error;
-      
-      // Group by month
-      const monthlyGroups: { [key: string]: any[] } = {};
-      data?.forEach(item => {
-        const monthKey = new Date(item.recorded_at).toLocaleDateString('th-TH', {
-          year: 'numeric',
-          month: '2-digit'
+      // Generate 12 months of mock data
+      for (let i = 11; i >= 0; i--) {
+        const date = new Date(now);
+        date.setMonth(date.getMonth() - i);
+        const variation = (Math.random() - 0.5) * basePrice * 0.05; // ±5% variation
+        const monthPrice = basePrice + variation;
+        data.push({
+          time: date.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: '2-digit'
+          }),
+          price: Number(monthPrice.toFixed(4)),
+          high: Number((monthPrice * 1.02).toFixed(4)),
+          low: Number((monthPrice * 0.98).toFixed(4))
         });
-        if (!monthlyGroups[monthKey]) {
-          monthlyGroups[monthKey] = [];
-        }
-        monthlyGroups[monthKey].push(item);
-      });
-
-      return Object.keys(monthlyGroups).map(monthKey => {
-        const items = monthlyGroups[monthKey];
-        const avgPrice = items.reduce((sum, item) => sum + Number(item.price), 0) / items.length;
-        const maxHigh = Math.max(...items.map(item => Number(item.high_price || item.price)));
-        const minLow = Math.min(...items.map(item => Number(item.low_price || item.price)));
-        
-        return {
-          time: monthKey,
-          price: Number(avgPrice.toFixed(4)),
-          high: Number(maxHigh.toFixed(4)),
-          low: Number(minLow.toFixed(4)),
-        };
-      });
+      }
+      return data;
     },
-    refetchInterval: 300000,
-    staleTime: 120000
+    enabled: !!realtimePrice,
+    refetchInterval: 60000
   });
 
-  // Fetch trend data (2019-2025) from database
+  // Generate mock trend data based on real-time price
   const {
     data: trendData,
     isLoading: trendLoading
   } = useQuery({
-    queryKey: ['trend-chart', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['trend-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
-      const startDate = new Date('2019-01-01');
-      
-      const { data, error } = await supabase
-        .from('market_prices')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .gte('recorded_at', startDate.toISOString())
-        .order('recorded_at', { ascending: true });
+      if (!realtimePrice) return [];
+      const basePrice = realtimePrice.price;
+      const data = [];
+      const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
 
-      if (error) throw error;
-      
-      // Group by year
-      const yearlyGroups: { [key: string]: any[] } = {};
-      data?.forEach(item => {
-        const year = new Date(item.recorded_at).getFullYear().toString();
-        if (!yearlyGroups[year]) {
-          yearlyGroups[year] = [];
-        }
-        yearlyGroups[year].push(item);
-      });
-
-      return Object.keys(yearlyGroups).sort().map(year => {
-        const items = yearlyGroups[year];
-        const avgPrice = items.reduce((sum, item) => sum + Number(item.price), 0) / items.length;
-        const maxHigh = Math.max(...items.map(item => Number(item.high_price || item.price)));
-        const minLow = Math.min(...items.map(item => Number(item.low_price || item.price)));
-        
-        return {
+      // Generate yearly trend data
+      years.forEach((year, index) => {
+        const trend = (index - 3) * 0.02; // Create a trend pattern
+        const variation = (Math.random() - 0.5) * 0.1;
+        const yearPrice = basePrice * (1 + trend + variation);
+        data.push({
           time: year,
-          price: Number(avgPrice.toFixed(4)),
-          high: Number(maxHigh.toFixed(4)),
-          low: Number(minLow.toFixed(4)),
-        };
+          price: Number(yearPrice.toFixed(4)),
+          high: Number((yearPrice * 1.03).toFixed(4)),
+          low: Number((yearPrice * 0.97).toFixed(4))
+        });
       });
+      return data;
     },
-    refetchInterval: 600000,
-    staleTime: 300000
+    enabled: !!realtimePrice,
+    refetchInterval: 60000
   });
   const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
   useEffect(() => {
@@ -345,9 +327,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคา" isAnimationActive={false} fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={false} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={false} />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -375,9 +357,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคา" isAnimationActive={false} fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={false} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={false} />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -405,9 +387,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={false} fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={false} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={false} />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -435,9 +417,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={false} fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={false} />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={false} />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
