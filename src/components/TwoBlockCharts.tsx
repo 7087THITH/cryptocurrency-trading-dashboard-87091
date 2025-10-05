@@ -107,7 +107,7 @@ const ChartBlock = ({
           high: Number(realtimePrice.high_price) || Number(realtimePrice.price) || 0,
           low: Number(realtimePrice.low_price) || Number(realtimePrice.price) || 0
         }];
-        return newHistory.slice(-240);
+        return newHistory.slice(-30); // Limit to last 30 points for better performance
       });
     }
   }, [realtimePrice]);
@@ -314,9 +314,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={true} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={true} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -344,7 +344,7 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
               <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
               <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
@@ -374,9 +374,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={true} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={true} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -404,9 +404,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={true} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={true} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
