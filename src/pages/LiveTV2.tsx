@@ -356,7 +356,7 @@ const LiveTV2 = () => {
     setIsPlaying(!isPlaying);
   };
   return <div className="h-screen w-screen bg-background overflow-hidden">
-      <div className="w-full h-full relative p-6">
+      <div className="w-full h-full">
         <TwoBlockCharts />
       </div>
     </div>;
