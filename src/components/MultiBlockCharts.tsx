@@ -94,9 +94,9 @@ const ChartBlock = ({
           hour: '2-digit',
           minute: '2-digit'
         }),
-        price: Number(item.price),
-        high: item.high_price != null ? Number(item.high_price) : Number(item.price),
-        low: item.low_price != null ? Number(item.low_price) : Number(item.price)
+        price: item.price,
+        high: item.high_price,
+        low: item.low_price
       })) || [];
     },
     refetchInterval: 5000 // Refresh every 5 seconds
@@ -251,6 +251,7 @@ const ChartBlock = ({
     enabled: !!realtimePrice,
     refetchInterval: 60000
   });
+  const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
   useEffect(() => {
     if (selectedTab === 'realtime' && realtimeHistory) {
       setChartData(realtimeHistory);
@@ -262,31 +263,29 @@ const ChartBlock = ({
       setChartData(trendData);
     }
   }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
-
-  // Check if current tab data is loading
-  const isCurrentTabLoading = 
-    (selectedTab === 'realtime' && realtimeLoading) ||
-    (selectedTab === 'monthly' && monthlyLoading) ||
-    (selectedTab === 'yearly' && yearlyLoading) ||
-    (selectedTab === 'trend' && trendLoading);
-
-  const hasNoData = !chartData || chartData.length === 0;
-  const latestData = chartData && chartData.length > 0 ? chartData[chartData.length - 1] : null;
-  
+  if (isLoading) {
+    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+        <h2 className="text-xl font-semibold mb-4">{title}</h2>
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          กำลังโหลด...
+        </div>
+      </div>;
+  }
+  if (!chartData || chartData.length === 0) {
+    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+        <h2 className="mb-4 text-base text-right font-semibold">{title}</h2>
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          ไม่มีข้อมูล
+        </div>
+      </div>;
+  }
+  const latestData = chartData[chartData.length - 1];
   return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         <div className="text-right">
-          {latestData ? (
-            <>
-              <div className="text-xl font-bold text-primary rounded-3xl">{latestData?.price?.toFixed(4)}</div>
-              <div className="text-xs text-muted-foreground">{latestData?.time}</div>
-            </>
-          ) : (
-            <div className="text-xs text-muted-foreground">
-              {isCurrentTabLoading ? 'กำลังโหลด...' : 'ไม่มีข้อมูล'}
-            </div>
-          )}
+          <div className="text-xl font-bold text-primary rounded-3xl">{latestData?.price?.toFixed(4)}</div>
+          <div className="text-xs text-muted-foreground">{latestData?.time}</div>
         </div>
       </div>
       
@@ -306,11 +305,6 @@ const ChartBlock = ({
         </TabsList>
 
         <TabsContent value="realtime" className="flex-1 mt-0 bg-transparent">
-          {isCurrentTabLoading || hasNoData ? (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground h-full">
-              {isCurrentTabLoading ? 'กำลังโหลดข้อมูล...' : 'ไม่มีข้อมูล'}
-            </div>
-          ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} style={{
             background: 'transparent'
@@ -333,20 +327,14 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
-          )}
         </TabsContent>
 
         <TabsContent value="monthly" className="flex-1 mt-0 bg-transparent">
-          {isCurrentTabLoading || hasNoData ? (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground h-full">
-              {isCurrentTabLoading ? 'กำลังโหลดข้อมูล...' : 'ไม่มีข้อมูล'}
-            </div>
-          ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} style={{
             background: 'transparent'
@@ -374,15 +362,9 @@ const ChartBlock = ({
               <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
-          )}
         </TabsContent>
 
         <TabsContent value="yearly" className="flex-1 mt-0 bg-transparent">
-          {isCurrentTabLoading || hasNoData ? (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground h-full">
-              {isCurrentTabLoading ? 'กำลังโหลดข้อมูล...' : 'ไม่มีข้อมูล'}
-            </div>
-          ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} style={{
             background: 'transparent'
@@ -410,15 +392,9 @@ const ChartBlock = ({
               <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
-          )}
         </TabsContent>
 
         <TabsContent value="trend" className="flex-1 mt-0 bg-transparent">
-          {isCurrentTabLoading || hasNoData ? (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground h-full">
-              {isCurrentTabLoading ? 'กำลังโหลดข้อมูล...' : 'ไม่มีข้อมูล'}
-            </div>
-          ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} style={{
             background: 'transparent'
@@ -446,7 +422,6 @@ const ChartBlock = ({
               <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
-          )}
         </TabsContent>
       </Tabs>
     </div>;
