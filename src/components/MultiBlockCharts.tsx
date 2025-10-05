@@ -69,35 +69,36 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch 12 hours of historical data for realtime chart (refresh every 5 seconds)
+  // Fetch last 50 records for realtime chart (refresh every 5 seconds)
   const {
     data: realtimeData,
     isLoading: realtimeLoading
   } = useQuery({
-    queryKey: ['realtime-12h', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['realtime-latest', currentSymbol.symbol, currentSymbol.market],
     queryFn: async () => {
-      const twelveHoursAgo = new Date();
-      twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
-      
       const { data, error } = await supabase
         .from('market_prices')
         .select('*')
         .eq('symbol', currentSymbol.symbol)
         .eq('market', currentSymbol.market)
-        .gte('recorded_at', twelveHoursAgo.toISOString())
-        .order('recorded_at', { ascending: true });
+        .order('recorded_at', { ascending: false })
+        .limit(50);
       
       if (error) throw error;
       
-      return data?.map(item => ({
+      // Reverse to show oldest first, then take last 30 points
+      const reversed = data?.reverse() || [];
+      const last30 = reversed.slice(-30);
+      
+      return last30.map(item => ({
         time: new Date(item.recorded_at).toLocaleTimeString('th-TH', {
           hour: '2-digit',
           minute: '2-digit'
         }),
-        price: item.price,
-        high: item.high_price,
-        low: item.low_price
-      })) || [];
+        price: Number(item.price),
+        high: Number(item.high_price || item.price),
+        low: Number(item.low_price || item.price)
+      }));
     },
     refetchInterval: 5000 // Refresh every 5 seconds
   });
