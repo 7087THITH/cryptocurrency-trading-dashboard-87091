@@ -104,12 +104,28 @@ const ChartBlock = ({
 
   // Get latest price for other tabs
   const {
-    data: realtimePrice
+    data: realtimePrice,
+    isLoading: latestPriceLoading,
+    error: latestPriceError
   } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
     refetchInterval: 5000
   });
+
+  // Debug logging
+  useEffect(() => {
+    console.log('MultiBlockCharts Debug:', {
+      title,
+      currentSymbol,
+      realtimeLoading,
+      realtimeDataLength: realtimeData?.length,
+      latestPriceLoading,
+      realtimePrice,
+      latestPriceError,
+      selectedTab
+    });
+  }, [title, currentSymbol, realtimeLoading, realtimeData, latestPriceLoading, realtimePrice, latestPriceError, selectedTab]);
 
   // Update realtime history from fetched data
   useEffect(() => {
@@ -251,7 +267,7 @@ const ChartBlock = ({
     enabled: !!realtimePrice,
     refetchInterval: 60000
   });
-  const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
+  const isLoading = realtimeLoading;
   useEffect(() => {
     if (selectedTab === 'realtime' && realtimeHistory) {
       setChartData(realtimeHistory);
