@@ -94,9 +94,9 @@ const ChartBlock = ({
           hour: '2-digit',
           minute: '2-digit'
         }),
-        price: item.price,
-        high: item.high_price,
-        low: item.low_price
+        price: Number(item.price),
+        high: item.high_price != null ? Number(item.high_price) : Number(item.price),
+        low: item.low_price != null ? Number(item.low_price) : Number(item.price)
       })) || [];
     },
     refetchInterval: 5000 // Refresh every 5 seconds
