@@ -251,7 +251,7 @@ const ChartBlock = ({
     }
   }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
   if (isLoading) {
-    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col mx-0 px-[24px] my-0">
+    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col px-[24px] py-[24px] my-[11px] mx-[11px]">
         <h2 className="text-xl font-semibold mb-4">{title}</h2>
         <div className="flex-1 flex items-center justify-center text-muted-foreground">
           กำลังโหลด...
