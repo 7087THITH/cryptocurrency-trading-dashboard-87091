@@ -283,7 +283,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dataKey="price" 
                 stroke="hsl(var(--primary))" 
                 strokeWidth={2}
-                dot={true}
+                dot={false}
                 name="ราคาเฉลี่ย"
                 isAnimationActive={true}
               />
@@ -292,7 +292,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dataKey="high" 
                 stroke="hsl(var(--success))" 
                 strokeWidth={1}
-                dot={true}
+                dot={false}
                 name="สูงสุด"
                 strokeDasharray="5 5"
                 isAnimationActive={true}
@@ -302,7 +302,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dataKey="low" 
                 stroke="hsl(var(--destructive))" 
                 strokeWidth={1}
-                dot={true}
+                dot={false}
                 name="ต่ำสุด"
                 strokeDasharray="5 5"
                 isAnimationActive={true}
@@ -339,7 +339,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dataKey="price" 
                 stroke="hsl(var(--primary))" 
                 strokeWidth={3}
-                dot={true}
+                dot={false}
                 name="ราคาเฉลี่ย"
                 isAnimationActive={true}
               />
@@ -348,7 +348,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dataKey="high" 
                 stroke="hsl(var(--success))" 
                 strokeWidth={2}
-                dot={true}
+                dot={false}
                 name="สูงสุด"
                 strokeDasharray="5 5"
                 isAnimationActive={true}
@@ -358,7 +358,7 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 dataKey="low" 
                 stroke="hsl(var(--destructive))" 
                 strokeWidth={2}
-                dot={true}
+                dot={false}
                 name="ต่ำสุด"
                 strokeDasharray="5 5"
                 isAnimationActive={true}

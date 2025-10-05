@@ -69,47 +69,64 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch 12 hours of historical data for realtime chart (refresh every 5 seconds)
+  // Fetch last 50 records for realtime chart (refresh every 5 seconds)
   const {
     data: realtimeData,
     isLoading: realtimeLoading
   } = useQuery({
-    queryKey: ['realtime-12h', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['realtime-latest', currentSymbol.symbol, currentSymbol.market],
     queryFn: async () => {
-      const twelveHoursAgo = new Date();
-      twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
-      
       const { data, error } = await supabase
         .from('market_prices')
         .select('*')
         .eq('symbol', currentSymbol.symbol)
         .eq('market', currentSymbol.market)
-        .gte('recorded_at', twelveHoursAgo.toISOString())
-        .order('recorded_at', { ascending: true });
+        .order('recorded_at', { ascending: false })
+        .limit(50);
       
       if (error) throw error;
       
-      return data?.map(item => ({
+      // Reverse to show oldest first, then take last 30 points
+      const reversed = data?.reverse() || [];
+      const last30 = reversed.slice(-30);
+      
+      return last30.map(item => ({
         time: new Date(item.recorded_at).toLocaleTimeString('th-TH', {
           hour: '2-digit',
           minute: '2-digit'
         }),
-        price: item.price,
-        high: item.high_price,
-        low: item.low_price
-      })) || [];
+        price: Number(item.price),
+        high: Number(item.high_price || item.price),
+        low: Number(item.low_price || item.price)
+      }));
     },
     refetchInterval: 5000 // Refresh every 5 seconds
   });
 
   // Get latest price for other tabs
   const {
-    data: realtimePrice
+    data: realtimePrice,
+    isLoading: latestPriceLoading,
+    error: latestPriceError
   } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
     refetchInterval: 5000
   });
+
+  // Debug logging
+  useEffect(() => {
+    console.log('MultiBlockCharts Debug:', {
+      title,
+      currentSymbol,
+      realtimeLoading,
+      realtimeDataLength: realtimeData?.length,
+      latestPriceLoading,
+      realtimePrice,
+      latestPriceError,
+      selectedTab
+    });
+  }, [title, currentSymbol, realtimeLoading, realtimeData, latestPriceLoading, realtimePrice, latestPriceError, selectedTab]);
 
   // Update realtime history from fetched data
   useEffect(() => {
@@ -251,7 +268,7 @@ const ChartBlock = ({
     enabled: !!realtimePrice,
     refetchInterval: 60000
   });
-  const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
+  const isLoading = realtimeLoading;
   useEffect(() => {
     if (selectedTab === 'realtime' && realtimeHistory) {
       setChartData(realtimeHistory);
@@ -357,7 +374,7 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
               <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
               <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
@@ -387,9 +404,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -417,9 +434,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>

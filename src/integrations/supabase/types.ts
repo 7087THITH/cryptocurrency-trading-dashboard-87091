@@ -53,6 +53,60 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_market_summary: {
+        Row: {
+          avg_price: number
+          close_price: number
+          created_at: string
+          data_points: number | null
+          high_price: number
+          id: string
+          low_price: number
+          market: string
+          open_price: number
+          percent_change: number | null
+          price_change: number | null
+          symbol: string
+          total_volume: number | null
+          trade_date: string
+          updated_at: string
+        }
+        Insert: {
+          avg_price: number
+          close_price: number
+          created_at?: string
+          data_points?: number | null
+          high_price: number
+          id?: string
+          low_price: number
+          market: string
+          open_price: number
+          percent_change?: number | null
+          price_change?: number | null
+          symbol: string
+          total_volume?: number | null
+          trade_date: string
+          updated_at?: string
+        }
+        Update: {
+          avg_price?: number
+          close_price?: number
+          created_at?: string
+          data_points?: number | null
+          high_price?: number
+          id?: string
+          low_price?: number
+          market?: string
+          open_price?: number
+          percent_change?: number | null
+          price_change?: number | null
+          symbol?: string
+          total_volume?: number | null
+          trade_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       historical_exchange_rates: {
         Row: {
           created_at: string | null

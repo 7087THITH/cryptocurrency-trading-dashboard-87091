@@ -68,36 +68,70 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch real-time price every 15 seconds
+  // Fetch last 50 records for realtime chart
   const {
-    data: realtimePrice,
-    isLoading: realtimeLoading
+    data: realtimeData,
+    isLoading: realtimeLoading,
+    error: realtimeError
+  } = useQuery({
+    queryKey: ['realtime-latest', currentSymbol.symbol, currentSymbol.market],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('market_prices')
+        .select('*')
+        .eq('symbol', currentSymbol.symbol)
+        .eq('market', currentSymbol.market)
+        .order('recorded_at', { ascending: false })
+        .limit(50);
+      
+      if (error) throw error;
+      
+      // Reverse to show oldest first, then take last 30 points
+      const reversed = data?.reverse() || [];
+      const last30 = reversed.slice(-30);
+      
+      return last30.map(item => ({
+        time: new Date(item.recorded_at).toLocaleTimeString('th-TH', {
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        price: Number(item.price),
+        high: Number(item.high_price || item.price),
+        low: Number(item.low_price || item.price)
+      }));
+    },
+    refetchInterval: 5000
+  });
+
+  // Get latest price for other tabs
+  const {
+    data: realtimePrice
   } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
-    refetchInterval: 15000
+    refetchInterval: 5000,
+    enabled: !!realtimeData && realtimeData.length > 0
   });
 
-  // Update realtime history when new data arrives
+  // Debug logging
   useEffect(() => {
-    if (realtimePrice) {
-      const now = new Date();
-      const timeString = now.toLocaleTimeString('th-TH', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      setRealtimeHistory(prev => {
-        const newHistory = [...prev, {
-          time: timeString,
-          price: realtimePrice.price,
-          high: realtimePrice.high_price,
-          low: realtimePrice.low_price
-        }];
-        return newHistory.slice(-240);
-      });
+    console.log('TwoBlockCharts Debug:', {
+      title,
+      currentSymbol,
+      realtimeLoading,
+      realtimeDataLength: realtimeData?.length,
+      realtimePrice,
+      realtimeError,
+      selectedTab
+    });
+  }, [title, currentSymbol, realtimeLoading, realtimeData, realtimePrice, realtimeError, selectedTab]);
+
+  // Update realtime history from fetched data
+  useEffect(() => {
+    if (realtimeData) {
+      setRealtimeHistory(realtimeData);
     }
-  }, [realtimePrice]);
+  }, [realtimeData]);
 
   // Continuous animation
   useEffect(() => {
@@ -128,7 +162,6 @@ const ChartBlock = ({
       const now = new Date();
       const currentMonth = now.getMonth();
       const currentYear = now.getFullYear();
-
       const date15PrevMonth = new Date(currentYear, currentMonth - 1, 15);
       const date30Current = now.getDate() >= 30 ? new Date(currentYear, currentMonth, 30) : new Date(currentYear, currentMonth - 1, 30);
       const date15NextMonth = new Date(currentYear, currentMonth + 1, 15);
@@ -176,7 +209,6 @@ const ChartBlock = ({
       const basePrice = realtimePrice.price;
       const data = [];
       const now = new Date();
-
       for (let i = 11; i >= 0; i--) {
         const date = new Date(now);
         date.setMonth(date.getMonth() - i);
@@ -209,7 +241,6 @@ const ChartBlock = ({
       const basePrice = realtimePrice.price;
       const data = [];
       const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
-
       years.forEach((year, index) => {
         const trend = (index - 3) * 0.02;
         const variation = (Math.random() - 0.5) * 0.1;
@@ -226,7 +257,9 @@ const ChartBlock = ({
     enabled: !!realtimePrice,
     refetchInterval: 60000
   });
-  const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
+  // Only show loading if we're actually fetching realtime data
+  // Other queries depend on realtime data, so they'll be enabled once it's loaded
+  const isLoading = realtimeLoading;
   useEffect(() => {
     if (selectedTab === 'realtime' && realtimeHistory) {
       setChartData(realtimeHistory);
@@ -239,7 +272,7 @@ const ChartBlock = ({
     }
   }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
   if (isLoading) {
-    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+    return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col px-[24px] py-[24px] my-[11px] mx-[11px]">
         <h2 className="text-xl font-semibold mb-4">{title}</h2>
         <div className="flex-1 flex items-center justify-center text-muted-foreground">
           กำลังโหลด...
@@ -255,7 +288,7 @@ const ChartBlock = ({
       </div>;
   }
   const latestData = chartData[chartData.length - 1];
-  return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
+  return <div className="glass-card p-4 rounded-lg h-screen animate-fade-in flex flex-col overflow-hidden">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         <div className="text-right">
@@ -302,9 +335,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -332,9 +365,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={false} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={false} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคา" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -362,9 +395,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -392,9 +425,9 @@ const ChartBlock = ({
               <Legend wrapperStyle={{
               fontSize: '10px'
             }} />
-              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={true} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
-              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={2} dot={true} name="สูงสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
-              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={2} dot={true} name="ต่ำสุด" strokeDasharray="5 5" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="price" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} name="ราคาเฉลี่ย" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" fill="url(#colorPrice)" />
+              <Line type="monotone" dataKey="high" stroke="hsl(var(--success))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="สูงสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
+              <Line type="monotone" dataKey="low" stroke="hsl(var(--destructive))" strokeWidth={1} strokeOpacity={0.5} dot={false} name="ต่ำสุด" isAnimationActive={true} animationDuration={3000} animationEasing="ease-in-out" />
             </LineChart>
           </ResponsiveContainer>
         </TabsContent>
@@ -436,11 +469,11 @@ const TwoBlockCharts = () => {
     market: "LME",
     symbol: "AL"
   }];
-  return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in mb-8">
-      <div className="min-h-[calc(100vh-8rem)]">
+  return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in h-screen overflow-hidden mx-0 px-0">
+      <div className="h-full overflow-hidden">
         <ChartBlock title="THB currency pair" symbols={block1Symbols} />
       </div>
-      <div className="min-h-[calc(100vh-8rem)]">
+      <div className="h-full overflow-hidden">
         <ChartBlock title="Copper & Aluminium" symbols={block2Symbols} />
       </div>
     </div>;
