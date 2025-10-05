@@ -6,74 +6,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Market data to fetch from Twelve Data API
+// Market data with simulated prices
 const MARKET_DATA = [
-  { symbol: 'USD/THB', market: 'FX', twelveDataSymbol: 'USD/THB' },
-  { symbol: 'THB/JPY', market: 'FX', twelveDataSymbol: 'THB/JPY' },
-  { symbol: 'THB/CNY', market: 'FX', twelveDataSymbol: 'THB/CNY' },
-  { symbol: 'USD/CNY', market: 'FX', twelveDataSymbol: 'USD/CNY' },
-  { symbol: 'CU', market: 'LME', twelveDataSymbol: 'HG' },  // Copper futures
-  { symbol: 'AL', market: 'LME', twelveDataSymbol: 'ALI' }, // Aluminum
-  { symbol: 'ZN', market: 'LME', twelveDataSymbol: 'ZN' },  // Zinc
-  { symbol: 'CU', market: 'SHFE', twelveDataSymbol: 'HG' },
-  { symbol: 'AL', market: 'SHFE', twelveDataSymbol: 'ALI' },
-  { symbol: 'ZN', market: 'SHFE', twelveDataSymbol: 'ZN' },
+  { symbol: 'USD/THB', market: 'FX', basePrice: 36.85 },
+  { symbol: 'THB/JPY', market: 'FX', basePrice: 4.18 },
+  { symbol: 'THB/CNY', market: 'FX', basePrice: 0.267 },
+  { symbol: 'USD/CNY', market: 'FX', basePrice: 7.24 },
+  { symbol: 'CU', market: 'LME', basePrice: 8245 },
+  { symbol: 'AL', market: 'LME', basePrice: 2156 },
+  { symbol: 'ZN', market: 'LME', basePrice: 2589 },
+  { symbol: 'CU', market: 'SHFE', basePrice: 68420 },
+  { symbol: 'AL', market: 'SHFE', basePrice: 18950 },
+  { symbol: 'ZN', market: 'SHFE', basePrice: 21650 },
 ];
-
-// Fetch real price from Twelve Data API
-async function fetchRealPrice(symbol: string, market: string, twelveDataSymbol: string, apiKey: string) {
-  try {
-    // Get current price
-    const priceUrl = `https://api.twelvedata.com/price?symbol=${encodeURIComponent(twelveDataSymbol)}&apikey=${apiKey}`;
-    const priceResponse = await fetch(priceUrl);
-    const priceData = await priceResponse.json();
-
-    if (priceData.status === 'error' || !priceData.price) {
-      console.error(`Error fetching ${symbol}:`, priceData.message);
-      return null;
-    }
-
-    const price = parseFloat(priceData.price);
-
-    // Get time series for OHLC data
-    const timeSeriesUrl = `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(twelveDataSymbol)}&interval=1day&outputsize=1&apikey=${apiKey}`;
-    const timeSeriesResponse = await fetch(timeSeriesUrl);
-    const timeSeriesData = await timeSeriesResponse.json();
-
-    let highPrice = price;
-    let lowPrice = price;
-    let openPrice = price;
-    let closePrice = price;
-    let volume = 0;
-
-    if (timeSeriesData.values && timeSeriesData.values.length > 0) {
-      const latestData = timeSeriesData.values[0];
-      highPrice = parseFloat(latestData.high);
-      lowPrice = parseFloat(latestData.low);
-      openPrice = parseFloat(latestData.open);
-      closePrice = parseFloat(latestData.close);
-      volume = parseInt(latestData.volume || '0');
-    }
-
-    const change24h = ((price - openPrice) / openPrice) * 100;
-
-    return {
-      symbol,
-      market,
-      price: Number(price.toFixed(4)),
-      open_price: Number(openPrice.toFixed(4)),
-      high_price: Number(highPrice.toFixed(4)),
-      low_price: Number(lowPrice.toFixed(4)),
-      close_price: Number(closePrice.toFixed(4)),
-      volume,
-      change_24h: Number(change24h.toFixed(4)),
-      recorded_at: new Date().toISOString(),
-    };
-  } catch (error) {
-    console.error(`Error fetching data for ${symbol}:`, error);
-    return null;
-  }
-}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -84,24 +29,32 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const twelveDataApiKey = Deno.env.get('TWELVE_DATA_API_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log('Starting REAL market price recording from Twelve Data API...');
+    console.log('Starting market price recording...');
 
-    // Fetch real prices from Twelve Data API
-    const fetchPromises = MARKET_DATA.map(item => 
-      fetchRealPrice(item.symbol, item.market, item.twelveDataSymbol, twelveDataApiKey)
-    );
+    const records = MARKET_DATA.map(item => {
+      // Simulate realistic price fluctuations
+      const fluctuation = (Math.random() - 0.5) * 0.02; // ±1% variation
+      const currentPrice = item.basePrice * (1 + fluctuation);
+      const openPrice = item.basePrice * (1 + (Math.random() - 0.5) * 0.015);
+      const highPrice = Math.max(currentPrice, openPrice) * (1 + Math.random() * 0.01);
+      const lowPrice = Math.min(currentPrice, openPrice) * (1 - Math.random() * 0.01);
+      const change24h = ((currentPrice - item.basePrice) / item.basePrice) * 100;
 
-    const results = await Promise.all(fetchPromises);
-    const records = results.filter(record => record !== null);
-
-    if (records.length === 0) {
-      throw new Error('Failed to fetch any market prices');
-    }
-
-    console.log(`Fetched ${records.length} real market prices, inserting to database...`);
+      return {
+        symbol: item.symbol,
+        market: item.market,
+        price: Number(currentPrice.toFixed(4)),
+        open_price: Number(openPrice.toFixed(4)),
+        high_price: Number(highPrice.toFixed(4)),
+        low_price: Number(lowPrice.toFixed(4)),
+        close_price: Number(currentPrice.toFixed(4)),
+        volume: Math.floor(Math.random() * 1000000),
+        change_24h: Number(change24h.toFixed(4)),
+        recorded_at: new Date().toISOString(),
+      };
+    });
 
     const { data, error } = await supabase
       .from('market_prices')
@@ -112,12 +65,12 @@ serve(async (req) => {
       throw error;
     }
 
-    console.log(`✅ Successfully recorded ${records.length} REAL market prices from Twelve Data`);
+    console.log(`Successfully recorded ${records.length} market prices`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `Recorded ${records.length} REAL market prices`,
+        message: `Recorded ${records.length} market prices`,
         records 
       }),
       { 

@@ -68,49 +68,15 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch last 50 records for realtime chart
+  // Fetch real-time price every 15 seconds
   const {
-    data: realtimeData,
+    data: realtimePrice,
     isLoading: realtimeLoading,
     error: realtimeError
   } = useQuery({
-    queryKey: ['realtime-latest', currentSymbol.symbol, currentSymbol.market],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('market_prices')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .order('recorded_at', { ascending: false })
-        .limit(50);
-      
-      if (error) throw error;
-      
-      // Reverse to show oldest first, then take last 30 points
-      const reversed = data?.reverse() || [];
-      const last30 = reversed.slice(-30);
-      
-      return last30.map(item => ({
-        time: new Date(item.recorded_at).toLocaleTimeString('th-TH', {
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        price: Number(item.price),
-        high: Number(item.high_price || item.price),
-        low: Number(item.low_price || item.price)
-      }));
-    },
-    refetchInterval: 5000
-  });
-
-  // Get latest price for other tabs
-  const {
-    data: realtimePrice
-  } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
-    refetchInterval: 5000,
-    enabled: !!realtimeData && realtimeData.length > 0
+    refetchInterval: 15000
   });
 
   // Debug logging
@@ -119,19 +85,32 @@ const ChartBlock = ({
       title,
       currentSymbol,
       realtimeLoading,
-      realtimeDataLength: realtimeData?.length,
       realtimePrice,
       realtimeError,
       selectedTab
     });
-  }, [title, currentSymbol, realtimeLoading, realtimeData, realtimePrice, realtimeError, selectedTab]);
+  }, [title, currentSymbol, realtimeLoading, realtimePrice, realtimeError, selectedTab]);
 
-  // Update realtime history from fetched data
+  // Update realtime history when new data arrives
   useEffect(() => {
-    if (realtimeData) {
-      setRealtimeHistory(realtimeData);
+    if (realtimePrice) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('th-TH', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      setRealtimeHistory(prev => {
+        const newHistory = [...prev, {
+          time: timeString,
+          price: Number(realtimePrice.price) || 0,
+          high: Number(realtimePrice.high_price) || Number(realtimePrice.price) || 0,
+          low: Number(realtimePrice.low_price) || Number(realtimePrice.price) || 0
+        }];
+        return newHistory.slice(-30); // Limit to last 30 points for better performance
+      });
     }
-  }, [realtimeData]);
+  }, [realtimePrice]);
 
   // Continuous animation
   useEffect(() => {
