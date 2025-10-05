@@ -71,12 +71,25 @@ const ChartBlock = ({
   // Fetch real-time price every 15 seconds
   const {
     data: realtimePrice,
-    isLoading: realtimeLoading
+    isLoading: realtimeLoading,
+    error: realtimeError
   } = useQuery({
     queryKey: ['realtime-price', currentSymbol.symbol, currentSymbol.market],
     queryFn: () => fetchRealtimePrice(currentSymbol.symbol, currentSymbol.market),
     refetchInterval: 15000
   });
+
+  // Debug logging
+  useEffect(() => {
+    console.log('TwoBlockCharts Debug:', {
+      title,
+      currentSymbol,
+      realtimeLoading,
+      realtimePrice,
+      realtimeError,
+      selectedTab
+    });
+  }, [title, currentSymbol, realtimeLoading, realtimePrice, realtimeError, selectedTab]);
 
   // Update realtime history when new data arrives
   useEffect(() => {
@@ -223,7 +236,9 @@ const ChartBlock = ({
     enabled: !!realtimePrice,
     refetchInterval: 60000
   });
-  const isLoading = realtimeLoading || monthlyLoading || yearlyLoading || trendLoading;
+  // Only show loading if we're actually fetching realtime data
+  // Other queries depend on realtime data, so they'll be enabled once it's loaded
+  const isLoading = realtimeLoading;
   useEffect(() => {
     if (selectedTab === 'realtime' && realtimeHistory) {
       setChartData(realtimeHistory);
