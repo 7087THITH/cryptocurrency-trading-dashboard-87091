@@ -75,15 +75,15 @@ const ChartBlock = ({
   } = useQuery({
     queryKey: ['realtime-12h', currentSymbol.symbol, currentSymbol.market],
     queryFn: async () => {
-      const twelveHoursAgo = new Date();
-      twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
+      const tenHoursAgo = new Date();
+      tenHoursAgo.setHours(tenHoursAgo.getHours() - 10);
       
       const { data, error } = await supabase
         .from('market_prices')
         .select('*')
         .eq('symbol', currentSymbol.symbol)
         .eq('market', currentSymbol.market)
-        .gte('recorded_at', twelveHoursAgo.toISOString())
+        .gte('recorded_at', tenHoursAgo.toISOString())
         .order('recorded_at', { ascending: true });
       
       if (error) throw error;
