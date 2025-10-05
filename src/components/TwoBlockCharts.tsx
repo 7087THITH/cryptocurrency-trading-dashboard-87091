@@ -90,9 +90,9 @@ const ChartBlock = ({
       setRealtimeHistory(prev => {
         const newHistory = [...prev, {
           time: timeString,
-          price: realtimePrice.price,
-          high: realtimePrice.high_price,
-          low: realtimePrice.low_price
+          price: Number(realtimePrice.price) || 0,
+          high: Number(realtimePrice.high_price) || Number(realtimePrice.price) || 0,
+          low: Number(realtimePrice.low_price) || Number(realtimePrice.price) || 0
         }];
         return newHistory.slice(-240);
       });
@@ -252,7 +252,7 @@ const ChartBlock = ({
       </div>;
   }
   const latestData = chartData[chartData.length - 1];
-  return <div className="glass-card p-4 rounded-lg max-h-[95vh] animate-fade-in flex flex-col overflow-hidden">
+  return <div className="glass-card p-4 rounded-lg h-screen animate-fade-in flex flex-col overflow-hidden">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         <div className="text-right">
@@ -433,7 +433,7 @@ const TwoBlockCharts = () => {
     market: "LME",
     symbol: "AL"
   }];
-  return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in h-full overflow-hidden mx-0 px-0 my-[20px]">
+  return <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in h-screen overflow-hidden mx-0 px-0">
       <div className="h-full overflow-hidden">
         <ChartBlock title="THB currency pair" symbols={block1Symbols} />
       </div>
