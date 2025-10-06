@@ -1,24 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-// Mapping our symbols to Twelve Data symbols
-const SYMBOL_MAPPINGS: Record<string, string> = {
-  // FX pairs
-  'USDTHB-FX': 'USD/THB',
-  'THBJPY-FX': 'THB/JPY',
-  'THBCNY-FX': 'THB/CNY',
-  'USDCNY-FX': 'USD/CNY',
-  // For metals, Twelve Data uses different symbols
-  'CU-SHFE': 'HG',  // Copper futures
-  'AL-SHFE': 'ALI', // Aluminum
-  'ZN-SHFE': 'ZN',  // Zinc futures
-  'CU-LME': 'HG',   // LME Copper
-  'AL-LME': 'ALI',  // LME Aluminum
-  'ZN-LME': 'ZN',   // LME Zinc
 };
 
 serve(async (req) => {
@@ -28,76 +13,47 @@ serve(async (req) => {
 
   try {
     const { symbol, market } = await req.json();
-    const twelveDataApiKey = Deno.env.get('TWELVE_DATA_API_KEY');
     
-    if (!twelveDataApiKey) {
-      throw new Error('TWELVE_DATA_API_KEY is not configured');
-    }
-
     if (!symbol || !market) {
       throw new Error('Symbol and market are required');
     }
 
-    // Create lookup key
-    const lookupKey = `${symbol}-${market}`;
-    const twelveDataSymbol = SYMBOL_MAPPINGS[lookupKey] || symbol;
+    console.log(`Fetching real-time price for ${symbol} (${market}) from database`);
 
-    console.log(`Fetching real-time price for ${symbol} (${market}), mapped to: ${twelveDataSymbol}`);
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Use Twelve Data's price endpoint for real-time data
-    const url = `https://api.twelvedata.com/price?symbol=${encodeURIComponent(twelveDataSymbol)}&apikey=${twelveDataApiKey}`;
-    
-    const response = await fetch(url);
-    const data = await response.json();
+    // Fetch the latest price from database
+    const { data: latestPrice, error } = await supabase
+      .from('market_prices')
+      .select('*')
+      .eq('symbol', symbol)
+      .eq('market', market)
+      .order('recorded_at', { ascending: false })
+      .limit(1)
+      .single();
 
-    if (data.status === 'error') {
-      console.error(`Error from Twelve Data: ${data.message}`);
-      throw new Error(data.message || 'Failed to fetch data from Twelve Data');
+    if (error || !latestPrice) {
+      console.error('Error fetching from database:', error);
+      throw new Error('No price data available in database');
     }
-
-    if (!data.price) {
-      console.error('No price data returned:', data);
-      throw new Error('No price data available');
-    }
-
-    const price = parseFloat(data.price);
-
-    // Get time series data for high/low
-    const timeSeriesUrl = `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(twelveDataSymbol)}&interval=1day&outputsize=1&apikey=${twelveDataApiKey}`;
-    const timeSeriesResponse = await fetch(timeSeriesUrl);
-    const timeSeriesData = await timeSeriesResponse.json();
-
-    let highPrice = price;
-    let lowPrice = price;
-    let openPrice = price;
-    let closePrice = price;
-    let volume = 0;
-
-    if (timeSeriesData.values && timeSeriesData.values.length > 0) {
-      const latestData = timeSeriesData.values[0];
-      highPrice = parseFloat(latestData.high);
-      lowPrice = parseFloat(latestData.low);
-      openPrice = parseFloat(latestData.open);
-      closePrice = parseFloat(latestData.close);
-      volume = parseInt(latestData.volume || '0');
-    }
-
-    const change24h = ((price - openPrice) / openPrice) * 100;
 
     const result = {
-      symbol,
-      market,
-      price: Number(price.toFixed(4)),
-      open_price: Number(openPrice.toFixed(4)),
-      high_price: Number(highPrice.toFixed(4)),
-      low_price: Number(lowPrice.toFixed(4)),
-      close_price: Number(closePrice.toFixed(4)),
-      volume,
-      change_24h: Number(change24h.toFixed(4)),
-      timestamp: new Date().toISOString(),
+      symbol: latestPrice.symbol,
+      market: latestPrice.market,
+      price: Number(latestPrice.price),
+      open_price: Number(latestPrice.open_price || latestPrice.price),
+      high_price: Number(latestPrice.high_price || latestPrice.price),
+      low_price: Number(latestPrice.low_price || latestPrice.price),
+      close_price: Number(latestPrice.close_price || latestPrice.price),
+      volume: latestPrice.volume || 0,
+      change_24h: Number(latestPrice.change_24h || 0),
+      timestamp: latestPrice.recorded_at,
     };
 
-    console.log(`Successfully fetched real-time price for ${symbol}:`, result);
+    console.log(`Successfully fetched real-time price for ${symbol} from database:`, result);
 
     return new Response(
       JSON.stringify(result),
