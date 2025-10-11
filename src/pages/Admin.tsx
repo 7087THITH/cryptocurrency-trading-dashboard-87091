@@ -1,7 +1,8 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Database, Settings, Activity } from "lucide-react";
+import { Users, Database, Settings, Activity, Code } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Admin = () => {
   const { user, loading } = useAuth();
@@ -36,6 +37,24 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">จำนวนผู้ใช้ทั้งหมด: -</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Code className="h-5 w-5" />
+              SQL Editor
+            </CardTitle>
+            <CardDescription>เรียกใช้คำสั่ง SQL (Admin เท่านั้น)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/sql-editor">
+              <Button variant="outline" className="w-full">
+                <Database className="mr-2 h-4 w-4" />
+                เปิด SQL Editor
+              </Button>
+            </Link>
           </CardContent>
         </Card>
 

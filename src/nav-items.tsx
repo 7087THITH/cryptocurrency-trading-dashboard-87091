@@ -3,7 +3,6 @@ import Index from "./pages/Index.tsx";
 import LiveTV from "./pages/LiveTV.tsx";
 import LiveTV2 from "./pages/LiveTV2.tsx";
 import LiveTV3 from "./pages/LiveTV3.tsx";
-import HistoricalData from "./pages/HistoricalData.tsx";
 import BackfillData from "./pages/BackfillData.tsx";
 import Auth from "./pages/Auth.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
@@ -39,16 +38,16 @@ export const navItems = [
     page: <LiveTV3 />,
   },
   {
-    title: "Admin",
-    to: "/admin",
-    icon: <Shield className="h-4 w-4" />,
-    page: <Admin />,
-  },
-  {
     title: "ดึงข้อมูล",
     to: "/backfill-data",
     icon: <Upload className="h-4 w-4" />,
     page: <BackfillData />,
+  },
+  {
+    title: "Admin",
+    to: "/admin",
+    icon: <Shield className="h-4 w-4" />,
+    page: <Admin />,
   },
   {
     title: "SQL Editor",
