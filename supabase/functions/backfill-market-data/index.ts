@@ -181,12 +181,12 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Backfill error:', error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('Backfill error:', error); // Log detailed error server-side only
     return new Response(
       JSON.stringify({
         success: false,
-        error: errorMessage,
+        error: 'Failed to backfill historical data',
+        code: 'BACKFILL_ERROR'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

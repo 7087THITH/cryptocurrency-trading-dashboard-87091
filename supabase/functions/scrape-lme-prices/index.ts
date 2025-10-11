@@ -103,11 +103,12 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error scraping LME prices:', error);
+    console.error('Error scraping LME prices:', error); // Log detailed error server-side only
     return new Response(
       JSON.stringify({
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
+        error: 'Failed to fetch LME prices',
+        code: 'SCRAPE_ERROR'
       }),
       {
         status: 500,
