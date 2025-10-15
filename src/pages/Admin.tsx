@@ -1,14 +1,11 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate, Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Database, Settings, Activity, Code, RefreshCw, TrendingUp } from "lucide-react";
+import { Users, Database, Settings, Activity, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMarketDataSync } from "@/hooks/useMarketDataSync";
-import { Badge } from "@/components/ui/badge";
 
 const Admin = () => {
   const { user, loading } = useAuth();
-  const { hasRecentData, syncMarketData, isSyncing, checkingData } = useMarketDataSync();
 
   if (loading) {
     return (
@@ -30,52 +27,6 @@ const Admin = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Market Data Sync
-            </CardTitle>
-            <CardDescription>ระบบอัพเดทข้อมูลตลาดอัตโนมัติ</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">สถานะข้อมูล:</span>
-              {checkingData ? (
-                <Badge variant="secondary">กำลังตรวจสอบ...</Badge>
-              ) : hasRecentData ? (
-                <Badge variant="default" className="bg-green-500">✓ อัพเดทแล้ว</Badge>
-              ) : (
-                <Badge variant="destructive">ต้องอัพเดท</Badge>
-              )}
-            </div>
-            <Button 
-              onClick={() => syncMarketData()} 
-              disabled={isSyncing}
-              className="w-full gap-2"
-              size="lg"
-            >
-              {isSyncing ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  กำลังซิงค์ข้อมูล...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4" />
-                  🚀 เริ่ม Epic Sync
-                </>
-              )}
-            </Button>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>✅ ดึงข้อมูล Real-time</p>
-              <p>✅ Fallback ข้อมูลเก่าอัตโนมัติ</p>
-              <p>✅ Backfill ข้อมูล 1 ปี</p>
-              <p>✅ คำนวณ Trend เดือน/ปี</p>
-            </div>
-          </CardContent>
-        </Card>
-
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

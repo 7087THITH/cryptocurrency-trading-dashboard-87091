@@ -17,6 +17,3 @@ verify_jwt = false
 
 [functions.send-reset-password-email]
 verify_jwt = false
-
-[functions.sync-market-data]
-verify_jwt = false  # Epic sync function with internal auth checks
