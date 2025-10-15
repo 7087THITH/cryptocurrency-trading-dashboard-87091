@@ -3,9 +3,7 @@ import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useMarketDataSync } from "@/hooks/useMarketDataSync";
+import { Loader2 } from "lucide-react";
 
 // Fetch latest price from market_prices table
 const fetchRealtimePrice = async (symbol: string, market: string) => {
@@ -30,7 +28,6 @@ const ChartBlock = ({
   title,
   symbols
 }: ChartBlockProps) => {
-  const { hasRecentData, syncMarketData, isSyncing, triggerAutoSync } = useMarketDataSync();
   const [selectedSymbol, setSelectedSymbol] = useState(0);
   const [chartData, setChartData] = useState<any[]>([]);
   const [realtimeHistory, setRealtimeHistory] = useState<any[]>([]);
@@ -39,11 +36,6 @@ const ChartBlock = ({
     const saved = localStorage.getItem(`multiBlockChart-tab-${title}`);
     return saved || "realtime";
   });
-
-  // Auto-trigger sync on mount if no recent data
-  useEffect(() => {
-    triggerAutoSync();
-  }, [triggerAutoSync]);
   const handleTabChange = (value: string) => {
     setSelectedTab(value);
     localStorage.setItem(`multiBlockChart-tab-${title}`, value);
@@ -288,66 +280,19 @@ const ChartBlock = ({
       setChartData(trendData);
     }
   }, [selectedTab, monthlyData, yearlyData, trendData, realtimeHistory]);
-  if (isLoading || isSyncing) {
+  if (isLoading) {
     return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">{title}</h2>
-          {isSyncing && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
-        </div>
-        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <div className="text-sm">
-            {isSyncing ? '🚀 กำลังอัพเดทข้อมูลตลาด...' : 'กำลังโหลดข้อมูล...'}
-          </div>
-          {!hasRecentData && !isSyncing && (
-            <Button 
-              onClick={() => syncMarketData()} 
-              size="sm"
-              variant="outline"
-              className="gap-2"
-            >
-              <RefreshCw className="w-3 h-3" />
-              อัพเดทข้อมูล
-            </Button>
-          )}
+        <h2 className="text-xl font-semibold mb-4">{title}</h2>
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          กำลังโหลด...
         </div>
       </div>;
   }
   if (!chartData || chartData.length === 0) {
     return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold">{title}</h2>
-          <Button 
-            onClick={() => syncMarketData()} 
-            disabled={isSyncing}
-            size="sm"
-            variant="outline"
-            className="gap-2"
-          >
-            <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
-            อัพเดท
-          </Button>
-        </div>
-        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground gap-3">
-          <div className="text-sm">ไม่มีข้อมูล - กำลังดึงข้อมูลย้อนหลัง 1 ปี</div>
-          <Button 
-            onClick={() => syncMarketData()} 
-            disabled={isSyncing}
-            size="sm"
-            className="gap-2"
-          >
-            {isSyncing ? (
-              <>
-                <Loader2 className="w-3 h-3 animate-spin" />
-                กำลังดึงข้อมูล...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-3 h-3" />
-                ดึงข้อมูลเดี๋ยวนี้
-              </>
-            )}
-          </Button>
+        <h2 className="mb-4 text-base text-right font-semibold">{title}</h2>
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          ไม่มีข้อมูล
         </div>
       </div>;
   }
@@ -355,21 +300,9 @@ const ChartBlock = ({
   return <div className="glass-card p-6 rounded-lg h-full animate-fade-in flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{title}</h2>
-        <div className="flex items-center gap-3">
-          <Button 
-            onClick={() => syncMarketData()} 
-            disabled={isSyncing}
-            size="sm"
-            variant="ghost"
-            className="gap-1 h-7 px-2"
-          >
-            <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
-            {isSyncing ? 'กำลังอัพเดท...' : ''}
-          </Button>
-          <div className="text-right">
-            <div className="text-xl font-bold text-primary rounded-3xl">{latestData?.price?.toFixed(4)}</div>
-            <div className="text-xs text-muted-foreground">{latestData?.time}</div>
-          </div>
+        <div className="text-right">
+          <div className="text-xl font-bold text-primary rounded-3xl">{latestData?.price?.toFixed(4)}</div>
+          <div className="text-xs text-muted-foreground">{latestData?.time}</div>
         </div>
       </div>
       
