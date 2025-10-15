@@ -1,6 +1,10 @@
 // Shared CORS configuration for all edge functions
+// Security: Environment-based CORS configuration
+const isDevelopment = Deno.env.get('ENVIRONMENT') !== 'production';
+const allowedOrigin = isDevelopment ? '*' : (Deno.env.get('ALLOWED_ORIGIN') || 'https://lovable.app');
+
 export const corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // Update to specific domain in production
+  'Access-Control-Allow-Origin': allowedOrigin,
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
   'Access-Control-Max-Age': '86400',

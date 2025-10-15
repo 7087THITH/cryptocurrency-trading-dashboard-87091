@@ -185,13 +185,22 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error:', error); // Log detailed error server-side only
+    
+    // Return generic error to client for security
+    const isAuthError = error instanceof Error && (
+      error.message.includes('Unauthorized') || 
+      error.message.includes('Forbidden')
+    );
+    
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ 
+        error: isAuthError ? error.message : 'Failed to process data import',
+        code: isAuthError ? 'AUTH_ERROR' : 'INTERNAL_ERROR'
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
+        status: isAuthError ? 403 : 500 
       }
     );
   }
