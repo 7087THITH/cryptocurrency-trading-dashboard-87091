@@ -62,6 +62,29 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email format" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Validate reset link format (must contain valid Supabase reset token)
+    if (!resetLink.includes('type=recovery') || !resetLink.includes('access_token=')) {
+      return new Response(
+        JSON.stringify({ error: "Invalid reset link format" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     const html = buildEmailHtml(resetLink);
 
     const emailResponse = await resend.emails.send({
@@ -81,9 +104,12 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("Error sending password reset email:", error);
+    console.error("Error sending password reset email:", error); // Log detailed error server-side only
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: 'Failed to send password reset email',
+        code: 'EMAIL_ERROR'
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

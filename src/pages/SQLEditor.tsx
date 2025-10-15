@@ -27,8 +27,17 @@ export default function SQLEditor() {
       });
 
       if (queryError) {
-        setError(queryError.message);
-        toast.error("Query failed: " + queryError.message);
+        // Provide user-friendly error messages
+        let errorMsg = queryError.message;
+        if (errorMsg.includes('Admin access required')) {
+          errorMsg = 'คุณต้องมีสิทธิ์ Admin เพื่อใช้งาน SQL Editor';
+        } else if (errorMsg.includes('Authentication required')) {
+          errorMsg = 'กรุณาเข้าสู่ระบบก่อนใช้งาน SQL Editor';
+        } else if (errorMsg.includes('Only SELECT queries')) {
+          errorMsg = 'รองรับเฉพาะคำสั่ง SELECT เท่านั้น';
+        }
+        setError(errorMsg);
+        toast.error(errorMsg);
         return;
       }
 
@@ -45,8 +54,9 @@ export default function SQLEditor() {
         toast.success("Query executed successfully. No rows returned.");
       }
     } catch (err: any) {
-      setError(err.message);
-      toast.error("Error: " + err.message);
+      const errorMsg = err.message || 'เกิดข้อผิดพลาดในการรันคำสั่ง SQL';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }

@@ -55,9 +55,12 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("Translation error:", error);
+    console.error("Translation error:", error); // Log detailed error server-side only
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }), 
+      JSON.stringify({ 
+        error: 'Translation service unavailable',
+        code: 'TRANSLATION_ERROR'
+      }), 
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

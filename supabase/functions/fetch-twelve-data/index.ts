@@ -170,10 +170,12 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error:', error); // Log detailed error server-side only
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ 
+        error: 'Failed to fetch market data',
+        code: 'FETCH_ERROR'
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
