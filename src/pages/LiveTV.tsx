@@ -1,5 +1,4 @@
-import TradingViewWidget from 'react-tradingview-widget';
-import ChartBlock from '@/components/charts/ChartBlock';
+import TradingViewChart from '@/components/TradingViewChart';
 import Footer from '@/components/Footer';
 
 const LiveTV = () => {
@@ -8,36 +7,12 @@ const LiveTV = () => {
     { symbol: 'FX_IDC:THBJPY', title: 'THB/JPY' },
     { symbol: 'FX_IDC:THBCNY', title: 'THB/CNY' },
     { symbol: 'FX_IDC:USDCNY', title: 'USD/CNY' },
-  ];
-
-  const shfeCharts = [
-    {
-      title: 'SHFE COPPER (CU)',
-      symbols: [{ label: 'SHFE COPPER (CU)', market: 'SHFE', symbol: 'CU' }]
-    },
-    {
-      title: 'SHFE ALUMINIUM (AL)',
-      symbols: [{ label: 'SHFE ALUMINIUM (AL)', market: 'SHFE', symbol: 'AL' }]
-    },
-    {
-      title: 'SHFE ZINC (ZN)',
-      symbols: [{ label: 'SHFE ZINC (ZN)', market: 'SHFE', symbol: 'ZN' }]
-    },
-  ];
-
-  const lmeCharts = [
-    {
-      title: 'LME COPPER (CU)',
-      symbols: [{ label: 'LME COPPER (CU)', market: 'LME', symbol: 'CU' }]
-    },
-    {
-      title: 'LME ALUMINIUM (AL)',
-      symbols: [{ label: 'LME ALUMINIUM (AL)', market: 'LME', symbol: 'AL' }]
-    },
-    {
-      title: 'LME ZINC (ZN)',
-      symbols: [{ label: 'LME ZINC (ZN)', market: 'LME', symbol: 'ZN' }]
-    },
+    { symbol: 'SHFE:CU1!', title: 'SHFE COPPER (CU)' },
+    { symbol: 'SHFE:AL1!', title: 'SHFE ALUMINIUM (AL)' },
+    { symbol: 'SHFE:ZN1!', title: 'SHFE ZINC (ZN)' },
+    { symbol: 'COMEX:HG1!', title: 'LME COPPER (CU)' },
+    { symbol: 'LME:AH1!', title: 'LME ALUMINIUM (AL)' },
+    { symbol: 'LME:ZS1!', title: 'LME ZINC (ZN)' },
   ];
 
   return (
@@ -58,43 +33,15 @@ const LiveTV = () => {
               <h2 className="text-xl font-semibold">{chart.title}</h2>
             </div>
             <div className="flex-1 w-full">
-              <TradingViewWidget
+              <TradingViewChart
                 symbol={chart.symbol}
-                theme="Light"
-                locale="en"
-                autosize
-                hide_side_toolbar={true}
-                allow_symbol_change={false}
+                title={chart.title}
                 interval="D"
-                toolbar_bg="#FAFAF8"
-                enable_publishing={false}
-                hide_top_toolbar={false}
-                save_image={false}
-                container_id={`tradingview_chart_${index}`}
-                studies={[]}
-                disabled_features={[
-                  "header_indicators",
-                  "header_compare",
-                  "header_screenshot",
-                  "header_undo_redo"
-                ]}
-                enabled_features={[
-                  "hide_left_toolbar_by_default"
-                ]}
+                theme="light"
+                locale="en"
+                allowSymbolChange={false}
               />
             </div>
-          </div>
-        ))}
-        
-        {shfeCharts.map((chart, index) => (
-          <div key={`shfe-${index}`} style={{ minHeight: '500px' }}>
-            <ChartBlock title={chart.title} symbols={chart.symbols} />
-          </div>
-        ))}
-        
-        {lmeCharts.map((chart, index) => (
-          <div key={`lme-${index}`} style={{ minHeight: '500px' }}>
-            <ChartBlock title={chart.title} symbols={chart.symbols} />
           </div>
         ))}
       </div>

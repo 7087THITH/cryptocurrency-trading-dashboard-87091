@@ -81,9 +81,12 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("Error sending password reset email:", error);
+    console.error("Error sending password reset email:", error); // Log detailed error server-side only
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: 'Failed to send password reset email',
+        code: 'EMAIL_ERROR'
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
