@@ -14,45 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      alert_rules: {
-        Row: {
-          condition: string
-          created_at: string | null
-          id: string
-          is_active: boolean | null
-          last_triggered_at: string | null
-          market: string
-          symbol: string
-          threshold: number
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          condition: string
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          last_triggered_at?: string | null
-          market: string
-          symbol: string
-          threshold: number
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          condition?: string
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          last_triggered_at?: string | null
-          market?: string
-          symbol?: string
-          threshold?: number
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       audit_logs: {
         Row: {
           action: string
@@ -320,45 +281,6 @@ export type Database = {
         }
         Relationships: []
       }
-      notifications: {
-        Row: {
-          created_at: string | null
-          id: string
-          is_read: boolean | null
-          message: string
-          metadata: Json | null
-          read_at: string | null
-          severity: string
-          title: string
-          type: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          is_read?: boolean | null
-          message: string
-          metadata?: Json | null
-          read_at?: string | null
-          severity?: string
-          title: string
-          type: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          is_read?: boolean | null
-          message?: string
-          metadata?: Json | null
-          read_at?: string | null
-          severity?: string
-          title?: string
-          type?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string | null
@@ -413,42 +335,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_preferences: {
-        Row: {
-          created_at: string | null
-          default_language: string | null
-          default_market: string | null
-          id: string
-          notification_email: boolean | null
-          notification_push: boolean | null
-          theme: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          default_language?: string | null
-          default_market?: string | null
-          id?: string
-          notification_email?: boolean | null
-          notification_push?: boolean | null
-          theme?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          default_language?: string | null
-          default_market?: string | null
-          id?: string
-          notification_email?: boolean | null
-          notification_push?: boolean | null
-          theme?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -466,33 +352,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
-      watchlist: {
-        Row: {
-          created_at: string | null
-          id: string
-          market: string
-          notes: string | null
-          symbol: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          market: string
-          notes?: string | null
-          symbol: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          market?: string
-          notes?: string | null
-          symbol?: string
           user_id?: string
         }
         Relationships: []

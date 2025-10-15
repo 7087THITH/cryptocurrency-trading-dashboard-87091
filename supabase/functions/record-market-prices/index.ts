@@ -82,21 +82,6 @@ serve(async (req) => {
   }
 
   try {
-    // Verify the request is from an authorized source (cron or admin)
-    const authHeader = req.headers.get('Authorization');
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    
-    // Allow requests with the anon key (from cron jobs) or service role key
-    if (!authHeader || !authHeader.includes(anonKey.substring(0, 20))) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 401 
-        }
-      );
-    }
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const twelveDataApiKey = Deno.env.get('TWELVE_DATA_API_KEY')!;

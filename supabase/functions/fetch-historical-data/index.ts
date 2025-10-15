@@ -179,12 +179,11 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error in fetch-historical-data:', error); // Log detailed error server-side only
+    console.error('Error in fetch-historical-data:', error);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: 'Failed to fetch historical data',
-        code: 'FETCH_ERROR'
+        error: error instanceof Error ? error.message : 'Unknown error occurred'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
