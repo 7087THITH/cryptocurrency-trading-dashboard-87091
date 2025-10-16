@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, CartesianGrid } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, CartesianGrid } from "recharts";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -200,7 +200,21 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
         
         <TabsContent value="monthly" className="flex-1 mt-0">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="colorPriceMonthly" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.5}/>
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05}/>
+                </linearGradient>
+                <linearGradient id="colorHighMonthly" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.02}/>
+                </linearGradient>
+                <linearGradient id="colorLowMonthly" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.02}/>
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis 
                 dataKey="time" 
@@ -222,42 +236,63 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 }}
               />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
-              <Line 
-                type="monotone" 
-                dataKey="price" 
-                stroke="hsl(var(--primary))" 
-                strokeWidth={2}
-                dot={false}
-                name="ราคา"
-                isAnimationActive={true}
-              />
-              <Line 
+              <Area 
                 type="monotone" 
                 dataKey="high" 
                 stroke="hsl(var(--success))" 
+                fill="url(#colorHighMonthly)"
                 strokeWidth={1}
-                dot={false}
-                name="สูงสุด"
                 strokeDasharray="5 5"
+                name="สูงสุด"
                 isAnimationActive={true}
               />
-              <Line 
+              <Area 
+                type="monotone" 
+                dataKey="price" 
+                stroke="hsl(var(--primary))" 
+                fill="url(#colorPriceMonthly)"
+                strokeWidth={2}
+                name="ราคา"
+                isAnimationActive={true}
+                dot={{ r: 0 }}
+                activeDot={{ 
+                  r: 6, 
+                  fill: 'hsl(var(--primary))',
+                  stroke: 'hsl(var(--background))',
+                  strokeWidth: 2
+                }}
+              />
+              <Area 
                 type="monotone" 
                 dataKey="low" 
                 stroke="hsl(var(--destructive))" 
+                fill="url(#colorLowMonthly)"
                 strokeWidth={1}
-                dot={false}
-                name="ต่ำสุด"
                 strokeDasharray="5 5"
+                name="ต่ำสุด"
                 isAnimationActive={true}
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </TabsContent>
 
         <TabsContent value="yearly" className="flex-1 mt-0">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="colorPriceYearly" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.5}/>
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05}/>
+                </linearGradient>
+                <linearGradient id="colorHighYearly" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.02}/>
+                </linearGradient>
+                <linearGradient id="colorLowYearly" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.02}/>
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis 
                 dataKey="time" 
@@ -278,42 +313,63 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 }}
               />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
-              <Line 
-                type="monotone" 
-                dataKey="price" 
-                stroke="hsl(var(--primary))" 
-                strokeWidth={2}
-                dot={false}
-                name="ราคาเฉลี่ย"
-                isAnimationActive={true}
-              />
-              <Line 
+              <Area 
                 type="monotone" 
                 dataKey="high" 
                 stroke="hsl(var(--success))" 
+                fill="url(#colorHighYearly)"
                 strokeWidth={1}
-                dot={false}
-                name="สูงสุด"
                 strokeDasharray="5 5"
+                name="สูงสุด"
                 isAnimationActive={true}
               />
-              <Line 
+              <Area 
+                type="monotone" 
+                dataKey="price" 
+                stroke="hsl(var(--primary))" 
+                fill="url(#colorPriceYearly)"
+                strokeWidth={2}
+                name="ราคาเฉลี่ย"
+                isAnimationActive={true}
+                dot={{ r: 0 }}
+                activeDot={{ 
+                  r: 6, 
+                  fill: 'hsl(var(--primary))',
+                  stroke: 'hsl(var(--background))',
+                  strokeWidth: 2
+                }}
+              />
+              <Area 
                 type="monotone" 
                 dataKey="low" 
                 stroke="hsl(var(--destructive))" 
+                fill="url(#colorLowYearly)"
                 strokeWidth={1}
-                dot={false}
-                name="ต่ำสุด"
                 strokeDasharray="5 5"
+                name="ต่ำสุด"
                 isAnimationActive={true}
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </TabsContent>
 
         <TabsContent value="trend" className="flex-1 mt-0">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="colorPriceTrend" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.5}/>
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05}/>
+                </linearGradient>
+                <linearGradient id="colorHighTrend" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.02}/>
+                </linearGradient>
+                <linearGradient id="colorLowTrend" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.02}/>
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis 
                 dataKey="time" 
@@ -334,36 +390,43 @@ const RealtimeChart = ({ symbol, market, title }: RealtimeChartProps) => {
                 }}
               />
               <Legend wrapperStyle={{ fontSize: '12px' }} />
-              <Line 
-                type="monotone" 
-                dataKey="price" 
-                stroke="hsl(var(--primary))" 
-                strokeWidth={3}
-                dot={false}
-                name="ราคาเฉลี่ย"
-                isAnimationActive={true}
-              />
-              <Line 
+              <Area 
                 type="monotone" 
                 dataKey="high" 
                 stroke="hsl(var(--success))" 
+                fill="url(#colorHighTrend)"
                 strokeWidth={2}
-                dot={false}
-                name="สูงสุด"
                 strokeDasharray="5 5"
+                name="สูงสุด"
                 isAnimationActive={true}
               />
-              <Line 
+              <Area 
+                type="monotone" 
+                dataKey="price" 
+                stroke="hsl(var(--primary))" 
+                fill="url(#colorPriceTrend)"
+                strokeWidth={3}
+                name="ราคาเฉลี่ย"
+                isAnimationActive={true}
+                dot={{ r: 0 }}
+                activeDot={{ 
+                  r: 6, 
+                  fill: 'hsl(var(--primary))',
+                  stroke: 'hsl(var(--background))',
+                  strokeWidth: 2
+                }}
+              />
+              <Area 
                 type="monotone" 
                 dataKey="low" 
                 stroke="hsl(var(--destructive))" 
+                fill="url(#colorLowTrend)"
                 strokeWidth={2}
-                dot={false}
-                name="ต่ำสุด"
                 strokeDasharray="5 5"
+                name="ต่ำสุด"
                 isAnimationActive={true}
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </TabsContent>
       </Tabs>
