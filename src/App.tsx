@@ -50,10 +50,10 @@ const Navigation = () => {
                 Live TV2
               </Button>
             </Link>
-            <Link to="/admin">
+            <Link to="/historical-data">
               <Button variant="ghost" size="sm">
-                <User className="mr-2 h-4 w-4" />
-                Admin
+                <LineChart className="mr-2 h-4 w-4" />
+                Tooling
               </Button>
             </Link>
           </div>
