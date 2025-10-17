@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Loader2 } from 'lucide-react';
 
 type ChartType = 'exchange' | 'lme' | 'shfe';
@@ -163,13 +163,7 @@ export const HistoricalChart = () => {
               </div>
             ) : chartData && chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={400}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorHistorical" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.5}/>
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05}/>
-                    </linearGradient>
-                  </defs>
+                <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis 
                     dataKey="date" 
@@ -187,22 +181,15 @@ export const HistoricalChart = () => {
                     }}
                   />
                   <Legend />
-                  <Area 
+                  <Line 
                     type="monotone" 
                     dataKey="value" 
                     stroke="hsl(var(--primary))" 
-                    fill="url(#colorHistorical)"
                     name={selectedSymbol}
                     strokeWidth={2}
-                    dot={{ r: 0 }}
-                    activeDot={{ 
-                      r: 6, 
-                      fill: 'hsl(var(--primary))',
-                      stroke: 'hsl(var(--background))',
-                      strokeWidth: 2
-                    }}
+                    dot={{ fill: 'hsl(var(--primary))' }}
                   />
-                </AreaChart>
+                </LineChart>
               </ResponsiveContainer>
             ) : (
               <div className="flex items-center justify-center h-[400px] text-muted-foreground">
