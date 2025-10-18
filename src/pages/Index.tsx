@@ -1,5 +1,7 @@
 import MarketStats from "@/components/MarketStats";
 import MultiBlockCharts from "@/components/MultiBlockCharts";
+
+
 import MarketHistory from "@/components/MarketHistory";
 import Footer from "@/components/Footer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
