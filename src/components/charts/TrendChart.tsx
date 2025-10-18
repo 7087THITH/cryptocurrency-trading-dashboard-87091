@@ -148,9 +148,39 @@ const TrendChart = ({ symbol, market }: TrendChartProps) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Area type="monotone" dataKey="avgHigh" stroke="#10b981" fill="url(#colorTrendHigh)" name="Avg High" />
-        <Area type="monotone" dataKey="avgPrice" stroke="#3b82f6" fill="url(#colorTrendPrice)" name="Avg Price" strokeWidth={2} />
-        <Area type="monotone" dataKey="avgLow" stroke="#ef4444" fill="url(#colorTrendLow)" name="Avg Low" />
+        <Area 
+          type="monotone" 
+          dataKey="avgHigh" 
+          stroke="#10b981" 
+          fill="url(#colorTrendHigh)" 
+          name="Avg High"
+          strokeWidth={2}
+          strokeDasharray="5 5"
+        />
+        <Area 
+          type="monotone" 
+          dataKey="avgPrice" 
+          stroke="#3b82f6" 
+          fill="url(#colorTrendPrice)" 
+          name="Avg Price" 
+          strokeWidth={2}
+          dot={{ r: 0 }}
+          activeDot={{ 
+            r: 6, 
+            fill: '#3b82f6',
+            stroke: '#ffffff',
+            strokeWidth: 2
+          }}
+        />
+        <Area 
+          type="monotone" 
+          dataKey="avgLow" 
+          stroke="#ef4444" 
+          fill="url(#colorTrendLow)" 
+          name="Avg Low"
+          strokeWidth={2}
+          strokeDasharray="5 5"
+        />
       </AreaChart>
     </ResponsiveContainer>
   );
