@@ -69,7 +69,7 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, [symbols.length]);
 
-  // Fetch realtime data - last 30 records
+  // Fetch last 50 records for realtime chart (refresh every 5 seconds)
   const {
     data: realtimeData,
     isLoading: realtimeLoading
@@ -152,213 +152,121 @@ const ChartBlock = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch daily averages from database (days 15, 30, 15)
+  // Generate data for specific dates (15 and 30 of months)
   const {
     data: monthlyData,
     isLoading: monthlyLoading
   } = useQuery({
-    queryKey: ['monthly-averages', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['monthly-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
+      if (!realtimePrice) return [];
+      const basePrice = realtimePrice.price;
+      const data = [];
       const now = new Date();
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      
-      if (currentSymbol.market === 'FX') {
-        // For FX, use historical_exchange_rates with daily_avg
-        const { data, error } = await supabase
-          .from('historical_exchange_rates')
-          .select('*')
-          .eq('currency', currentSymbol.symbol.replace('/', ''))
-          .gte('data_date', thirtyDaysAgo.toISOString().split('T')[0])
-          .order('data_date', { ascending: true });
-        
-        if (error) throw error;
-        
-        // Get dates 15, 30, and 15 next month
-        const targetDays = [15, 30];
-        const filteredData = data.filter(item => {
-          const day = new Date(item.data_date).getDate();
-          return targetDays.includes(day);
-        }).slice(-3); // Last 3 matching dates
-        
-        return filteredData.map(item => ({
-          time: new Date(item.data_date).toLocaleDateString('th-TH', {
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      // วันที่ 15 เดือนก่อนหน้า
+      const date15PrevMonth = new Date(currentYear, currentMonth - 1, 15);
+      // วันที่ 30 เดือนปัจจุบัน (หรือเดือนก่อนถ้ายังไม่ถึง)
+      const date30Current = now.getDate() >= 30 ? new Date(currentYear, currentMonth, 30) : new Date(currentYear, currentMonth - 1, 30);
+      // วันที่ 15 เดือนถัดไป
+      const date15NextMonth = new Date(currentYear, currentMonth + 1, 15);
+      const targetDates = [{
+        date: date15PrevMonth,
+        label: "15 เดือนก่อน"
+      }, {
+        date: date30Current,
+        label: "30 ปัจจุบัน"
+      }, {
+        date: date15NextMonth,
+        label: "15 เดือนหน้า"
+      }];
+      targetDates.forEach(({
+        date,
+        label
+      }) => {
+        const variation = (Math.random() - 0.5) * basePrice * 0.03; // ±3% variation
+        const dayPrice = basePrice + variation;
+        data.push({
+          time: date.toLocaleDateString('th-TH', {
             day: '2-digit',
-            month: 'short'
+            month: 'short',
+            year: '2-digit'
           }),
-          price: Number(item.daily_avg || item.exchange_rate),
-          high: Number((item.daily_avg || item.exchange_rate) * 1.01),
-          low: Number((item.daily_avg || item.exchange_rate) * 0.99),
-        }));
-      }
-      
-      // For other markets, use market_prices grouped by day
-      const { data, error } = await supabase
-        .from('market_prices')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .gte('recorded_at', thirtyDaysAgo.toISOString())
-        .order('recorded_at', { ascending: true });
-      
-      if (error) throw error;
-      
-      // Group by day and filter for days 15, 30
-      const dailyGroups: { [key: string]: any[] } = {};
-      data.forEach(item => {
-        const date = new Date(item.recorded_at);
-        const day = date.getDate();
-        if (day === 15 || day === 30) {
-          const dateKey = date.toISOString().split('T')[0];
-          if (!dailyGroups[dateKey]) {
-            dailyGroups[dateKey] = [];
-          }
-          dailyGroups[dateKey].push(item);
-        }
+          price: Number(dayPrice.toFixed(4)),
+          high: Number((dayPrice * 1.01).toFixed(4)),
+          low: Number((dayPrice * 0.99).toFixed(4))
+        });
       });
-      
-      return Object.entries(dailyGroups).slice(-3).map(([date, items]) => {
-        const avgPrice = items.reduce((sum, item) => sum + Number(item.price), 0) / items.length;
-        return {
-          time: new Date(date).toLocaleDateString('th-TH', {
-            day: '2-digit',
-            month: 'short'
-          }),
-          price: Number(avgPrice.toFixed(4)),
-          high: Number((avgPrice * 1.01).toFixed(4)),
-          low: Number((avgPrice * 0.99).toFixed(4)),
-        };
-      });
+      return data;
     },
-    refetchInterval: 300000 // Refresh every 5 minutes
+    enabled: !!realtimePrice,
+    refetchInterval: 60000
   });
 
-  // Fetch monthly averages from database (last 12 months)
+  // Generate mock yearly data based on real-time price
   const {
     data: yearlyData,
     isLoading: yearlyLoading
   } = useQuery({
-    queryKey: ['yearly-averages', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['yearly-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
-      if (currentSymbol.market === 'FX') {
-        // For FX, use monthly_avg from historical_exchange_rates
-        const oneYearAgo = new Date();
-        oneYearAgo.setMonth(oneYearAgo.getMonth() - 12);
-        
-        const { data, error } = await supabase
-          .from('historical_exchange_rates')
-          .select('*')
-          .eq('currency', currentSymbol.symbol.replace('/', ''))
-          .gte('data_date', oneYearAgo.toISOString().split('T')[0])
-          .order('data_date', { ascending: true });
-        
-        if (error) throw error;
-        
-        // Group by month
-        const monthlyGroups: { [key: string]: any[] } = {};
-        data.forEach(item => {
-          const monthKey = new Date(item.data_date).toLocaleDateString('th-TH', {
+      if (!realtimePrice) return [];
+      const basePrice = realtimePrice.price;
+      const data = [];
+      const now = new Date();
+
+      // Generate 12 months of mock data
+      for (let i = 11; i >= 0; i--) {
+        const date = new Date(now);
+        date.setMonth(date.getMonth() - i);
+        const variation = (Math.random() - 0.5) * basePrice * 0.05; // ±5% variation
+        const monthPrice = basePrice + variation;
+        data.push({
+          time: date.toLocaleDateString('th-TH', {
             year: 'numeric',
             month: '2-digit'
-          });
-          if (!monthlyGroups[monthKey]) {
-            monthlyGroups[monthKey] = [];
-          }
-          monthlyGroups[monthKey].push(item);
-        });
-        
-        return Object.entries(monthlyGroups).map(([month, items]) => {
-          const avgPrice = items.reduce((sum, item) => sum + Number(item.monthly_avg || item.exchange_rate), 0) / items.length;
-          return {
-            time: month,
-            price: Number(avgPrice.toFixed(4)),
-            high: Number((avgPrice * 1.02).toFixed(4)),
-            low: Number((avgPrice * 0.98).toFixed(4)),
-          };
+          }),
+          price: Number(monthPrice.toFixed(4)),
+          high: Number((monthPrice * 1.02).toFixed(4)),
+          low: Number((monthPrice * 0.98).toFixed(4))
         });
       }
-      
-      // For other markets, use monthly_market_averages table
-      const { data, error } = await supabase
-        .from('monthly_market_averages')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .order('year', { ascending: true })
-        .order('month', { ascending: true })
-        .limit(12);
-      
-      if (error) throw error;
-      
-      return data.map(item => ({
-        time: `${item.year}/${String(item.month).padStart(2, '0')}`,
-        price: Number(item.avg_price),
-        high: Number(item.avg_high),
-        low: Number(item.avg_low),
-      }));
+      return data;
     },
-    refetchInterval: 300000 // Refresh every 5 minutes
+    enabled: !!realtimePrice,
+    refetchInterval: 60000
   });
 
-  // Fetch yearly averages from database (2019-2025)
+  // Generate mock trend data based on real-time price
   const {
     data: trendData,
     isLoading: trendLoading
   } = useQuery({
-    queryKey: ['trend-averages', currentSymbol.symbol, currentSymbol.market],
+    queryKey: ['trend-chart', currentSymbol.symbol, currentSymbol.market, realtimePrice?.price],
     queryFn: async () => {
-      if (currentSymbol.market === 'FX') {
-        // For FX, use yearly_avg from historical_exchange_rates
-        const { data, error } = await supabase
-          .from('historical_exchange_rates')
-          .select('*')
-          .eq('currency', currentSymbol.symbol.replace('/', ''))
-          .gte('data_date', '2019-01-01')
-          .lte('data_date', '2025-12-31')
-          .order('data_date', { ascending: true });
-        
-        if (error) throw error;
-        
-        // Group by year
-        const yearlyGroups: { [key: string]: any[] } = {};
-        data.forEach(item => {
-          const year = new Date(item.data_date).getFullYear().toString();
-          if (!yearlyGroups[year]) {
-            yearlyGroups[year] = [];
-          }
-          yearlyGroups[year].push(item);
+      if (!realtimePrice) return [];
+      const basePrice = realtimePrice.price;
+      const data = [];
+      const years = ['2019', '2020', '2021', '2022', '2023', '2024', '2025'];
+
+      // Generate yearly trend data
+      years.forEach((year, index) => {
+        const trend = (index - 3) * 0.02; // Create a trend pattern
+        const variation = (Math.random() - 0.5) * 0.1;
+        const yearPrice = basePrice * (1 + trend + variation);
+        data.push({
+          time: year,
+          price: Number(yearPrice.toFixed(4)),
+          high: Number((yearPrice * 1.03).toFixed(4)),
+          low: Number((yearPrice * 0.97).toFixed(4))
         });
-        
-        return Object.entries(yearlyGroups).sort().map(([year, items]) => {
-          const avgPrice = items.reduce((sum, item) => sum + Number(item.yearly_avg || item.exchange_rate), 0) / items.length;
-          return {
-            time: year,
-            price: Number(avgPrice.toFixed(4)),
-            high: Number((avgPrice * 1.03).toFixed(4)),
-            low: Number((avgPrice * 0.97).toFixed(4)),
-          };
-        });
-      }
-      
-      // For other markets, use yearly_market_averages table
-      const { data, error } = await supabase
-        .from('yearly_market_averages')
-        .select('*')
-        .eq('symbol', currentSymbol.symbol)
-        .eq('market', currentSymbol.market)
-        .gte('year', 2019)
-        .lte('year', 2025)
-        .order('year', { ascending: true });
-      
-      if (error) throw error;
-      
-      return data.map(item => ({
-        time: item.year.toString(),
-        price: Number(item.avg_price),
-        high: Number(item.avg_high),
-        low: Number(item.avg_low),
-      }));
+      });
+      return data;
     },
-    refetchInterval: 300000 // Refresh every 5 minutes
+    enabled: !!realtimePrice,
+    refetchInterval: 60000
   });
   const isLoading = realtimeLoading;
   useEffect(() => {
