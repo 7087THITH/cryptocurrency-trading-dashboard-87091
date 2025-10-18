@@ -1,34 +1,30 @@
-import MarketStats from "@/components/MarketStats";
-import MultiBlockCharts from "@/components/MultiBlockCharts";
+// src/components/MultiBlockCharts.tsx
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-
-import MarketHistory from "@/components/MarketHistory";
-import Footer from "@/components/Footer";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import TranslatedText from "@/components/TranslatedText";
-
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="w-full pl-2 pr-4 py-4 space-y-4">
-        <header className="mb-4 flex justify-between items-start">
-          <div>
-            <TranslatedText text="API MATERIAL EXCHANGE RATE" as="h1" className="text-3xl font-bold mb-1" />
-            <TranslatedText text="Currency Pairs & Metal Markets" as="p" className="text-muted-foreground" />
-          </div>
-          <LanguageSwitcher />
-        </header>
-
-        <MarketStats />
-
-        <MultiBlockCharts />
-
-        <MarketHistory />
-      </div>
-
-      <Footer />
-    </div>
-  );
+type Props = {
+  titleLeft?: string;
+  titleRight?: string;
+  left?: React.ReactNode; // ใส่ chart ซ้าย
+  right?: React.ReactNode; // ใส่ chart ขวา
 };
 
-export default Index;
+export default function MultiBlockCharts({ titleLeft = "Left", titleRight = "Right", left, right }: Props) {
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{titleLeft}</CardTitle>
+        </CardHeader>
+        <CardContent>{left ?? <div className="h-48">Left chart</div>}</CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{titleRight}</CardTitle>
+        </CardHeader>
+        <CardContent>{right ?? <div className="h-48">Right chart</div>}</CardContent>
+      </Card>
+    </div>
+  );
+}
