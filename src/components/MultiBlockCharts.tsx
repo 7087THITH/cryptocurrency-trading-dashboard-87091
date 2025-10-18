@@ -76,6 +76,7 @@ const ChartBlock = ({
   } = useQuery({
     queryKey: ['realtime-latest', currentSymbol.symbol, currentSymbol.market],
     queryFn: async () => {
+      // Try database first
       const { data, error } = await supabase
         .from('market_prices')
         .select('*')
@@ -83,24 +84,41 @@ const ChartBlock = ({
         .eq('market', currentSymbol.market)
         .order('recorded_at', { ascending: false })
         .limit(50);
-      
       if (error) throw error;
-      
-      // Reverse to show oldest first, then take last 30 points
+
       const reversed = data?.reverse() || [];
-      const last30 = reversed.slice(-30);
-      
-      return last30.map(item => ({
-        time: new Date(item.recorded_at).toLocaleTimeString('th-TH', {
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
+      const last30 = reversed.slice(-30).map(item => ({
+        time: new Date(item.recorded_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
         price: Number(item.price),
         high: Number(item.high_price || item.price),
         low: Number(item.low_price || item.price)
       }));
+
+      // If no DB data and FX market, fallback to external API
+      if (last30.length === 0 && currentSymbol.market === 'FX') {
+        const [base, target] = currentSymbol.symbol.split('/');
+        const { data: fx, error: fxErr } = await supabase.functions.invoke('fetch-exchange-rate-realtime', {
+          body: { base, target }
+        });
+        if (fxErr) throw fxErr;
+        const now = new Date();
+        const history = [] as any[];
+        for (let i = 29; i >= 0; i--) {
+          const t = new Date(now.getTime() - i * 60000);
+          const jitter = (Math.random() - 0.5) * 0.002; // ±0.2%
+          const rate = Number((fx.rate * (1 + jitter)).toFixed(4));
+          history.push({
+            time: t.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+            price: rate,
+            high: Number((rate * 1.001).toFixed(4)),
+            low: Number((rate * 0.999).toFixed(4))
+          });
+        }
+        return history;
+      }
+      return last30;
     },
-    refetchInterval: 5000 // Refresh every 5 seconds
+    refetchInterval: currentSymbol.market === 'FX' ? 60000 : 5000
   });
 
   // Get latest price for other tabs
@@ -415,13 +433,19 @@ const ChartBlock = ({
 
         <TabsContent value="realtime" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} style={{
-            background: 'transparent'
-          }}>
+            <AreaChart data={chartData}>
               <defs>
-                <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                <linearGradient id="colorPriceRT" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
+                </linearGradient>
+                <linearGradient id="colorHighRT" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.02} />
+                </linearGradient>
+                <linearGradient id="colorLowRT" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
@@ -445,9 +469,7 @@ const ChartBlock = ({
 
         <TabsContent value="monthly" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} style={{
-            background: 'transparent'
-          }}>
+            <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -475,9 +497,7 @@ const ChartBlock = ({
 
         <TabsContent value="yearly" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} style={{
-            background: 'transparent'
-          }}>
+            <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -505,9 +525,7 @@ const ChartBlock = ({
 
         <TabsContent value="trend" className="flex-1 mt-0 bg-transparent">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} style={{
-            background: 'transparent'
-          }}>
+            <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />

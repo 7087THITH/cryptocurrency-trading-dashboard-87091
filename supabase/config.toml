@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.send-reset-password-email]
 verify_jwt = false
+
+[functions.fetch-exchange-rate-realtime]
+verify_jwt = false

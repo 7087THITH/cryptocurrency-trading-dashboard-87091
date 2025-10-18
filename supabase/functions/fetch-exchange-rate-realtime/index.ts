@@ -68,11 +68,12 @@ serve(async (req) => {
         status: 200,
       }
     );
-  } catch (error) {
-    console.error("Error fetching exchange rate:", error);
+  } catch (err) {
+    console.error("Error fetching exchange rate:", err);
+    const message = (err as Error)?.message || "Unknown error";
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: message,
         source: "exchangerate-api.com",
       }),
       {
