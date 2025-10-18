@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend, CartesianGrid } from "recharts";
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 const MarketHistory = () => {
@@ -120,22 +120,7 @@ const MarketHistory = () => {
 
       {historyData && historyData.length > 0 && (
         <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={historyData}>
-            <defs>
-              <linearGradient id="colorMarketPrice" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.5}/>
-                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05}/>
-              </linearGradient>
-              <linearGradient id="colorMarketHigh" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0.02}/>
-              </linearGradient>
-              <linearGradient id="colorMarketLow" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--destructive))" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="hsl(var(--destructive))" stopOpacity={0.02}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <LineChart data={historyData}>
             <XAxis 
               dataKey="time" 
               stroke="hsl(var(--muted-foreground))"
@@ -153,40 +138,30 @@ const MarketHistory = () => {
               }}
             />
             <Legend />
-            <Area 
+            <Line 
+              type="monotone" 
+              dataKey="price" 
+              stroke="hsl(var(--primary))" 
+              strokeWidth={2}
+              name="ราคา"
+            />
+            <Line 
               type="monotone" 
               dataKey="high" 
               stroke="hsl(var(--success))" 
-              fill="url(#colorMarketHigh)"
               strokeWidth={1}
               strokeDasharray="5 5"
               name="สูงสุด"
             />
-            <Area 
-              type="monotone" 
-              dataKey="price" 
-              stroke="hsl(var(--primary))" 
-              fill="url(#colorMarketPrice)"
-              strokeWidth={2}
-              name="ราคา"
-              dot={{ r: 0 }}
-              activeDot={{ 
-                r: 6, 
-                fill: 'hsl(var(--primary))',
-                stroke: 'hsl(var(--background))',
-                strokeWidth: 2
-              }}
-            />
-            <Area 
+            <Line 
               type="monotone" 
               dataKey="low" 
               stroke="hsl(var(--destructive))" 
-              fill="url(#colorMarketLow)"
               strokeWidth={1}
               strokeDasharray="5 5"
               name="ต่ำสุด"
             />
-          </AreaChart>
+          </LineChart>
         </ResponsiveContainer>
       )}
     </div>

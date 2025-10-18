@@ -148,55 +148,31 @@ export type Database = {
       }
       historical_exchange_rates: {
         Row: {
-          avg_calculated_at: string | null
           created_at: string | null
           currency: string
-          daily_avg: number | null
           data_date: string
-          data_source: string | null
           exchange_rate: number | null
-          from_currency: string | null
           id: string
           making_date: string
-          monthly_avg: number | null
           selling_price: number | null
-          to_currency: string | null
-          weekly_avg: number | null
-          yearly_avg: number | null
         }
         Insert: {
-          avg_calculated_at?: string | null
           created_at?: string | null
           currency: string
-          daily_avg?: number | null
           data_date: string
-          data_source?: string | null
           exchange_rate?: number | null
-          from_currency?: string | null
           id?: string
           making_date: string
-          monthly_avg?: number | null
           selling_price?: number | null
-          to_currency?: string | null
-          weekly_avg?: number | null
-          yearly_avg?: number | null
         }
         Update: {
-          avg_calculated_at?: string | null
           created_at?: string | null
           currency?: string
-          daily_avg?: number | null
           data_date?: string
-          data_source?: string | null
           exchange_rate?: number | null
-          from_currency?: string | null
           id?: string
           making_date?: string
-          monthly_avg?: number | null
           selling_price?: number | null
-          to_currency?: string | null
-          weekly_avg?: number | null
-          yearly_avg?: number | null
         }
         Relationships: []
       }
@@ -565,10 +541,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      calculate_exchange_rate_averages: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
       execute_sql: {
         Args: { query_text: string }
         Returns: {

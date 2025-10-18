@@ -164,39 +164,9 @@ const MonthlyChart = ({ symbol, market }: MonthlyChartProps) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Area 
-          type="monotone" 
-          dataKey="high" 
-          stroke="#10b981" 
-          fill="url(#colorHigh)" 
-          name="High" 
-          strokeWidth={1}
-          strokeDasharray="5 5"
-        />
-        <Area 
-          type="monotone" 
-          dataKey="price" 
-          stroke="#3b82f6" 
-          fill="url(#colorPrice)" 
-          name="Price" 
-          strokeWidth={2}
-          dot={{ r: 0 }}
-          activeDot={{ 
-            r: 6, 
-            fill: '#3b82f6',
-            stroke: '#ffffff',
-            strokeWidth: 2
-          }}
-        />
-        <Area 
-          type="monotone" 
-          dataKey="low" 
-          stroke="#ef4444" 
-          fill="url(#colorLow)" 
-          name="Low"
-          strokeWidth={1}
-          strokeDasharray="5 5"
-        />
+        <Area type="monotone" dataKey="high" stroke="#10b981" fill="url(#colorHigh)" name="High" />
+        <Area type="monotone" dataKey="price" stroke="#3b82f6" fill="url(#colorPrice)" name="Price" strokeWidth={2} />
+        <Area type="monotone" dataKey="low" stroke="#ef4444" fill="url(#colorLow)" name="Low" />
       </AreaChart>
     </ResponsiveContainer>
   );

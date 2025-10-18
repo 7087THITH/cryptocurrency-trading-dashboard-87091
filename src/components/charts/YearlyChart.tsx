@@ -149,39 +149,9 @@ const YearlyChart = ({ symbol, market }: YearlyChartProps) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Area 
-          type="monotone" 
-          dataKey="avgHigh" 
-          stroke="#10b981" 
-          fill="url(#colorAvgHigh)" 
-          name="Avg High"
-          strokeWidth={1}
-          strokeDasharray="5 5"
-        />
-        <Area 
-          type="monotone" 
-          dataKey="avgPrice" 
-          stroke="#3b82f6" 
-          fill="url(#colorAvgPrice)" 
-          name="Avg Price" 
-          strokeWidth={2}
-          dot={{ r: 0 }}
-          activeDot={{ 
-            r: 6, 
-            fill: '#3b82f6',
-            stroke: '#ffffff',
-            strokeWidth: 2
-          }}
-        />
-        <Area 
-          type="monotone" 
-          dataKey="avgLow" 
-          stroke="#ef4444" 
-          fill="url(#colorAvgLow)" 
-          name="Avg Low"
-          strokeWidth={1}
-          strokeDasharray="5 5"
-        />
+        <Area type="monotone" dataKey="avgHigh" stroke="#10b981" fill="url(#colorAvgHigh)" name="Avg High" />
+        <Area type="monotone" dataKey="avgPrice" stroke="#3b82f6" fill="url(#colorAvgPrice)" name="Avg Price" strokeWidth={2} />
+        <Area type="monotone" dataKey="avgLow" stroke="#ef4444" fill="url(#colorAvgLow)" name="Avg Low" />
       </AreaChart>
     </ResponsiveContainer>
   );
