@@ -3,12 +3,14 @@
 ## 1. อัตราแลกเปลี่ยน (Exchange Rates)
 
 ### แหล่งข้อมูล:
+
 - **Exchange Rate API**: https://www.exchangerate-api.com/
 - **API Endpoint**: https://api.exchangerate-api.com/v4/latest/{base_currency}
 - **รองรับสกุลเงิน**: USD, THB, JPY, CNY และอื่นๆ กว่า 160 สกุล
 
 ### วิธีการดึงข้อมูล:
-1. **Realtime Tab**: 
+
+1. **Realtime Tab**:
    - ดึงข้อมูลจาก Exchange Rate API แบบ real-time
    - อัพเดททุก 5 วินาที
    - ไม่ต้องใช้ API Key สำหรับ basic usage
@@ -20,6 +22,7 @@
    - บันทึกเวลา: ใช้ฟังก์ชัน `calculate_exchange_rate_averages()` คำนวณทุกวัน
 
 ### ตาราง:
+
 - `historical_exchange_rates`: เก็บข้อมูลประวัติศาสตร์อัตราแลกเปลี่ยน
 - คอลัมน์สำคัญ: `currency`, `exchange_rate`, `daily_avg`, `weekly_avg`, `monthly_avg`, `yearly_avg`
 
@@ -28,11 +31,13 @@
 ## 2. ราคาโลหะ LME (London Metal Exchange)
 
 ### แหล่งข้อมูล:
+
 - **LME Official Prices**: https://www.lme.com/
 - **Metal Price API**: https://www.metalpriceapi.com/
 - **รองรับโลหะ**: CU (ทองแดง), AL (อลูมิเนียม), ZN (สังกะสี), PB (ตะกั่ว), NI (นิกเกิล), SN (ดีบุก)
 
 ### วิธีการดึงข้อมูล:
+
 1. **Realtime Tab**:
    - ดึงข้อมูลจาก Metal Price API
    - อัพเดททุก 60 วินาที (free tier มี rate limit)
@@ -45,10 +50,12 @@
    - บันทึกเวลา: ดึงข้อมูลทุกวันเวลา 09:00 UTC
 
 ### ตาราง:
+
 - `historical_lme_prices`: เก็บข้อมูลราคา LME
 - คอลัมน์สำคัญ: `metal`, `price_usd`, `data_date`, `making_date`
 
 ### เครื่องมือ:
+
 - Edge Function: `scrape-lme-prices`
 - Web Scraping จากเว็บไซต์ LME
 
@@ -57,11 +64,13 @@
 ## 3. ราคาโลหะ SHFE (Shanghai Futures Exchange)
 
 ### แหล่งข้อมูล:
+
 - **SHFE Official**: http://www.shfe.com.cn/
 - **Alternative API**: Quandl SHFE Data
 - **รองรับโลหะ**: CU (ทองแดง), AL (อลูมิเนียม), ZN (สังกะสี)
 
 ### วิธีการดึงข้อมูล:
+
 1. **Realtime Tab**:
    - ดึงข้อมูลจาก SHFE API ผ่าน proxy
    - อัพเดททุก 60 วินาที
@@ -74,10 +83,12 @@
    - บันทึกเวลา: ดึงข้อมูลทุกวันหลังตลาดปิด
 
 ### ตาราง:
+
 - `historical_shfe_prices`: เก็บข้อมูลราคา SHFE
 - คอลัมน์สำคัญ: `metal`, `price_cny`, `price_usd`, `data_date`, `making_date`
 
 ### เครื่องมือ:
+
 - Edge Function: สำหรับดึงข้อมูล SHFE
 - แปลงสกุลเงิน CNY → USD อัตโนมัติ
 
@@ -86,11 +97,13 @@
 ## 4. Market Prices (ราคาตลาดทั่วไป)
 
 ### แหล่งข้อมูล:
+
 - **Twelve Data API**: https://twelvedata.com/
 - **รองรับ**: หุ้น, Forex, Crypto, Commodities
 - **Endpoint**: https://api.twelvedata.com/
 
 ### วิธีการดึงข้อมูล:
+
 1. **Realtime Tab**:
    - ดึงข้อมูลจาก Twelve Data API
    - อัพเดททุก 5-60 วินาที (ขึ้นกับ plan)
@@ -103,10 +116,12 @@
    - บันทึกเวลา: ใช้ `recorded_at` timestamp
 
 ### ตาราง:
+
 - `market_prices`: เก็บข้อมูลราคาตลาดทั่วไป
 - คอลัมน์สำคัญ: `symbol`, `market`, `price`, `high_price`, `low_price`, `recorded_at`
 
 ### เครื่องมือ:
+
 - Edge Function: `fetch-twelve-data`
 - Edge Function: `get-realtime-price`
 - Edge Function: `record-market-prices`
@@ -116,16 +131,19 @@
 ## 5. ตารางค่าเฉลี่ย (Average Tables)
 
 ### Monthly Averages
+
 - **ตาราง**: `monthly_market_averages`
 - **คอลัมน์**: `symbol`, `market`, `year`, `month`, `avg_price`, `avg_high`, `avg_low`
 - **อัพเดท**: คำนวณใหม่ทุกวัน
 
 ### Yearly Averages
+
 - **ตาราง**: `yearly_market_averages`
 - **คอลัมน์**: `symbol`, `market`, `year`, `avg_price`, `avg_high`, `avg_low`
 - **อัพเดท**: คำนวณใหม่ทุกปี
 
 ### Daily Summary
+
 - **ตาราง**: `daily_market_summary`
 - **คอลัมน์**: `symbol`, `market`, `trade_date`, `open_price`, `close_price`, `high_price`, `low_price`, `avg_price`
 - **อัพเดท**: คำนวณทุกวันหลังตลาดปิด
@@ -135,6 +153,7 @@
 ## สรุปเครื่องมือที่ใช้
 
 ### Edge Functions:
+
 1. `fetch-twelve-data`: ดึงข้อมูลจาก Twelve Data API
 2. `get-realtime-price`: ดึงราคา real-time
 3. `scrape-lme-prices`: ดึงราคา LME
@@ -143,6 +162,7 @@
 6. `import-excel-data`: นำเข้าข้อมูลจาก Excel
 
 ### External APIs:
+
 1. **Exchange Rate API** (Free): https://www.exchangerate-api.com/
 2. **Metal Price API** (Free tier): https://www.metalpriceapi.com/
 3. **Twelve Data** (Paid): https://twelvedata.com/
@@ -150,6 +170,7 @@
 5. **SHFE Official** (Scraping): http://www.shfe.com.cn/
 
 ### บันทึกเวลา:
+
 - **Realtime**: ใช้เวลาจาก API timestamp
 - **Historical**: ใช้ `recorded_at` หรือ `data_date`
 - **Average calculation**: ใช้ `avg_calculated_at`
@@ -162,7 +183,6 @@
 1. **API Keys ที่ต้องการ**:
    - TWELVE_DATA_API_KEY (สำหรับ market prices)
    - METAL_PRICE_API_KEY (สำหรับ LME real-time) - optional
-   
 2. **Rate Limits**:
    - Exchange Rate API: ไม่จำกัด (free tier)
    - Metal Price API: 50 requests/เดือน (free)
