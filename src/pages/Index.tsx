@@ -16,14 +16,14 @@ const Index = () => {
           </div>
           <LanguageSwitcher />
         </header>
-        
+
         <MarketStats />
-        
+
         <MultiBlockCharts />
-        
+
         <MarketHistory />
       </div>
-      
+
       <Footer />
     </div>
   );
