@@ -1,73 +1,57 @@
-import { ArrowUpIcon, ArrowDownIcon, TrendingUpIcon } from "lucide-react";
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { AreaChart, Area, ResponsiveContainer } from "recharts";
 
 const initialMarketData = [
-  { label: "USD/THB", value: "36.75", change: 0.15, prefix: "", flag: "🇹🇭" },
-  { label: "THB/JPY", value: "4.08", change: 0.22, prefix: "", flag: "🇹🇭🇯🇵" },
-  { label: "THB/CNY", value: "5.07", change: -0.15, prefix: "", flag: "🇹🇭🇨🇳" },
-  { label: "USD/CNY", value: "7.24", change: -0.08, prefix: "", flag: "🇺🇸🇨🇳" },
-  { label: "SHFE COPPER (CU)", value: "68,750", change: 0.95, prefix: "¥", flag: "🇨🇳" },
-  { label: "SHFE ALUMINIUM (AL)", value: "19,850", change: 0.45, prefix: "¥", flag: "🇨🇳" },
-  { label: "SHFE ZINC (ZN)", value: "21,450", change: 0.62, prefix: "¥", flag: "🇨🇳" },
-  { label: "LME COPPER (CU)", value: "8,245", change: 1.2, prefix: "$", flag: "🇬🇧" },
-  { label: "LME ALUMINIUM (AL)", value: "2,485", change: 0.85, prefix: "$", flag: "🇬🇧" },
-  { label: "LME ZINC (ZN)", value: "2,645", change: 0.8, prefix: "$", flag: "🇬🇧" },
+  { code: "THCN", label: "THB/CNY", value: "5.14", change: 0.33, prefix: "" },
+  { code: "USCN", label: "USD/CNY", value: "7.19", change: 0.2, prefix: "" },
+  { code: "CN", label: "SHFE COPPER (CU)", value: "¥68,727", change: 0.81, prefix: "" },
+  { code: "CN", label: "SHFE ALUMINIUM (AL)", value: "¥19,879", change: 0.56, prefix: "" },
+  { code: "CN", label: "SHFE ZINC (ZN)", value: "¥21,497", change: 0.51, prefix: "" },
+  { code: "GB", label: "LME COPPER (CU)", value: "$8,256", change: 1.12, prefix: "" },
+  { code: "GB", label: "LME ALUMINIUM (AL)", value: "$2,528", change: 1.22, prefix: "" },
+  { code: "GB", label: "LME ZINC (ZN)", value: "$2,691", change: 0.86, prefix: "" },
+  { code: "TH", label: "USD/THB", value: "36.79", change: 0.06, prefix: "" },
+  { code: "THJP", label: "THB/JPY", value: "4.02", change: 0.31, prefix: "" },
 ];
 
 const MarketStats = () => {
   const [marketData, setMarketData] = useState(initialMarketData);
-  const [lastUpdate, setLastUpdate] = useState(new Date());
-  const [trendData, setTrendData] = useState<Record<string, any[]>>({});
-
-  // Generate 7-day trend data for each item
-  const generateTrendData = (baseValue: string, change: number) => {
-    const numValue = parseFloat(baseValue.replace(/,/g, ''));
-    const data = [];
-    for (let i = 6; i >= 0; i--) {
-      const dayChange = (Math.random() - 0.5) * (numValue * 0.02);
-      data.push({
-        day: i,
-        value: numValue + dayChange - (i * (numValue * Math.abs(change) * 0.001))
-      });
-    }
-    return data;
-  };
-
-  // Initialize trend data
-  useEffect(() => {
-    const initialTrends: Record<string, any[]> = {};
-    initialMarketData.forEach((item) => {
-      initialTrends[item.label] = generateTrendData(item.value, item.change);
-    });
-    setTrendData(initialTrends);
-  }, []);
 
   useEffect(() => {
     const updateInterval = setInterval(() => {
       setMarketData((current) =>
-        current.map((item) => ({
-          ...item,
-          value: item.value.replace(/,/g, '').includes('.') 
-            ? (parseFloat(item.value.replace(/,/g, '')) + (Math.random() - 0.5) * 0.1).toFixed(item.value.split('.')[1]?.length || 2)
-            : Math.round(parseFloat(item.value.replace(/,/g, '')) + (Math.random() - 0.5) * 50).toLocaleString(),
-          change: parseFloat((item.change + (Math.random() - 0.5) * 0.3).toFixed(2)),
-        }))
+        current.map((item) => {
+          const cleanValue = item.value.replace(/[¥$,]/g, '');
+          const numValue = parseFloat(cleanValue);
+          const randomChange = (Math.random() - 0.5) * 0.1;
+          
+          let newValue: string;
+          if (cleanValue.includes('.')) {
+            newValue = (numValue + randomChange).toFixed(2);
+          } else {
+            newValue = Math.round(numValue + (Math.random() - 0.5) * 50).toString();
+          }
+          
+          // Add prefix back
+          const valuePrefix = item.value.match(/^[¥$]/)?.[0] || '';
+          const formattedValue = valuePrefix + (cleanValue.includes('.') ? newValue : parseFloat(newValue).toLocaleString());
+          
+          return {
+            ...item,
+            value: formattedValue,
+            change: parseFloat((item.change + (Math.random() - 0.5) * 0.2).toFixed(2)),
+          };
+        })
       );
-      setLastUpdate(new Date());
-    }, 2000);
+    }, 3000);
 
-    return () => {
-      clearInterval(updateInterval);
-    };
+    return () => clearInterval(updateInterval);
   }, []);
 
   // Duplicate items for seamless loop
   const duplicatedData = [...marketData, ...marketData];
 
   return (
-    <div className="mb-8 animate-fade-in overflow-hidden">
+    <div className="mb-6 animate-fade-in overflow-hidden bg-slate-900 rounded-lg">
       <style>{`
         @keyframes scroll {
           0% {
@@ -78,66 +62,40 @@ const MarketStats = () => {
           }
         }
         .scroll-container {
-          animation: scroll 10s linear infinite;
+          animation: scroll 60s linear infinite;
         }
         .scroll-container:hover {
           animation-play-state: paused;
         }
       `}</style>
-      <div className="flex scroll-container gap-4">
+      <div className="flex scroll-container">
         {duplicatedData.map((item, index) => (
-          <div key={`${item.label}-${index}`} className="flex-shrink-0 w-[280px]">
-            <div className="glass-card p-6 rounded-lg h-[200px] flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-2xl animate-pulse hover:scale-110 transition-transform duration-300 cursor-pointer">
-                  {item.flag}
-                </span>
-                <TrendingUpIcon className={`w-4 h-4 ${item.change >= 0 ? 'text-success' : 'text-warning'}`} />
-              </div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">{item.label}</h3>
-              
-              {/* Mini Area Chart */}
-              <div className="h-16 w-full mb-2 bg-muted/10 rounded">
-                {trendData[item.label] && trendData[item.label].length > 0 && (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={trendData[item.label]} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                      <defs>
-                        <linearGradient id={`gradient-${item.label}-${index}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop 
-                            offset="5%" 
-                            stopColor={item.change >= 0 ? "#22c55e" : "#ef4444"} 
-                            stopOpacity={0.4}
-                          />
-                          <stop 
-                            offset="95%" 
-                            stopColor={item.change >= 0 ? "#22c55e" : "#ef4444"} 
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <Area
-                        type="monotone"
-                        dataKey="value"
-                        stroke={item.change >= 0 ? "#22c55e" : "#ef4444"}
-                        strokeWidth={2}
-                        fill={`url(#gradient-${item.label}-${index})`}
-                        isAnimationActive={false}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                )}
+          <div 
+            key={`${item.label}-${index}`} 
+            className="flex-shrink-0 px-6 py-3 border-r border-slate-700/50 hover:bg-slate-800/50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              {/* Country Code */}
+              <div className="text-slate-400 text-xs font-semibold min-w-[40px]">
+                {item.code}
               </div>
               
-              <p className="text-2xl font-semibold">
-                {item.prefix}{item.value}
-              </p>
-              <span className={`text-sm ${item.change >= 0 ? 'text-success' : 'text-warning'} flex items-center gap-1`}>
-                {item.change >= 0 ? <ArrowUpIcon className="w-3 h-3" /> : <ArrowDownIcon className="w-3 h-3" />}
-                {Math.abs(item.change)}%
-              </span>
-              <p className="text-xs text-muted-foreground mt-2">
-                {format(lastUpdate, "dd/MM/yyyy HH:mm:ss")}
-              </p>
+              {/* Market Label */}
+              <div className="text-slate-300 text-sm font-medium min-w-[140px]">
+                {item.label}
+              </div>
+              
+              {/* Value */}
+              <div className="text-white text-base font-bold min-w-[80px]">
+                {item.value}
+              </div>
+              
+              {/* Change Percentage */}
+              <div className={`text-sm font-semibold min-w-[60px] ${
+                item.change >= 0 ? 'text-green-400' : 'text-red-400'
+              }`}>
+                {item.change >= 0 ? '↑' : '↓'} {Math.abs(item.change).toFixed(2)}%
+              </div>
             </div>
           </div>
         ))}
